@@ -1,0 +1,291 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
+  role      Role     @default(STAFF)
+  position  String?
+  avatar    String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  departmentId String?
+  department   Department? @relation(fields: [departmentId], references: [id])
+  managerId    String?
+  manager      User?       @relation("ManagerEmployee", fields: [managerId], references: [id])
+  employees    User[]      @relation("ManagerEmployee")
+
+  // OKR relationships
+  ownedObjectives       Objective[]      @relation("ObjectiveOwner")
+  contributedObjectives Objective[]      @relation("ObjectiveContributor")
+  keyResults            KeyResult[]
+  progressUpdates       ProgressUpdate[]
+  reviews               Review[]         @relation("ReviewReviewer")
+  reviewsReceived       Review[]         @relation("ReviewReviewee")
+
+  // Notifications
+  notifications Notification[]
+
+  // Sessions for NextAuth
+  accounts Account[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Department {
+  id       String  @id @default(cuid())
+  name     String
+  parentId String?
+  headId   String?
+
+  parent   Department?  @relation("DepartmentHierarchy", fields: [parentId], references: [id])
+  children Department[] @relation("DepartmentHierarchy")
+  users    User[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("departments")
+}
+
+model Cycle {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  active      Boolean  @default(false)
+
+  objectives Objective[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("cycles")
+}
+
+model Objective {
+  id          String        @id @default(cuid())
+  title       String
+  description String?
+  type        ObjectiveType @default(PERSONAL)
+  status      Status        @default(NOT_STARTED)
+  weight      Float?        @default(1.0)
+
+  // Relationships
+  ownerId      String
+  owner        User   @relation("ObjectiveOwner", fields: [ownerId], references: [id])
+  contributors User[] @relation("ObjectiveContributor")
+
+  cycleId String
+  cycle   Cycle  @relation(fields: [cycleId], references: [id])
+
+  parentId String?
+  parent   Objective?  @relation("ObjectiveHierarchy", fields: [parentId], references: [id])
+  children Objective[] @relation("ObjectiveHierarchy")
+
+  keyResults KeyResult[]
+  reviews    Review[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("objectives")
+}
+
+model KeyResult {
+  id           String     @id @default(cuid())
+  description  String
+  metricType   MetricType
+  targetValue  Float
+  currentValue Float      @default(0)
+  unit         String?
+  weight       Float?     @default(1.0)
+
+  // Relationships
+  objectiveId String
+  objective   Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  ownerId String
+  owner   User   @relation(fields: [ownerId], references: [id])
+
+  progressUpdates ProgressUpdate[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("key_results")
+}
+
+model ProgressUpdate {
+  id       String  @id @default(cuid())
+  value    Float
+  notes    String?
+  evidence String? // URL to uploaded files/images
+
+  // Relationships
+  keyResultId String
+  keyResult   KeyResult @relation(fields: [keyResultId], references: [id], onDelete: Cascade)
+
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("progress_updates")
+}
+
+model Review {
+  id         String     @id @default(cuid())
+  score      Float? // 0.0 to 1.0 scale
+  feedback   String?
+  reviewDate DateTime
+  reviewType ReviewType @default(PROGRESS)
+
+  // Relationships
+  objectiveId String
+  objective   Objective @relation(fields: [objectiveId], references: [id])
+
+  reviewerId String
+  reviewer   User   @relation("ReviewReviewer", fields: [reviewerId], references: [id])
+
+  revieweeId String
+  reviewee   User   @relation("ReviewReviewee", fields: [revieweeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("reviews")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  type      NotificationType
+  title     String
+  message   String
+  read      Boolean          @default(false)
+  actionUrl String?
+
+  // Relationships
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
+
+model Template {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  type        ObjectiveType
+  content     String // Stores template structure as JSON string
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("templates")
+}
+
+// Enums
+enum Role {
+  ADMIN
+  MANAGER
+  STAFF
+}
+
+enum ObjectiveType {
+  COMPANY
+  TEAM
+  PERSONAL
+}
+
+enum Status {
+  NOT_STARTED
+  IN_PROGRESS
+  AT_RISK
+  COMPLETED
+  CANCELLED
+}
+
+enum MetricType {
+  PERCENTAGE
+  NUMBER
+  CURRENCY
+  BOOLEAN
+}
+
+enum ReviewType {
+  PROGRESS
+  MID_CYCLE
+  END_CYCLE
+  ANNUAL
+}
+
+enum NotificationType {
+  DEADLINE_REMINDER
+  PROGRESS_REQUEST
+  NEW_ASSIGNMENT
+  REVIEW_REMINDER
+  ACHIEVEMENT
+  ESCALATION
+}
