@@ -214,6 +214,26 @@ export async function GET() {
             <div class="note-text">Most endpoints require authentication. Make sure you're logged in or include proper authentication headers.</div>
         </div>
         
+        <!-- Health Check Endpoint -->
+        <div class="endpoint-group">
+            <div class="group-header">
+                <div class="group-title">🏥 Health Check</div>
+                <div class="group-description">API health monitoring</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/health</span>
+                </div>
+                <div class="endpoint-description">Check API health status</div>
+                <div class="response">
+                    <div class="response-title">Response:</div>
+                    <div class="response-description">Returns API status, timestamp, and service name</div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Authentication Endpoints -->
         <div class="endpoint-group">
             <div class="group-header">
@@ -401,6 +421,11 @@ export async function GET() {
                         <span class="param-type">string</span>
                         <div class="param-description">Cycle ID (required)</div>
                     </div>
+                    <div class="param">
+                        <span class="param-name">parentId</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Parent objective ID (optional)</div>
+                    </div>
                 </div>
             </div>
             
@@ -410,6 +435,52 @@ export async function GET() {
                     <span class="endpoint-path">/objectives?id={objectiveId}</span>
                 </div>
                 <div class="endpoint-description">Update an existing objective</div>
+                <div class="params">
+                    <div class="params-title">Query Parameters:</div>
+                    <div class="param">
+                        <span class="param-name">id</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Objective ID to update (required)</div>
+                    </div>
+                </div>
+                <div class="params">
+                    <div class="params-title">Request Body:</div>
+                    <div class="param">
+                        <span class="param-name">title</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Updated objective title</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">description</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Updated objective description</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">type</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">PERSONAL, TEAM, or COMPANY</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">status</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">NOT_STARTED, IN_PROGRESS, COMPLETED, or AT_RISK</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">ownerId</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Owner's user ID</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">cycleId</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Cycle ID</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">parentId</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Parent objective ID (optional)</div>
+                    </div>
+                </div>
             </div>
             
             <div class="endpoint">
@@ -418,6 +489,14 @@ export async function GET() {
                     <span class="endpoint-path">/objectives?id={objectiveId}</span>
                 </div>
                 <div class="endpoint-description">Delete an objective</div>
+                <div class="params">
+                    <div class="params-title">Query Parameters:</div>
+                    <div class="param">
+                        <span class="param-name">id</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Objective ID to delete (required)</div>
+                    </div>
+                </div>
             </div>
         </div>
         
@@ -473,6 +552,58 @@ export async function GET() {
                         <span class="param-name">ownerId</span>
                         <span class="param-type">string</span>
                         <div class="param-description">Owner's user ID (required)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="endpoint-path">/key-results</span>
+                </div>
+                <div class="endpoint-description">Update an existing key result</div>
+                <div class="params">
+                    <div class="params-title">Request Body:</div>
+                    <div class="param">
+                        <span class="param-name">id</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Key result ID (required)</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">description</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Updated description</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">targetValue</span>
+                        <span class="param-type">number</span>
+                        <div class="param-description">Updated target value</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">currentValue</span>
+                        <span class="param-type">number</span>
+                        <div class="param-description">Updated current value</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">unit</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Updated unit of measurement</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method delete">DELETE</span>
+                    <span class="endpoint-path">/key-results?id={keyResultId}</span>
+                </div>
+                <div class="endpoint-description">Delete a key result</div>
+                <div class="params">
+                    <div class="params-title">Query Parameters:</div>
+                    <div class="param">
+                        <span class="param-name">id</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Key result ID to delete (required)</div>
                     </div>
                 </div>
             </div>

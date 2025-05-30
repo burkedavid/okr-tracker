@@ -21,7 +21,9 @@ import {
   User,
   Building,
   Search,
-  Filter
+  Filter,
+  Edit,
+  Trash2
 } from 'lucide-react'
 
 interface Objective {
@@ -76,6 +78,8 @@ export default function ManagePage() {
   const [showObjectiveForm, setShowObjectiveForm] = useState(false)
   const [showKeyResultForm, setShowKeyResultForm] = useState(false)
   const [showProgressForm, setShowProgressForm] = useState(false)
+  const [editingObjective, setEditingObjective] = useState<Objective | null>(null)
+  const [editingKeyResult, setEditingKeyResult] = useState<any | null>(null)
   const [filterStatus, setFilterStatus] = useState('')
   const [filterUser, setFilterUser] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -144,6 +148,11 @@ export default function ManagePage() {
 
   const handleCreateObjective = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (editingObjective) {
+      return handleUpdateObjective(e)
+    }
+    
     try {
       const response = await fetch('/api/objectives', {
         method: 'POST',
@@ -173,6 +182,11 @@ export default function ManagePage() {
 
   const handleCreateKeyResult = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    if (editingKeyResult) {
+      return handleUpdateKeyResult(e)
+    }
+    
     try {
       const response = await fetch('/api/key-results', {
         method: 'POST',
@@ -227,6 +241,140 @@ export default function ManagePage() {
       }
     } catch (error) {
       console.error('Error updating progress:', error)
+    }
+  }
+
+  const handleEditObjective = (objective: Objective) => {
+    setEditingObjective(objective)
+    const cycleId = objective.cycle ? cycles.find(c => c.name === objective.cycle.name)?.id || '' : ''
+    setObjectiveForm({
+      title: objective.title,
+      description: objective.description,
+      type: 'PERSONAL', // You might want to add type to the Objective interface
+      ownerId: objective.ownerId,
+      cycleId: cycleId
+    })
+    setShowObjectiveForm(true)
+  }
+
+  const handleEditKeyResult = (keyResult: any, objectiveId: string) => {
+    setEditingKeyResult(keyResult)
+    setKeyResultForm({
+      description: keyResult.description,
+      metricType: keyResult.metricType,
+      targetValue: keyResult.targetValue.toString(),
+      unit: keyResult.unit || '',
+      objectiveId: objectiveId,
+      ownerId: keyResult.owner.id
+    })
+    setShowKeyResultForm(true)
+  }
+
+  const handleUpdateObjective = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const response = await fetch(`/api/objectives?id=${editingObjective?.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objectiveForm),
+      })
+
+      if (response.ok) {
+        setShowObjectiveForm(false)
+        setEditingObjective(null)
+        setObjectiveForm({
+          title: '',
+          description: '',
+          type: 'PERSONAL',
+          ownerId: '',
+          cycleId: ''
+        })
+        fetchData()
+      } else {
+        console.error('Failed to update objective')
+      }
+    } catch (error) {
+      console.error('Error updating objective:', error)
+    }
+  }
+
+  const handleUpdateKeyResult = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const response = await fetch('/api/key-results', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: editingKeyResult?.id,
+          ...keyResultForm
+        }),
+      })
+
+      if (response.ok) {
+        setShowKeyResultForm(false)
+        setEditingKeyResult(null)
+        setKeyResultForm({
+          description: '',
+          metricType: 'NUMBER',
+          targetValue: '',
+          unit: '',
+          objectiveId: '',
+          ownerId: ''
+        })
+        fetchData()
+      } else {
+        console.error('Failed to update key result')
+      }
+    } catch (error) {
+      console.error('Error updating key result:', error)
+    }
+  }
+
+  const handleDeleteObjective = async (objectiveId: string) => {
+    if (!window.confirm('Are you sure you want to delete this objective? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/objectives?id=${objectiveId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        fetchData()
+      } else {
+        console.error('Failed to delete objective')
+        alert('Failed to delete objective. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error deleting objective:', error)
+      alert('Error deleting objective. Please try again.')
+    }
+  }
+
+  const handleDeleteKeyResult = async (keyResultId: string) => {
+    if (!window.confirm('Are you sure you want to delete this key result? This action cannot be undone.')) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/key-results?id=${keyResultId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        fetchData()
+      } else {
+        console.error('Failed to delete key result')
+        alert('Failed to delete key result. Please try again.')
+      }
+    } catch (error) {
+      console.error('Error deleting key result:', error)
+      alert('Error deleting key result. Please try again.')
     }
   }
 
@@ -469,19 +617,34 @@ export default function ManagePage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Target className="w-5 h-5 text-blue-600" />
-                  <CardTitle className="text-xl text-gray-900">Create New Objective</CardTitle>
+                  <CardTitle className="text-xl text-gray-900">
+                    {editingObjective ? 'Edit Objective' : 'Create New Objective'}
+                  </CardTitle>
                 </div>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => setShowObjectiveForm(false)}
+                  onClick={() => {
+                    setShowObjectiveForm(false)
+                    setEditingObjective(null)
+                    setObjectiveForm({
+                      title: '',
+                      description: '',
+                      type: 'PERSONAL',
+                      ownerId: '',
+                      cycleId: ''
+                    })
+                  }}
                   className="text-gray-500 hover:text-gray-700"
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
               <CardDescription className="text-gray-600">
-                Fill in the details to create a new objective for your team or organisation.
+                {editingObjective 
+                  ? 'Update the details of this objective.'
+                  : 'Fill in the details to create a new objective for your team or organisation.'
+                }
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6">
@@ -567,7 +730,7 @@ export default function ManagePage() {
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6"
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    Create Objective
+                    {editingObjective ? 'Update Objective' : 'Create Objective'}
                   </Button>
                 </div>
               </form>
@@ -582,19 +745,35 @@ export default function ManagePage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <BarChart3 className="w-5 h-5 text-green-600" />
-                  <CardTitle className="text-xl text-gray-900">Add Key Result</CardTitle>
+                  <CardTitle className="text-xl text-gray-900">
+                    {editingKeyResult ? 'Edit Key Result' : 'Add Key Result'}
+                  </CardTitle>
                 </div>
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => setShowKeyResultForm(false)}
+                  onClick={() => {
+                    setShowKeyResultForm(false)
+                    setEditingKeyResult(null)
+                    setKeyResultForm({
+                      description: '',
+                      metricType: 'NUMBER',
+                      targetValue: '',
+                      unit: '',
+                      objectiveId: '',
+                      ownerId: ''
+                    })
+                  }}
                   className="text-gray-500 hover:text-gray-700"
                 >
                   <X className="w-4 h-4" />
                 </Button>
               </div>
               <CardDescription className="text-gray-600">
-                Add a measurable key result to track progress on an objective.
+                {editingKeyResult 
+                  ? 'Update the details of this key result.'
+                  : 'Add a measurable key result to track progress on an objective.'
+                }
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6">
@@ -692,7 +871,7 @@ export default function ManagePage() {
                     className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-6"
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    Add Key Result
+                    {editingKeyResult ? 'Update Key Result' : 'Add Key Result'}
                   </Button>
                 </div>
               </form>
@@ -867,10 +1046,44 @@ export default function ManagePage() {
                     <div className="flex-1 space-y-3">
                       <div className="flex items-center space-x-3">
                         {getStatusIcon(objective.status)}
-                        <CardTitle className="text-xl font-semibold text-slate-900">{objective.title}</CardTitle>
+                        <CardTitle 
+                          className="text-xl font-semibold text-slate-900 cursor-pointer hover:text-blue-600 transition-colors"
+                          onClick={() => handleEditObjective(objective)}
+                        >
+                          {objective.title}
+                        </CardTitle>
                         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(objective.status)}`}>
                           {objective.status.replace('_', ' ')}
                         </span>
+                        {/* Edit and Delete buttons for managers */}
+                        {(session?.user?.role === 'MANAGER' || session?.user?.role === 'ADMIN') && (
+                          <div className="flex items-center space-x-2 ml-4">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleEditObjective(objective)
+                              }}
+                              className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1"
+                              title="Edit objective"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleDeleteObjective(objective.id)
+                              }}
+                              className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1"
+                              title="Delete objective"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        )}
                       </div>
                       <CardDescription className="text-slate-600 leading-relaxed">
                         {objective.description}
@@ -919,14 +1132,56 @@ export default function ManagePage() {
                               <div key={kr.id} className="p-4 bg-white rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200 shadow-sm">
                                 <div className="space-y-3">
                                   <div className="flex items-start justify-between">
-                                    <p className="font-medium text-slate-900 leading-relaxed flex-1 pr-4">{kr.description}</p>
-                                    <div className="text-right">
-                                      <div className={`text-2xl font-bold ${getProgressColor(progress)}`}>
-                                        {Math.round(progress)}%
+                                    <div className="flex-1 pr-4">
+                                      <p 
+                                        className="font-medium text-slate-900 leading-relaxed cursor-pointer hover:text-blue-600 transition-colors"
+                                        onClick={() => handleEditKeyResult(kr, objective.id)}
+                                      >
+                                        {kr.description}
+                                      </p>
+                                      <div className="flex items-center space-x-2 mt-1 text-sm text-slate-500">
+                                        <User className="w-3 h-3" />
+                                        <span>{kr.owner.name}</span>
                                       </div>
-                                      <div className="text-sm text-slate-500">
-                                        {kr.currentValue} / {kr.targetValue}{kr.unit}
+                                    </div>
+                                    <div className="flex items-center space-x-3">
+                                      <div className="text-right">
+                                        <div className={`text-2xl font-bold ${getProgressColor(progress)}`}>
+                                          {Math.round(progress)}%
+                                        </div>
+                                        <div className="text-sm text-slate-500">
+                                          {kr.currentValue} / {kr.targetValue}{kr.unit}
+                                        </div>
                                       </div>
+                                      {/* Edit and Delete buttons for managers */}
+                                      {(session?.user?.role === 'MANAGER' || session?.user?.role === 'ADMIN') && (
+                                        <div className="flex flex-col space-y-1">
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={(e) => {
+                                              e.stopPropagation()
+                                              handleEditKeyResult(kr, objective.id)
+                                            }}
+                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 h-8 w-8"
+                                            title="Edit key result"
+                                          >
+                                            <Edit className="w-3 h-3" />
+                                          </Button>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={(e) => {
+                                              e.stopPropagation()
+                                              handleDeleteKeyResult(kr.id)
+                                            }}
+                                            className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-8 w-8"
+                                            title="Delete key result"
+                                          >
+                                            <Trash2 className="w-3 h-3" />
+                                          </Button>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                   <Progress value={Math.min(progress, 100)} className="h-2 bg-slate-100" />

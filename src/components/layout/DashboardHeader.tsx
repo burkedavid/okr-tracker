@@ -88,7 +88,7 @@ export default function DashboardHeader({
     {
       label: 'Manage OKRs',
       href: '/dashboard/manage',
-      variant: 'default' as const,
+      variant: 'outline' as const,
       icon: <Target className="w-4 h-4" />,
       hidden: currentPage === 'Manage OKRs',
       disabled: false,
