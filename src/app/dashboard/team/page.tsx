@@ -263,6 +263,14 @@ export default function TeamManagementPage() {
         description="View and manage your team's OKRs and progress"
         currentPage="Team OKRs"
         icon={<Users className="w-6 h-6 text-blue-600" />}
+        actions={[
+          {
+            label: 'Timeline View',
+            href: '/dashboard/timeline',
+            variant: 'default',
+            icon: <Calendar className="w-4 h-4" />
+          }
+        ]}
       />
 
       {/* Main Content */}
