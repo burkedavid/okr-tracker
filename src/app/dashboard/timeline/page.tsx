@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -23,7 +23,13 @@ import {
   TrendingDown,
   AlertTriangle,
   Eye,
-  EyeOff
+  EyeOff,
+  ChevronLeft,
+  SkipBack,
+  SkipForward,
+  Home,
+  ZoomIn,
+  ZoomOut
 } from 'lucide-react'
 
 interface Objective {
@@ -87,6 +93,9 @@ export default function TimelinePage() {
   const [showAtRiskOnly, setShowAtRiskOnly] = useState(false)
   const [loading, setLoading] = useState(true)
   const [hoveredObjective, setHoveredObjective] = useState<string | null>(null)
+  const [timelineZoom, setTimelineZoom] = useState(1) // 1 = normal, 2 = zoomed in, 0.5 = zoomed out
+  const timelineRef = useRef<HTMLDivElement>(null)
+  const dateLabelsRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
 
   useEffect(() => {
@@ -99,6 +108,23 @@ export default function TimelinePage() {
       setSelectedUserId(session.user.id)
     }
   }, [session])
+
+  // Synchronize scroll between timeline and date labels
+  useEffect(() => {
+    const handleTimelineScroll = () => {
+      if (timelineRef.current && dateLabelsRef.current) {
+        dateLabelsRef.current.scrollLeft = timelineRef.current.scrollLeft
+      }
+    }
+
+    const timelineElement = timelineRef.current
+    if (timelineElement) {
+      timelineElement.addEventListener('scroll', handleTimelineScroll)
+      return () => {
+        timelineElement.removeEventListener('scroll', handleTimelineScroll)
+      }
+    }
+  }, [])
 
   const fetchData = async () => {
     try {
@@ -135,34 +161,60 @@ export default function TimelinePage() {
     const elapsedTime = now.getTime() - cycleStart.getTime()
     const timeProgress = Math.max(0, Math.min(100, (elapsedTime / totalCycleDuration) * 100))
     
+    // For completed cycles (past cycles), use 100% time progress
+    const isCompletedCycle = now > cycleEnd
+    const effectiveTimeProgress = isCompletedCycle ? 100 : timeProgress
+    
     // Expected progress should match time progress for linear progression
-    const expectedProgress = timeProgress
+    const expectedProgress = effectiveTimeProgress
     const progressGap = expectedProgress - objective.progress
     
     // Calculate days remaining
     const daysRemaining = Math.max(0, Math.ceil((cycleEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
     
-    // Determine if missed or at risk
-    const isMissed = progressGap > 20 && timeProgress > 50 // Significantly behind halfway through
-    const isAtRisk = progressGap > 10 && timeProgress > 25 // Behind by 10% after 25% of time
+    // For completed cycles, determine missed targets based on final achievement
+    if (isCompletedCycle) {
+      // Check if key results met their targets
+      const keyResultsMetTargets = objective.keyResults.every(kr => {
+        const achievementRate = kr.targetValue > 0 ? (kr.currentValue / kr.targetValue) * 100 : 100
+        return achievementRate >= 100 // Met or exceeded target
+      })
+      
+      // Calculate overall achievement rate
+      const totalAchievementRate = objective.keyResults.length > 0 
+        ? objective.keyResults.reduce((sum, kr) => {
+            const rate = kr.targetValue > 0 ? (kr.currentValue / kr.targetValue) * 100 : 100
+            return sum + Math.min(rate, 100) // Cap at 100% per key result
+          }, 0) / objective.keyResults.length
+        : objective.progress
+      
+      const isMissed = totalAchievementRate < 80 // Less than 80% achievement is considered missed
+      const isAtRisk = totalAchievementRate < 90 && !isMissed // 80-90% is at risk
+      
+      let riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' = 'LOW'
+      if (totalAchievementRate < 60) riskLevel = 'CRITICAL'
+      else if (totalAchievementRate < 70) riskLevel = 'HIGH'
+      else if (totalAchievementRate < 80) riskLevel = 'MEDIUM'
+      
+      return {
+        isMissed,
+        isAtRisk,
+        expectedProgress: 100,
+        progressGap: 100 - totalAchievementRate,
+        daysRemaining: 0,
+        riskLevel
+      }
+    }
+    
+    // For active/future cycles, use the original logic
+    const isMissed = progressGap > 20 && effectiveTimeProgress > 50 // Significantly behind halfway through
+    const isAtRisk = progressGap > 10 && effectiveTimeProgress > 25 // Behind by 10% after 25% of time
     
     // Calculate risk level
     let riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' = 'LOW'
     if (progressGap > 30) riskLevel = 'CRITICAL'
     else if (progressGap > 20) riskLevel = 'HIGH'
     else if (progressGap > 10) riskLevel = 'MEDIUM'
-    
-    // Override for completed objectives
-    if (objective.status === 'COMPLETED' || objective.progress >= 100) {
-      return {
-        isMissed: false,
-        isAtRisk: false,
-        expectedProgress,
-        progressGap: 0,
-        daysRemaining,
-        riskLevel: 'LOW'
-      }
-    }
     
     return {
       isMissed,
@@ -191,6 +243,7 @@ export default function TimelinePage() {
     return filtered
   }
 
+  // Enhanced timeline positioning with zoom support
   const calculateTimelinePosition = (cycle: Cycle, allCycles: Cycle[]) => {
     if (allCycles.length === 0) return { left: 0, width: 100 }
     
@@ -202,10 +255,14 @@ export default function TimelinePage() {
     const cycleEnd = new Date(cycle.endDate).getTime()
     const cycleDuration = cycleEnd - cycleStart
     
-    const left = ((cycleStart - earliestStart) / totalTimespan) * 100
-    const width = (cycleDuration / totalTimespan) * 100
+    // Apply zoom factor to width calculations
+    const baseLeft = ((cycleStart - earliestStart) / totalTimespan) * 100
+    const baseWidth = (cycleDuration / totalTimespan) * 100
     
-    return { left, width }
+    return { 
+      left: baseLeft * timelineZoom, 
+      width: baseWidth * timelineZoom 
+    }
   }
 
   const getCurrentTimePosition = (allCycles: Cycle[]) => {
@@ -216,7 +273,101 @@ export default function TimelinePage() {
     const totalTimespan = latestEnd - earliestStart
     const now = new Date().getTime()
     
-    return Math.max(0, Math.min(100, ((now - earliestStart) / totalTimespan) * 100))
+    const basePosition = Math.max(0, Math.min(100, ((now - earliestStart) / totalTimespan) * 100))
+    return basePosition * timelineZoom
+  }
+
+  // Timeline navigation functions
+  const scrollToToday = () => {
+    if (timelineRef.current) {
+      const currentPosition = getCurrentTimePosition(cycles)
+      const containerWidth = timelineRef.current.clientWidth
+      const timelineWidth = timelineRef.current.scrollWidth
+      
+      // Only scroll if there's actually scrollable content
+      if (timelineWidth > containerWidth) {
+        const scrollPosition = (currentPosition / 100) * timelineWidth - containerWidth / 2
+        
+        timelineRef.current.scrollTo({
+          left: Math.max(0, Math.min(scrollPosition, timelineWidth - containerWidth)),
+          behavior: 'smooth'
+        })
+      }
+    }
+  }
+
+  const scrollToStart = () => {
+    if (timelineRef.current) {
+      timelineRef.current.scrollTo({
+        left: 0,
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  const scrollToEnd = () => {
+    if (timelineRef.current) {
+      const maxScroll = timelineRef.current.scrollWidth - timelineRef.current.clientWidth
+      timelineRef.current.scrollTo({
+        left: Math.max(0, maxScroll),
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  const scrollLeft = () => {
+    if (timelineRef.current) {
+      const scrollAmount = timelineRef.current.clientWidth * 0.5
+      const currentScroll = timelineRef.current.scrollLeft
+      console.log('Scrolling left - Current:', currentScroll, 'Amount:', scrollAmount)
+      timelineRef.current.scrollTo({
+        left: Math.max(0, currentScroll - scrollAmount),
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  const scrollRight = () => {
+    if (timelineRef.current) {
+      const scrollAmount = timelineRef.current.clientWidth * 0.5
+      const currentScroll = timelineRef.current.scrollLeft
+      const maxScroll = timelineRef.current.scrollWidth - timelineRef.current.clientWidth
+      console.log('Scrolling right - Current:', currentScroll, 'Amount:', scrollAmount, 'Max:', maxScroll)
+      timelineRef.current.scrollTo({
+        left: Math.min(maxScroll, currentScroll + scrollAmount),
+        behavior: 'smooth'
+      })
+    }
+  }
+
+  const zoomIn = () => {
+    setTimelineZoom(prev => Math.min(prev * 1.5, 4))
+  }
+
+  const zoomOut = () => {
+    setTimelineZoom(prev => Math.max(prev / 1.5, 0.25))
+  }
+
+  const resetZoom = () => {
+    setTimelineZoom(1)
+  }
+
+  const scrollToActiveCycle = () => {
+    const activeCycle = cycles.find(cycle => cycle.active)
+    if (activeCycle && timelineRef.current) {
+      const activeCyclePosition = calculateTimelinePosition(activeCycle, cycles)
+      const containerWidth = timelineRef.current.clientWidth
+      const timelineWidth = timelineRef.current.scrollWidth
+      
+      if (timelineWidth > containerWidth) {
+        const scrollPosition = (activeCyclePosition.left / 100) * timelineWidth - containerWidth / 3
+        
+        timelineRef.current.scrollTo({
+          left: Math.max(0, Math.min(scrollPosition, timelineWidth - containerWidth)),
+          behavior: 'smooth'
+        })
+      }
+    }
   }
 
   const formatDate = (dateString: string) => {
@@ -263,6 +414,9 @@ export default function TimelinePage() {
   const filteredObjectives = getFilteredObjectives()
   const currentTimePosition = getCurrentTimePosition(cycles)
 
+  // Find active cycle for better context
+  const activeCycle = cycles.find(cycle => cycle.active)
+
   // Calculate missed target statistics
   const allFilteredObjectives = objectives.filter(obj => !selectedUserId || obj.ownerId === selectedUserId)
   const missedTargets = allFilteredObjectives.filter(obj => calculateMissedTargetInfo(obj).isMissed)
@@ -278,6 +432,9 @@ export default function TimelinePage() {
     objectives: filteredObjectives.filter(obj => obj.cycle.id === cycle.id),
     position: calculateTimelinePosition(cycle, cycles)
   }))
+
+  // Calculate total timeline width based on zoom
+  const totalTimelineWidth = Math.max(100 * timelineZoom, 150) // Ensure minimum scrollable width
 
   if (loading) {
     return (
@@ -322,6 +479,7 @@ export default function TimelinePage() {
                   onChange={(e) => setSelectedUserId(e.target.value)}
                   className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   disabled={session?.user?.role === 'STAFF'}
+                  title="Select a specific team member to view their individual OKR timeline and performance metrics, or choose 'All Team Members' to see the complete team overview."
                 >
                   <option value="">All Team Members</option>
                   {users.map(user => (
@@ -347,6 +505,7 @@ export default function TimelinePage() {
                       if (!showMissedOnly) setShowAtRiskOnly(false)
                     }}
                     className="w-full justify-start"
+                    title="Filter to show only objectives that have missed their targets. Useful for identifying areas that need immediate attention and corrective action."
                   >
                     <XCircle className="w-4 h-4 mr-2" />
                     {showMissedOnly ? 'Hide' : 'Show'} Missed Targets Only
@@ -359,6 +518,7 @@ export default function TimelinePage() {
                       if (!showAtRiskOnly) setShowMissedOnly(false)
                     }}
                     className="w-full justify-start"
+                    title="Filter to show only objectives that are at risk of missing their targets. Useful for proactive intervention and resource reallocation."
                   >
                     <AlertTriangle className="w-4 h-4 mr-2" />
                     {showAtRiskOnly ? 'Hide' : 'Show'} At Risk Only
@@ -370,27 +530,45 @@ export default function TimelinePage() {
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-slate-700">Status Legend</label>
                 <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="flex items-center space-x-2">
+                  <div 
+                    className="flex items-center space-x-2 cursor-help"
+                    title="Missed Target: Objectives that failed to achieve their goals (< 80% achievement for completed cycles, > 20% behind for active cycles)"
+                  >
                     <div className="w-3 h-3 bg-red-600 rounded-full"></div>
                     <span>Missed Target</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div 
+                    className="flex items-center space-x-2 cursor-help"
+                    title="At Risk: Objectives that may miss targets without intervention (80-90% achievement for completed cycles, 10-20% behind for active cycles)"
+                  >
                     <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
                     <span>At Risk</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div 
+                    className="flex items-center space-x-2 cursor-help"
+                    title="Completed: Objectives that have been finished and achieved their targets (≥ 90% achievement rate)"
+                  >
                     <div className="w-3 h-3 bg-emerald-500 rounded-full"></div>
                     <span>Completed</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div 
+                    className="flex items-center space-x-2 cursor-help"
+                    title="On Track: Active objectives that are progressing well and likely to meet their targets (within 10% of expected progress)"
+                  >
                     <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
                     <span>On Track</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div 
+                    className="flex items-center space-x-2 cursor-help"
+                    title="Today: Current date marker showing where we are in the timeline"
+                  >
                     <div className="w-0.5 h-4 bg-red-500"></div>
                     <span>Today</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div 
+                    className="flex items-center space-x-2 cursor-help"
+                    title="Not Started: Objectives that haven't begun yet (future cycles or pending objectives)"
+                  >
                     <div className="w-3 h-3 bg-slate-400 rounded-full"></div>
                     <span>Not Started</span>
                   </div>
@@ -416,7 +594,10 @@ export default function TimelinePage() {
               <div className="space-y-6">
                 {/* Summary Stats */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                  <div 
+                    className="bg-red-50 p-4 rounded-lg border border-red-200 cursor-help"
+                    title="Missed Targets: Objectives that failed to achieve their goals. For completed cycles: < 80% average achievement rate. For active cycles: > 20% behind expected progress after 50% of time elapsed."
+                  >
                     <div className="flex items-center space-x-2">
                       <XCircle className="w-5 h-5 text-red-600" />
                       <span className="text-sm font-medium text-red-900">Missed Targets</span>
@@ -429,7 +610,10 @@ export default function TimelinePage() {
                     </div>
                   </div>
                   
-                  <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                  <div 
+                    className="bg-orange-50 p-4 rounded-lg border border-orange-200 cursor-help"
+                    title="At Risk: Objectives that may miss their targets without intervention. For completed cycles: 80-90% average achievement rate. For active cycles: 10-20% behind expected progress after 25% of time elapsed."
+                  >
                     <div className="flex items-center space-x-2">
                       <AlertTriangle className="w-5 h-5 text-orange-600" />
                       <span className="text-sm font-medium text-orange-900">At Risk</span>
@@ -442,7 +626,10 @@ export default function TimelinePage() {
                     </div>
                   </div>
                   
-                  <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                  <div 
+                    className="bg-green-50 p-4 rounded-lg border border-green-200 cursor-help"
+                    title="On Track: Objectives that are meeting or exceeding expectations. For completed cycles: ≥ 90% average achievement rate. For active cycles: within 10% of expected progress based on time elapsed."
+                  >
                     <div className="flex items-center space-x-2">
                       <CheckCircle className="w-5 h-5 text-green-600" />
                       <span className="text-sm font-medium text-green-900">On Track</span>
@@ -455,7 +642,10 @@ export default function TimelinePage() {
                     </div>
                   </div>
                   
-                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <div 
+                    className="bg-slate-50 p-4 rounded-lg border border-slate-200 cursor-help"
+                    title="Total OKRs: All objectives across all cycles for the selected team member(s). Each objective contains multiple key results that measure specific outcomes and targets."
+                  >
                     <div className="flex items-center space-x-2">
                       <Target className="w-5 h-5 text-slate-600" />
                       <span className="text-sm font-medium text-slate-900">Total OKRs</span>
@@ -492,106 +682,239 @@ export default function TimelinePage() {
           </Card>
         )}
 
-        {/* Main Timeline */}
+        {/* Enhanced Scrollable Timeline */}
         <Card className="bg-white shadow-sm border-slate-200">
           <CardHeader>
-            <CardTitle className="flex items-center text-xl font-semibold text-slate-900">
-              <Calendar className="w-6 h-6 mr-3 text-blue-600" />
-              OKR Timeline
-              {selectedUser && <span className="text-base font-normal text-slate-600 ml-2">- {selectedUser.name}</span>}
-              {(showMissedOnly || showAtRiskOnly) && (
-                <span className="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded-full ml-2">
-                  Filtered View
-                </span>
-              )}
-            </CardTitle>
-            <CardDescription>
-              {selectedUser ? 'Individual timeline view' : 'Team overview across all cycles'}
-              {showMissedOnly && ' - Showing missed targets only'}
-              {showAtRiskOnly && ' - Showing at-risk targets only'}
-            </CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center text-xl font-semibold text-slate-900">
+                  <Calendar className="w-6 h-6 mr-3 text-blue-600" />
+                  OKR Timeline
+                  {selectedUser && <span className="text-base font-normal text-slate-600 ml-2">- {selectedUser.name}</span>}
+                  {(showMissedOnly || showAtRiskOnly) && (
+                    <span className="text-sm bg-amber-100 text-amber-800 px-2 py-1 rounded-full ml-2">
+                      Filtered View
+                    </span>
+                  )}
+                </CardTitle>
+                <CardDescription>
+                  {selectedUser ? 'Individual timeline view' : 'Team overview across all cycles'}
+                  {showMissedOnly && ' - Showing missed targets only'}
+                  {showAtRiskOnly && ' - Showing at-risk targets only'}
+                  {activeCycle && (
+                    <span className="block mt-1 text-blue-600">
+                      Currently active: {activeCycle.name} ({formatDate(activeCycle.startDate)} - {formatDate(activeCycle.endDate)})
+                    </span>
+                  )}
+                </CardDescription>
+              </div>
+              
+              {/* Timeline Navigation Controls */}
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-1 bg-slate-100 rounded-lg p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={zoomOut}
+                    className="h-8 w-8 p-0"
+                    title="Zoom Out"
+                  >
+                    <ZoomOut className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={resetZoom}
+                    className="h-8 px-2 text-xs"
+                    title="Reset Zoom"
+                  >
+                    {Math.round(timelineZoom * 100)}%
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={zoomIn}
+                    className="h-8 w-8 p-0"
+                    title="Zoom In"
+                  >
+                    <ZoomIn className="w-4 h-4" />
+                  </Button>
+                </div>
+                
+                <div className="flex items-center space-x-1 bg-slate-100 rounded-lg p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={scrollToStart}
+                    className="h-8 w-8 p-0"
+                    title="Go to Start"
+                  >
+                    <SkipBack className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={scrollLeft}
+                    className="h-8 w-8 p-0"
+                    title="Scroll Left"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={scrollToToday}
+                    className="h-8 px-2 text-xs"
+                    title="Go to Today"
+                  >
+                    <Home className="w-4 h-4 mr-1" />
+                    Today
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={scrollToActiveCycle}
+                    className="h-8 px-2 text-xs bg-blue-50 hover:bg-blue-100"
+                    title="Go to Active Cycle"
+                  >
+                    <Target className="w-4 h-4 mr-1" />
+                    Active
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={scrollRight}
+                    className="h-8 w-8 p-0"
+                    title="Scroll Right"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={scrollToEnd}
+                    className="h-8 w-8 p-0"
+                    title="Go to End"
+                  >
+                    <SkipForward className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-6">
             {cycles.length > 0 ? (
               <div className="space-y-8">
-                {/* Timeline Container */}
+                {/* Scrollable Timeline Container */}
                 <div className="relative">
-                  {/* Timeline Background */}
-                  <div className="relative h-40 bg-white rounded-lg border border-slate-200 overflow-hidden">
-                    {/* Cycle Bars */}
-                    {objectivesByCycle.map(({ cycle, objectives, position }) => (
-                      <div
-                        key={cycle.id}
-                        className={`absolute top-6 h-8 rounded ${cycle.active ? 'bg-blue-500' : 'bg-slate-300'}`}
-                        style={{
-                          left: `${position.left}%`,
-                          width: `${position.width}%`
-                        }}
-                      >
-                        <div className="p-1.5 text-xs font-medium text-white truncate">
-                          {cycle.name}
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Current Time Indicator */}
-                    <div
-                      className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-10"
-                      style={{ left: `${currentTimePosition}%` }}
+                  {/* Timeline Background with Horizontal Scroll */}
+                  <div 
+                    ref={timelineRef}
+                    className="relative h-40 bg-white rounded-lg border border-slate-200 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100"
+                    style={{ scrollbarWidth: 'thin' }}
+                  >
+                    {/* Timeline Content */}
+                    <div 
+                      className="relative h-full"
+                      style={{ width: `${totalTimelineWidth}%`, minWidth: `${Math.max(totalTimelineWidth, 200)}%` }}
                     >
-                      <div className="absolute -top-1 -left-6 bg-red-500 text-white text-xs px-2 py-1 rounded shadow">
-                        Today
-                      </div>
-                    </div>
-
-                    {/* Objectives as dots */}
-                    {objectivesByCycle.map(({ cycle, objectives, position }) =>
-                      objectives.map((objective, index) => {
-                        const missedInfo = calculateMissedTargetInfo(objective)
-                        const objectivePosition = position.left + (position.width * 0.1) + (index * 15)
-                        const verticalPosition = 60 + (index % 3) * 18
-                        return (
-                          <div
-                            key={objective.id}
-                            className={`absolute w-4 h-4 rounded-full cursor-pointer hover:scale-125 transition-transform ${getStatusColor(objective.status, missedInfo)} border-2 border-white shadow`}
-                            style={{
-                              left: `${Math.min(objectivePosition, position.left + position.width - 2)}%`,
-                              top: `${verticalPosition}px`
-                            }}
-                            onMouseEnter={() => setHoveredObjective(objective.id)}
-                            onMouseLeave={() => setHoveredObjective(null)}
-                            title={`${objective.title} - ${objective.progress}% ${missedInfo.isMissed ? '(MISSED)' : missedInfo.isAtRisk ? '(AT RISK)' : ''}`}
-                          >
-                            {/* Risk indicator overlay */}
-                            {missedInfo.isMissed && (
-                              <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-600 rounded-full border border-white"></div>
-                            )}
-                            {missedInfo.isAtRisk && !missedInfo.isMissed && (
-                              <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border border-white"></div>
+                      {/* Cycle Bars */}
+                      {objectivesByCycle.map(({ cycle, objectives, position }) => (
+                        <div
+                          key={cycle.id}
+                          className={`absolute top-6 h-8 rounded transition-all duration-300 ${
+                            cycle.active 
+                              ? 'bg-blue-500 ring-2 ring-blue-300 ring-offset-1' 
+                              : 'bg-slate-300 hover:bg-slate-400'
+                          }`}
+                          style={{
+                            left: `${position.left}%`,
+                            width: `${position.width}%`
+                          }}
+                        >
+                          <div className="p-1.5 text-xs font-medium text-white truncate flex items-center justify-between">
+                            <span>{cycle.name}</span>
+                            {cycle.active && (
+                              <span className="text-xs bg-white bg-opacity-20 px-1 rounded">
+                                ACTIVE
+                              </span>
                             )}
                           </div>
-                        )
-                      })
-                    )}
+                        </div>
+                      ))}
+
+                      {/* Current Time Indicator */}
+                      <div
+                        className="absolute top-0 bottom-0 w-0.5 bg-red-500 z-10 transition-all duration-300"
+                        style={{ left: `${currentTimePosition}%` }}
+                      >
+                        <div className="absolute -top-1 -left-6 bg-red-500 text-white text-xs px-2 py-1 rounded shadow">
+                          Today
+                        </div>
+                      </div>
+
+                      {/* Objectives as dots */}
+                      {objectivesByCycle.map(({ cycle, objectives, position }) =>
+                        objectives.map((objective, index) => {
+                          const missedInfo = calculateMissedTargetInfo(objective)
+                          const objectivePosition = position.left + (position.width * 0.1) + (index * (15 / timelineZoom))
+                          const verticalPosition = 60 + (index % 3) * 18
+                          return (
+                            <div
+                              key={objective.id}
+                              className={`absolute w-4 h-4 rounded-full cursor-pointer hover:scale-125 transition-all duration-200 ${getStatusColor(objective.status, missedInfo)} border-2 border-white shadow`}
+                              style={{
+                                left: `${Math.min(objectivePosition, position.left + position.width - 2)}%`,
+                                top: `${verticalPosition}px`
+                              }}
+                              onMouseEnter={() => setHoveredObjective(objective.id)}
+                              onMouseLeave={() => setHoveredObjective(null)}
+                              title={`${objective.title} - ${objective.progress}% ${missedInfo.isMissed ? '(MISSED)' : missedInfo.isAtRisk ? '(AT RISK)' : ''}`}
+                            >
+                              {/* Risk indicator overlay */}
+                              {missedInfo.isMissed && (
+                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-red-600 rounded-full border border-white"></div>
+                              )}
+                              {missedInfo.isAtRisk && !missedInfo.isMissed && (
+                                <div className="absolute -top-1 -right-1 w-2 h-2 bg-orange-500 rounded-full border border-white"></div>
+                              )}
+                            </div>
+                          )
+                        })
+                      )}
+                    </div>
                   </div>
 
                   {/* Timeline Labels */}
-                  <div className="relative mt-4">
-                    {objectivesByCycle.map(({ cycle, position }) => (
-                      <div
-                        key={cycle.id}
-                        className="absolute text-xs text-slate-600"
-                        style={{
-                          left: `${position.left}%`,
-                          width: `${position.width}%`
-                        }}
-                      >
-                        <div className="flex justify-between px-1">
-                          <span>{formatDate(cycle.startDate)}</span>
-                          <span>{formatDate(cycle.endDate)}</span>
+                  <div className="relative mt-4 overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100">
+                    <div 
+                      ref={dateLabelsRef}
+                      className="relative"
+                      style={{ width: `${totalTimelineWidth}%`, minWidth: `${Math.max(totalTimelineWidth, 200)}%` }}
+                    >
+                      {objectivesByCycle.map(({ cycle, position }) => (
+                        <div
+                          key={cycle.id}
+                          className="absolute text-xs text-slate-600"
+                          style={{
+                            left: `${position.left}%`,
+                            width: `${position.width}%`
+                          }}
+                        >
+                          <div className="flex justify-between px-1">
+                            <span>{formatDate(cycle.startDate)}</span>
+                            <span>{formatDate(cycle.endDate)}</span>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Scroll Hint */}
+                  <div className="text-center mt-2">
+                    <p className="text-xs text-slate-500">
+                      💡 Use the navigation controls above or scroll horizontally to explore past and future cycles
+                    </p>
                   </div>
                 </div>
 
@@ -662,6 +985,10 @@ export default function TimelinePage() {
                   {objectivesByCycle.map(({ cycle, objectives }) => {
                     const cycleMissed = objectives.filter(obj => calculateMissedTargetInfo(obj).isMissed)
                     const cycleAtRisk = objectives.filter(obj => calculateMissedTargetInfo(obj).isAtRisk)
+                    const cycleCompleted = objectives.filter(obj => obj.status === 'COMPLETED')
+                    const now = new Date()
+                    const cycleEnd = new Date(cycle.endDate)
+                    const isCompletedCycle = now > cycleEnd
                     
                     return (
                       <Card key={cycle.id} className={`${cycle.active ? 'ring-2 ring-blue-400 bg-blue-50' : 'bg-white'} shadow-sm border-slate-200`}>
@@ -671,6 +998,9 @@ export default function TimelinePage() {
                             <div className="flex items-center space-x-1">
                               {cycle.active && (
                                 <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-full">Active</span>
+                              )}
+                              {cycleCompleted.length > 0 && (
+                                <span className="text-xs bg-emerald-600 text-white px-2 py-1 rounded-full">{cycleCompleted.length} Completed</span>
                               )}
                               {cycleMissed.length > 0 && (
                                 <span className="text-xs bg-red-600 text-white px-2 py-1 rounded-full">{cycleMissed.length} Missed</span>

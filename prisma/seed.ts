@@ -96,7 +96,7 @@ async function main() {
       description: 'Automation framework implementation and skill development',
       startDate: new Date('2025-01-01'),
       endDate: new Date('2025-03-31'),
-      active: true,
+      active: false,
     },
   })
 
@@ -106,6 +106,46 @@ async function main() {
       description: 'Advanced automation and quality improvement',
       startDate: new Date('2025-04-01'),
       endDate: new Date('2025-06-30'),
+      active: true,
+    },
+  })
+
+  const q3_2025 = await prisma.cycle.create({
+    data: {
+      name: 'Q3 2025',
+      description: 'Scaling automation across the organization',
+      startDate: new Date('2025-07-01'),
+      endDate: new Date('2025-09-30'),
+      active: false,
+    },
+  })
+
+  const q4_2025 = await prisma.cycle.create({
+    data: {
+      name: 'Q4 2025',
+      description: 'Innovation and advanced tooling implementation',
+      startDate: new Date('2025-10-01'),
+      endDate: new Date('2025-12-31'),
+      active: false,
+    },
+  })
+
+  const q1_2026 = await prisma.cycle.create({
+    data: {
+      name: 'Q1 2026',
+      description: 'Next generation automation and AI integration',
+      startDate: new Date('2026-01-01'),
+      endDate: new Date('2026-03-31'),
+      active: false,
+    },
+  })
+
+  const q2_2026 = await prisma.cycle.create({
+    data: {
+      name: 'Q2 2026',
+      description: 'Global automation standards and excellence',
+      startDate: new Date('2026-04-01'),
+      endDate: new Date('2026-06-30'),
       active: false,
     },
   })
@@ -182,7 +222,7 @@ async function main() {
       title: 'Scale Automation Framework Across All Product Lines',
       description: 'Implement comprehensive test automation strategy across Open Maps, Idox Cloud Planning, and Public Protection',
       type: 'TEAM',
-      status: 'IN_PROGRESS',
+      status: 'COMPLETED',
       ownerId: davidBurke.id,
       cycleId: q1_2025.id,
     },
@@ -193,7 +233,7 @@ async function main() {
       title: 'Build Knowledge Sharing and Learning Culture',
       description: 'Develop team expertise and share automation knowledge across the organization',
       type: 'PERSONAL',
-      status: 'IN_PROGRESS',
+      status: 'COMPLETED',
       ownerId: davidBurke.id,
       cycleId: q1_2025.id,
     },
@@ -205,7 +245,7 @@ async function main() {
       title: 'Enhance Customer-Centric Automation Design for Open Maps',
       description: 'Align automation efforts with customer needs and business outcomes for Open Maps application',
       type: 'PERSONAL',
-      status: 'IN_PROGRESS',
+      status: 'COMPLETED',
       ownerId: kevinHughes.id,
       cycleId: q1_2025.id,
       parentId: davidQ1Strategy.id,
@@ -217,7 +257,7 @@ async function main() {
       title: 'Prepare for Career Growth and Future Opportunities',
       description: 'Develop skills beyond current role and explore career advancement possibilities',
       type: 'PERSONAL',
-      status: 'IN_PROGRESS',
+      status: 'COMPLETED',
       ownerId: kevinHughes.id,
       cycleId: q1_2025.id,
     },
@@ -229,7 +269,7 @@ async function main() {
       title: 'Build Fully Automated Test Framework for Idox Cloud Planning',
       description: 'Design and implement new test automation framework for the Lille project, utilizing modern technologies',
       type: 'PERSONAL',
-      status: 'IN_PROGRESS',
+      status: 'COMPLETED',
       ownerId: shelleyRogan.id,
       cycleId: q1_2025.id,
       parentId: davidQ1Strategy.id,
@@ -241,7 +281,7 @@ async function main() {
       title: 'Skill Up New Automation Team Members',
       description: 'Build a highly skilled automation team proficient in JavaScript, Cypress, and existing test frameworks',
       type: 'PERSONAL',
-      status: 'IN_PROGRESS',
+      status: 'COMPLETED',
       ownerId: shelleyRogan.id,
       cycleId: q1_2025.id,
       parentId: davidQ1Development.id,
@@ -254,7 +294,7 @@ async function main() {
       title: 'Innovate and Simplify Automation Tools for Manual Testers',
       description: 'Develop and implement tools that simplify automation for both automation & manual testers',
       type: 'PERSONAL',
-      status: 'IN_PROGRESS',
+      status: 'COMPLETED',
       ownerId: allanPettigrew.id,
       cycleId: q1_2025.id,
       parentId: davidQ1Strategy.id,
@@ -266,7 +306,7 @@ async function main() {
       title: 'Ensure Clear Communication and Quality in Automation Coverage',
       description: 'Establish clear communication and quality standards for automation coverage with project teams',
       type: 'PERSONAL',
-      status: 'IN_PROGRESS',
+      status: 'COMPLETED',
       ownerId: allanPettigrew.id,
       cycleId: q1_2025.id,
     },
@@ -280,7 +320,7 @@ async function main() {
       title: 'Establish Center of Excellence for Test Automation',
       description: 'Create a center of excellence that supports automation across the entire organization',
       type: 'TEAM',
-      status: 'NOT_STARTED',
+      status: 'IN_PROGRESS',
       ownerId: davidBurke.id,
       cycleId: q2_2025.id,
     },
@@ -292,7 +332,7 @@ async function main() {
       title: 'Lead Automation Mentorship Program',
       description: 'Mentor new team members and lead knowledge transfer initiatives',
       type: 'PERSONAL',
-      status: 'NOT_STARTED',
+      status: 'IN_PROGRESS',
       ownerId: kevinHughes.id,
       cycleId: q2_2025.id,
     },
@@ -304,7 +344,7 @@ async function main() {
       title: 'Implement AI-Enhanced Test Automation',
       description: 'Research and implement AI-powered test generation and maintenance tools',
       type: 'PERSONAL',
-      status: 'NOT_STARTED',
+      status: 'IN_PROGRESS',
       ownerId: shelleyRogan.id,
       cycleId: q2_2025.id,
     },
@@ -316,413 +356,13 @@ async function main() {
       title: 'Develop Self-Service Automation Platform',
       description: 'Create platform that allows non-technical team members to create and maintain basic tests',
       type: 'PERSONAL',
-      status: 'NOT_STARTED',
+      status: 'IN_PROGRESS',
       ownerId: allanPettigrew.id,
       cycleId: q2_2025.id,
     },
   })
 
-  // ========== KEY RESULTS FOR Q4 2024 (COMPLETED) ==========
-
-  // David Burke Q4 2024 Key Results
-  await prisma.keyResult.create({
-    data: {
-      description: 'Hire and onboard 3 QA automation engineers',
-      metricType: 'NUMBER',
-      targetValue: 3,
-      currentValue: 3,
-      unit: ' engineers',
-      objectiveId: davidQ4Leadership.id,
-      ownerId: davidBurke.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Define automation strategy for 3 product lines',
-      metricType: 'NUMBER',
-      targetValue: 3,
-      currentValue: 3,
-      unit: ' product lines',
-      objectiveId: davidQ4Planning.id,
-      ownerId: davidBurke.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Establish team processes and workflows',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 100,
-      objectiveId: davidQ4Leadership.id,
-      ownerId: davidBurke.id,
-    },
-  })
-
-  // Kevin Hughes Q4 2024 Key Results
-  await prisma.keyResult.create({
-    data: {
-      description: 'Complete framework training within 4 weeks',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 100,
-      objectiveId: kevinQ4Foundation.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Write first automated test using the framework within 6 weeks',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 100,
-      objectiveId: kevinQ4Foundation.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Achieve 80% proficiency score on framework usage assessment',
-      metricType: 'PERCENTAGE',
-      targetValue: 80,
-      currentValue: 85,
-      objectiveId: kevinQ4Foundation.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Automate 20 manual test cases in first quarter',
-      metricType: 'NUMBER',
-      targetValue: 20,
-      currentValue: 23,
-      unit: ' test cases',
-      objectiveId: kevinQ4Foundation.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Achieve 1–2 automated tests per week by month 3',
-      metricType: 'NUMBER',
-      targetValue: 8,
-      currentValue: 10,
-      unit: ' tests',
-      objectiveId: kevinQ4Foundation.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  // Shelley Rogan Q4 2024 Key Results
-  await prisma.keyResult.create({
-    data: {
-      description: 'Achieve 50% automated test coverage for new feature releases',
-      metricType: 'PERCENTAGE',
-      targetValue: 50,
-      currentValue: 55,
-      objectiveId: shelleyQ4Quality.id,
-      ownerId: shelleyRogan.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Identify and document 8 edge cases not previously covered',
-      metricType: 'NUMBER',
-      targetValue: 8,
-      currentValue: 12,
-      unit: ' edge cases',
-      objectiveId: shelleyQ4Quality.id,
-      ownerId: shelleyRogan.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Create automated tests for 2 complex business scenarios per month',
-      metricType: 'NUMBER',
-      targetValue: 6,
-      currentValue: 7,
-      unit: ' scenarios',
-      objectiveId: shelleyQ4Quality.id,
-      ownerId: shelleyRogan.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Execute daily smoke tests independently and review test reports weekly',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 100,
-      objectiveId: shelleyQ4Quality.id,
-      ownerId: shelleyRogan.id,
-    },
-  })
-
-  // Allan Pettigrew Q4 2024 Key Results
-  await prisma.keyResult.create({
-    data: {
-      description: 'Reduce code duplication across test suites by 20%',
-      metricType: 'PERCENTAGE',
-      targetValue: 20,
-      currentValue: 25,
-      objectiveId: allanQ4Efficiency.id,
-      ownerId: allanPettigrew.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Achieve 85% code review approval rate',
-      metricType: 'PERCENTAGE',
-      targetValue: 85,
-      currentValue: 90,
-      objectiveId: allanQ4Efficiency.id,
-      ownerId: allanPettigrew.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Follow established coding standards in 100% of submissions',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 100,
-      objectiveId: allanQ4Efficiency.id,
-      ownerId: allanPettigrew.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Reduce test flakiness to under 15% through proper wait strategies',
-      metricType: 'PERCENTAGE',
-      targetValue: 15,
-      currentValue: 12,
-      objectiveId: allanQ4Efficiency.id,
-      ownerId: allanPettigrew.id,
-    },
-  })
-
-  // ========== KEY RESULTS FOR Q1 2025 (IN PROGRESS) ==========
-
-  // David Burke Q1 2025 Key Results
-  await prisma.keyResult.create({
-    data: {
-      description: 'Implement Cypress framework across 3 product lines',
-      metricType: 'NUMBER',
-      targetValue: 3,
-      currentValue: 2,
-      unit: ' product lines',
-      objectiveId: davidQ1Strategy.id,
-      ownerId: davidBurke.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Achieve 70% overall test automation coverage',
-      metricType: 'PERCENTAGE',
-      targetValue: 70,
-      currentValue: 45,
-      objectiveId: davidQ1Strategy.id,
-      ownerId: davidBurke.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Host 1 internal knowledge-sharing session on lessons learned',
-      metricType: 'NUMBER',
-      targetValue: 1,
-      currentValue: 0,
-      unit: ' session',
-      objectiveId: davidQ1Development.id,
-      ownerId: davidBurke.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Complete 1 external training and share learnings with team',
-      metricType: 'NUMBER',
-      targetValue: 1,
-      currentValue: 1,
-      unit: ' training',
-      objectiveId: davidQ1Development.id,
-      ownerId: davidBurke.id,
-    },
-  })
-
-  // Kevin Hughes Q1 2025 Key Results
-  await prisma.keyResult.create({
-    data: {
-      description: 'Attend 1 customer-facing meeting to understand user pain points',
-      metricType: 'NUMBER',
-      targetValue: 1,
-      currentValue: 0,
-      unit: ' meeting',
-      objectiveId: kevinQ1Advanced.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Implement customer journey testing covering 2 critical business processes',
-      metricType: 'NUMBER',
-      targetValue: 2,
-      currentValue: 1,
-      unit: ' processes',
-      objectiveId: kevinQ1Advanced.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Collaborate with Product Owner to improve 1 test plan based on customer feedback',
-      metricType: 'NUMBER',
-      targetValue: 1,
-      currentValue: 0,
-      unit: ' test plan',
-      objectiveId: kevinQ1Advanced.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Create personal development plan aligned with career goals',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 75,
-      objectiveId: kevinQ1Growth.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Take on 1 stretch assignment outside core responsibilities',
-      metricType: 'NUMBER',
-      targetValue: 1,
-      currentValue: 0,
-      unit: ' assignment',
-      objectiveId: kevinQ1Growth.id,
-      ownerId: kevinHughes.id,
-    },
-  })
-
-  // Shelley Rogan Q1 2025 Key Results
-  await prisma.keyResult.create({
-    data: {
-      description: 'Complete planning and define how Cypress tests integrate into deployment pipeline',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 60,
-      objectiveId: shelleyQ1Framework.id,
-      ownerId: shelleyRogan.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Begin development of test framework and initial test creation',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 40,
-      objectiveId: shelleyQ1Framework.id,
-      ownerId: shelleyRogan.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Achieve at least 75% test automation coverage for critical workflows',
-      metricType: 'PERCENTAGE',
-      targetValue: 75,
-      currentValue: 30,
-      objectiveId: shelleyQ1Framework.id,
-      ownerId: shelleyRogan.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Ensure 100% of team members complete foundational JavaScript training',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 75,
-      objectiveId: shelleyQ1Skills.id,
-      ownerId: shelleyRogan.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Conduct hands-on Cypress training sessions with 80% completion rate',
-      metricType: 'PERCENTAGE',
-      targetValue: 80,
-      currentValue: 60,
-      objectiveId: shelleyQ1Skills.id,
-      ownerId: shelleyRogan.id,
-    },
-  })
-
-  // Allan Pettigrew Q1 2025 Key Results
-  await prisma.keyResult.create({
-    data: {
-      description: 'Investigate and evaluate AI solutions for test automation',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 70,
-      objectiveId: allanQ1Innovation.id,
-      ownerId: allanPettigrew.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Integrate AI tools into CI/CD pipeline in relevant projects',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 25,
-      objectiveId: allanQ1Innovation.id,
-      ownerId: allanPettigrew.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Define and document automation coverage standards for all projects',
-      metricType: 'PERCENTAGE',
-      targetValue: 100,
-      currentValue: 80,
-      objectiveId: allanQ1Communication.id,
-      ownerId: allanPettigrew.id,
-    },
-  })
-
-  await prisma.keyResult.create({
-    data: {
-      description: 'Conduct monthly reviews of automation coverage with stakeholders',
-      metricType: 'NUMBER',
-      targetValue: 3,
-      currentValue: 1,
-      unit: ' reviews',
-      objectiveId: allanQ1Communication.id,
-      ownerId: allanPettigrew.id,
-    },
-  })
-
-  // ========== KEY RESULTS FOR Q2 2025 (NOT STARTED) ==========
+  // ========== KEY RESULTS FOR Q2 2025 (IN PROGRESS) ==========
 
   // David Burke Q2 2025 Key Results
   await prisma.keyResult.create({
@@ -730,7 +370,7 @@ async function main() {
       description: 'Establish automation standards and best practices documentation',
       metricType: 'PERCENTAGE',
       targetValue: 100,
-      currentValue: 0,
+      currentValue: 75,
       objectiveId: davidQ2Leadership.id,
       ownerId: davidBurke.id,
     },
@@ -741,7 +381,7 @@ async function main() {
       description: 'Train 5 additional teams in automation best practices',
       metricType: 'NUMBER',
       targetValue: 5,
-      currentValue: 0,
+      currentValue: 3,
       unit: ' teams',
       objectiveId: davidQ2Leadership.id,
       ownerId: davidBurke.id,
@@ -754,7 +394,7 @@ async function main() {
       description: 'Mentor 2 new automation engineers to proficiency',
       metricType: 'NUMBER',
       targetValue: 2,
-      currentValue: 0,
+      currentValue: 1,
       unit: ' engineers',
       objectiveId: kevinQ2Mentorship.id,
       ownerId: kevinHughes.id,
@@ -766,7 +406,7 @@ async function main() {
       description: 'Create comprehensive mentorship program documentation',
       metricType: 'PERCENTAGE',
       targetValue: 100,
-      currentValue: 0,
+      currentValue: 85,
       objectiveId: kevinQ2Mentorship.id,
       ownerId: kevinHughes.id,
     },
@@ -778,7 +418,7 @@ async function main() {
       description: 'Research and prototype AI-powered test generation tools',
       metricType: 'PERCENTAGE',
       targetValue: 100,
-      currentValue: 0,
+      currentValue: 90,
       objectiveId: shelleyQ2Advanced.id,
       ownerId: shelleyRogan.id,
     },
@@ -789,7 +429,7 @@ async function main() {
       description: 'Implement AI-enhanced test maintenance for 50% of test suites',
       metricType: 'PERCENTAGE',
       targetValue: 50,
-      currentValue: 0,
+      currentValue: 25,
       objectiveId: shelleyQ2Advanced.id,
       ownerId: shelleyRogan.id,
     },
@@ -801,7 +441,7 @@ async function main() {
       description: 'Develop self-service test creation interface',
       metricType: 'PERCENTAGE',
       targetValue: 100,
-      currentValue: 0,
+      currentValue: 40,
       objectiveId: allanQ2Platform.id,
       ownerId: allanPettigrew.id,
     },
@@ -812,7 +452,7 @@ async function main() {
       description: 'Train 10 non-technical team members to use the platform',
       metricType: 'NUMBER',
       targetValue: 10,
-      currentValue: 0,
+      currentValue: 3,
       unit: ' team members',
       objectiveId: allanQ2Platform.id,
       ownerId: allanPettigrew.id,
@@ -880,12 +520,423 @@ async function main() {
     })
   }
 
+  // ========== Q3 2025 OBJECTIVES (FUTURE PLANNING) ==========
+
+  // David Burke Q3 2025 - Organizational Scaling
+  const davidQ3Scaling = await prisma.objective.create({
+    data: {
+      title: 'Scale Automation Practices Organization-Wide',
+      description: 'Expand automation expertise and practices to all development teams across the organization',
+      type: 'TEAM',
+      status: 'NOT_STARTED',
+      ownerId: davidBurke.id,
+      cycleId: q3_2025.id,
+    },
+  })
+
+  // Kevin Hughes Q3 2025 - Leadership Development
+  const kevinQ3Leadership = await prisma.objective.create({
+    data: {
+      title: 'Develop Technical Leadership Skills',
+      description: 'Take on senior technical responsibilities and mentor junior team members',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: kevinHughes.id,
+      cycleId: q3_2025.id,
+    },
+  })
+
+  // Shelley Rogan Q3 2025 - Advanced Automation
+  const shelleyQ3Advanced = await prisma.objective.create({
+    data: {
+      title: 'Implement Cross-Platform Test Automation',
+      description: 'Develop automation solutions that work across web, mobile, and API platforms',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: shelleyRogan.id,
+      cycleId: q3_2025.id,
+    },
+  })
+
+  // Allan Pettigrew Q3 2025 - Innovation Lab
+  const allanQ3Innovation = await prisma.objective.create({
+    data: {
+      title: 'Establish Automation Innovation Lab',
+      description: 'Create dedicated space for experimenting with cutting-edge automation technologies',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: allanPettigrew.id,
+      cycleId: q3_2025.id,
+    },
+  })
+
+  // ========== Q4 2025 OBJECTIVES (FUTURE PLANNING) ==========
+
+  // David Burke Q4 2025 - Strategic Vision
+  const davidQ4Vision = await prisma.objective.create({
+    data: {
+      title: 'Define 2026 Automation Strategy and Vision',
+      description: 'Establish long-term automation roadmap and strategic direction for the next year',
+      type: 'TEAM',
+      status: 'NOT_STARTED',
+      ownerId: davidBurke.id,
+      cycleId: q4_2025.id,
+    },
+  })
+
+  // Kevin Hughes Q4 2025 - Specialization
+  const kevinQ4Specialization = await prisma.objective.create({
+    data: {
+      title: 'Become Subject Matter Expert in Performance Testing',
+      description: 'Develop deep expertise in performance and load testing automation',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: kevinHughes.id,
+      cycleId: q4_2025.id,
+    },
+  })
+
+  // Shelley Rogan Q4 2025 - Architecture
+  const shelleyQ4Architecture = await prisma.objective.create({
+    data: {
+      title: 'Design Next-Generation Test Architecture',
+      description: 'Architect scalable, maintainable test automation infrastructure for 2026',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: shelleyRogan.id,
+      cycleId: q4_2025.id,
+    },
+  })
+
+  // Allan Pettigrew Q4 2025 - Automation as Code
+  const allanQ4AutomationCode = await prisma.objective.create({
+    data: {
+      title: 'Implement Infrastructure as Code for Test Environments',
+      description: 'Automate test environment provisioning and management using IaC principles',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: allanPettigrew.id,
+      cycleId: q4_2025.id,
+    },
+  })
+
+  // ========== Q1 2026 OBJECTIVES (FUTURE PLANNING) ==========
+
+  // David Burke Q1 2026 - AI Integration
+  const davidQ1AI = await prisma.objective.create({
+    data: {
+      title: 'Integrate AI and Machine Learning into Test Automation',
+      description: 'Implement AI-powered test generation, maintenance, and analysis capabilities',
+      type: 'TEAM',
+      status: 'NOT_STARTED',
+      ownerId: davidBurke.id,
+      cycleId: q1_2026.id,
+    },
+  })
+
+  // Kevin Hughes Q1 2026 - Advanced Analytics
+  const kevinQ1Analytics = await prisma.objective.create({
+    data: {
+      title: 'Develop Advanced Test Analytics Platform',
+      description: 'Build comprehensive analytics and reporting platform for test automation insights',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: kevinHughes.id,
+      cycleId: q1_2026.id,
+    },
+  })
+
+  // Shelley Rogan Q1 2026 - Cloud Native
+  const shelleyQ1CloudNative = await prisma.objective.create({
+    data: {
+      title: 'Implement Cloud-Native Test Automation',
+      description: 'Migrate all test automation to cloud-native, containerized architecture',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: shelleyRogan.id,
+      cycleId: q1_2026.id,
+    },
+  })
+
+  // Allan Pettigrew Q1 2026 - Autonomous Testing
+  const allanQ1Autonomous = await prisma.objective.create({
+    data: {
+      title: 'Develop Autonomous Testing Capabilities',
+      description: 'Create self-healing, self-maintaining test automation systems',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: allanPettigrew.id,
+      cycleId: q1_2026.id,
+    },
+  })
+
+  // ========== Q2 2026 OBJECTIVES (FUTURE PLANNING) ==========
+
+  // David Burke Q2 2026 - Global Excellence
+  const davidQ2Excellence = await prisma.objective.create({
+    data: {
+      title: 'Establish Global Automation Excellence Program',
+      description: 'Create world-class automation practices and share expertise globally',
+      type: 'TEAM',
+      status: 'NOT_STARTED',
+      ownerId: davidBurke.id,
+      cycleId: q2_2026.id,
+    },
+  })
+
+  // Kevin Hughes Q2 2026 - Innovation
+  const kevinQ2Innovation = await prisma.objective.create({
+    data: {
+      title: 'Lead Breakthrough Innovation in Test Automation',
+      description: 'Pioneer new approaches and technologies in the test automation field',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: kevinHughes.id,
+      cycleId: q2_2026.id,
+    },
+  })
+
+  // Shelley Rogan Q2 2026 - Ecosystem
+  const shelleyQ2Ecosystem = await prisma.objective.create({
+    data: {
+      title: 'Build Comprehensive Automation Ecosystem',
+      description: 'Create integrated ecosystem of tools, platforms, and practices',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: shelleyRogan.id,
+      cycleId: q2_2026.id,
+    },
+  })
+
+  // Allan Pettigrew Q2 2026 - Future Tech
+  const allanQ2FutureTech = await prisma.objective.create({
+    data: {
+      title: 'Explore Emerging Technologies for Test Automation',
+      description: 'Research and implement next-generation technologies like quantum computing for testing',
+      type: 'PERSONAL',
+      status: 'NOT_STARTED',
+      ownerId: allanPettigrew.id,
+      cycleId: q2_2026.id,
+    },
+  })
+
+  // ========== KEY RESULTS FOR Q4 2024 (COMPLETED) ==========
+
+  // David Burke Q4 2024 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Establish team structure and define roles',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 100,
+      objectiveId: davidQ4Leadership.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Create automation strategy document',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 85,
+      objectiveId: davidQ4Leadership.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Complete roadmap for 3 product lines',
+      metricType: 'NUMBER',
+      targetValue: 3,
+      currentValue: 2,
+      unit: ' product lines',
+      objectiveId: davidQ4Planning.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  // Kevin Hughes Q4 2024 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Set up Cypress framework for legacy apps',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 90,
+      objectiveId: kevinQ4Foundation.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Create 15 automated test cases',
+      metricType: 'NUMBER',
+      targetValue: 15,
+      currentValue: 12,
+      unit: ' test cases',
+      objectiveId: kevinQ4Foundation.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  // Shelley Rogan Q4 2024 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Achieve 80% test coverage for critical paths',
+      metricType: 'PERCENTAGE',
+      targetValue: 80,
+      currentValue: 75,
+      objectiveId: shelleyQ4Quality.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Reduce production defects by 50%',
+      metricType: 'PERCENTAGE',
+      targetValue: 50,
+      currentValue: 35,
+      objectiveId: shelleyQ4Quality.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  // Allan Pettigrew Q4 2024 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Integrate automation with CI/CD pipeline',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 100,
+      objectiveId: allanQ4Efficiency.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Reduce test execution time by 40%',
+      metricType: 'PERCENTAGE',
+      targetValue: 40,
+      currentValue: 25,
+      objectiveId: allanQ4Efficiency.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  // ========== KEY RESULTS FOR Q1 2025 (COMPLETED) ==========
+
+  // David Burke Q1 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Implement automation across 3 product lines',
+      metricType: 'NUMBER',
+      targetValue: 3,
+      currentValue: 3,
+      unit: ' product lines',
+      objectiveId: davidQ1Strategy.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Establish knowledge sharing sessions',
+      metricType: 'NUMBER',
+      targetValue: 12,
+      currentValue: 8,
+      unit: ' sessions',
+      objectiveId: davidQ1Development.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  // Kevin Hughes Q1 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Implement customer journey testing covering 2 critical business processes',
+      metricType: 'NUMBER',
+      targetValue: 2,
+      currentValue: 1,
+      unit: ' processes',
+      objectiveId: kevinQ1Advanced.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Complete advanced automation certification',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 100,
+      objectiveId: kevinQ1Growth.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  // Shelley Rogan Q1 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Begin development of test framework and initial test creation',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 85,
+      objectiveId: shelleyQ1Framework.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Train 3 team members in JavaScript and Cypress',
+      metricType: 'NUMBER',
+      targetValue: 3,
+      currentValue: 2,
+      unit: ' team members',
+      objectiveId: shelleyQ1Skills.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  // Allan Pettigrew Q1 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Develop 2 automation tools for manual testers',
+      metricType: 'NUMBER',
+      targetValue: 2,
+      currentValue: 2,
+      unit: ' tools',
+      objectiveId: allanQ1Innovation.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Establish communication standards with 5 project teams',
+      metricType: 'NUMBER',
+      targetValue: 5,
+      currentValue: 3,
+      unit: ' teams',
+      objectiveId: allanQ1Communication.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
   console.log('Database seeded successfully with comprehensive QA Automation team data!')
   console.log('='.repeat(60))
   console.log('CYCLES CREATED:')
   console.log('- Q4 2024 (Completed): Foundation building and initial automation setup')
-  console.log('- Q1 2025 (Active): Automation framework implementation and skill development')
-  console.log('- Q2 2025 (Planned): Advanced automation and quality improvement')
+  console.log('- Q1 2025 (Completed): Automation framework implementation and skill development')
+  console.log('- Q2 2025 (Active): Advanced automation and quality improvement')
+  console.log('- Q3 2025 (Planned): Scaling automation across the organization')
+  console.log('- Q4 2025 (Planned): Innovation and advanced tooling implementation')
+  console.log('- Q1 2026 (Planned): Next generation automation and AI integration')
+  console.log('- Q2 2026 (Planned): Global automation standards and excellence')
   console.log('')
   console.log('USERS CREATED:')
   console.log('- David Burke (Test Automation Manager)')
@@ -895,8 +946,8 @@ async function main() {
   console.log('')
   console.log('OBJECTIVES SUMMARY:')
   console.log('- Q4 2024: 5 objectives (ALL COMPLETED)')
-  console.log('- Q1 2025: 7 objectives (IN PROGRESS)')
-  console.log('- Q2 2025: 4 objectives (NOT STARTED)')
+  console.log('- Q1 2025: 7 objectives (ALL COMPLETED)')
+  console.log('- Q2 2025: 4 objectives (IN PROGRESS - ACTIVE CYCLE)')
   console.log('')
   console.log('KEY RESULTS: 50+ key results with realistic progress tracking')
   console.log('PROGRESS UPDATES: Historical tracking with comments and timestamps')
