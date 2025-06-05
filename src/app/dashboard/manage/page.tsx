@@ -105,7 +105,7 @@ export default function ManagePage() {
   const [showKeyResultForm, setShowKeyResultForm] = useState(false)
   const [showProgressForm, setShowProgressForm] = useState(false)
   const [editingObjective, setEditingObjective] = useState<Objective | null>(null)
-  const [editingKeyResult, setEditingKeyResult] = useState<any | null>(null)
+  const [editingKeyResultInline, setEditingKeyResultInline] = useState<string | null>(null)
   const [filterStatus, setFilterStatus] = useState('')
   const [filterUser, setFilterUser] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
@@ -290,10 +290,6 @@ export default function ManagePage() {
   const handleCreateKeyResult = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    if (editingKeyResult) {
-      return handleUpdateKeyResult(e)
-    }
-    
     try {
       const response = await fetch('/api/key-results', {
         method: 'POST',
@@ -362,10 +358,12 @@ export default function ManagePage() {
       cycleId: cycleId
     })
     setShowObjectiveForm(true)
+    // Scroll to top so user can see the edit form
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleEditKeyResult = (keyResult: any, objectiveId: string) => {
-    setEditingKeyResult(keyResult)
+    setEditingKeyResultInline(keyResult.id)
     setKeyResultForm({
       description: keyResult.description,
       metricType: keyResult.metricType,
@@ -374,7 +372,6 @@ export default function ManagePage() {
       objectiveId: objectiveId,
       ownerId: keyResult.owner.id
     })
-    setShowKeyResultForm(true)
   }
 
   const handleUpdateObjective = async (e: React.FormEvent) => {
@@ -416,14 +413,13 @@ export default function ManagePage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          id: editingKeyResult?.id,
+          id: editingKeyResultInline,
           ...keyResultForm
         }),
       })
 
       if (response.ok) {
-        setShowKeyResultForm(false)
-        setEditingKeyResult(null)
+        setEditingKeyResultInline(null)
         setKeyResultForm({
           description: '',
           metricType: 'NUMBER',
@@ -439,6 +435,18 @@ export default function ManagePage() {
     } catch (error) {
       console.error('Error updating key result:', error)
     }
+  }
+
+  const handleCancelKeyResultEdit = () => {
+    setEditingKeyResultInline(null)
+    setKeyResultForm({
+      description: '',
+      metricType: 'NUMBER',
+      targetValue: '',
+      unit: '',
+      objectiveId: '',
+      ownerId: ''
+    })
   }
 
   const handleDeleteObjective = async (objectiveId: string) => {
@@ -626,13 +634,19 @@ export default function ManagePage() {
         actions={[
           {
             label: 'Add Objective',
-            onClick: () => setShowObjectiveForm(true),
+            onClick: () => {
+              setShowObjectiveForm(true)
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            },
             variant: 'default',
             icon: <Plus className="w-4 h-4" />
           },
           {
             label: 'Add Key Result',
-            onClick: () => setShowKeyResultForm(true),
+            onClick: () => {
+              setShowKeyResultForm(true)
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            },
             variant: 'secondary',
             icon: <BarChart3 className="w-4 h-4" />
           },
@@ -648,6 +662,8 @@ export default function ManagePage() {
                   keyResultFilterUserId: session.user.id // Also filter key results by current user by default
                 }))
               }
+              // Scroll to top so user can see the progress form
+              window.scrollTo({ top: 0, behavior: 'smooth' })
             },
             variant: 'ghost',
             icon: <TrendingUp className="w-4 h-4" />
@@ -1041,7 +1057,7 @@ export default function ManagePage() {
                 <div className="flex items-center space-x-2">
                   <BarChart3 className="w-5 h-5 text-green-600" />
                   <CardTitle className="text-xl text-gray-900">
-                    {editingKeyResult ? 'Edit Key Result' : 'Add Key Result'}
+                    Add Key Result
                   </CardTitle>
                 </div>
                 <Button 
@@ -1049,7 +1065,6 @@ export default function ManagePage() {
                   size="sm" 
                   onClick={() => {
                     setShowKeyResultForm(false)
-                    setEditingKeyResult(null)
                     setKeyResultForm({
                       description: '',
                       metricType: 'NUMBER',
@@ -1065,10 +1080,7 @@ export default function ManagePage() {
                 </Button>
               </div>
               <CardDescription className="text-gray-600">
-                {editingKeyResult 
-                  ? 'Update the details of this key result.'
-                  : 'Add a measurable key result to track progress on an objective.'
-                }
+                Add a measurable key result to track progress on an objective.
               </CardDescription>
             </CardHeader>
             <CardContent className="p-6">
@@ -1132,7 +1144,7 @@ export default function ManagePage() {
                       value={keyResultForm.unit}
                       onChange={(e) => setKeyResultForm({...keyResultForm, unit: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      placeholder="%, $, users, etc."
+                      placeholder="%, $, etc."
                     />
                   </div>
                   <div>
@@ -1166,7 +1178,7 @@ export default function ManagePage() {
                     className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-6"
                   >
                     <Save className="w-4 h-4 mr-2" />
-                    {editingKeyResult ? 'Update Key Result' : 'Add Key Result'}
+                    Add Key Result
                   </Button>
                 </div>
               </form>
@@ -1484,6 +1496,120 @@ export default function ManagePage() {
                         <div className="space-y-3">
                           {objective.keyResults.map((kr) => {
                             const progress = kr.targetValue > 0 ? Math.min((kr.currentValue / kr.targetValue) * 100, 100) : 0
+                            
+                            // Show inline edit form if this key result is being edited
+                            if (editingKeyResultInline === kr.id) {
+                              return (
+                                <div key={kr.id} className="p-4 bg-blue-50 rounded-lg border-2 border-blue-200 shadow-sm">
+                                  <form onSubmit={handleUpdateKeyResult} className="space-y-4">
+                                    <div className="flex items-center justify-between mb-3">
+                                      <h5 className="font-medium text-blue-900 flex items-center">
+                                        <Edit className="w-4 h-4 mr-2" />
+                                        Editing Key Result
+                                      </h5>
+                                      <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={handleCancelKeyResultEdit}
+                                        className="text-slate-500 hover:text-slate-700"
+                                      >
+                                        <X className="w-4 h-4" />
+                                      </Button>
+                                    </div>
+                                    
+                                    <div className="grid grid-cols-1 gap-4">
+                                      <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                                        <input
+                                          type="text"
+                                          value={keyResultForm.description}
+                                          onChange={(e) => setKeyResultForm({...keyResultForm, description: e.target.value})}
+                                          required
+                                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                          placeholder="Enter key result description"
+                                        />
+                                      </div>
+                                      
+                                      <div className="grid grid-cols-4 gap-3">
+                                        <div>
+                                          <label className="block text-sm font-medium text-slate-700 mb-1">Type</label>
+                                          <select
+                                            value={keyResultForm.metricType}
+                                            onChange={(e) => setKeyResultForm({...keyResultForm, metricType: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                          >
+                                            <option value="NUMBER">Number</option>
+                                            <option value="PERCENTAGE">Percentage</option>
+                                            <option value="CURRENCY">Currency</option>
+                                            <option value="BOOLEAN">Yes/No</option>
+                                          </select>
+                                        </div>
+                                        <div>
+                                          <label className="block text-sm font-medium text-slate-700 mb-1">Target</label>
+                                          <input
+                                            type="number"
+                                            value={keyResultForm.targetValue}
+                                            onChange={(e) => setKeyResultForm({...keyResultForm, targetValue: e.target.value})}
+                                            required
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                            placeholder="100"
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="block text-sm font-medium text-slate-700 mb-1">Unit</label>
+                                          <input
+                                            type="text"
+                                            value={keyResultForm.unit}
+                                            onChange={(e) => setKeyResultForm({...keyResultForm, unit: e.target.value})}
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                            placeholder="%, $, etc."
+                                          />
+                                        </div>
+                                        <div>
+                                          <label className="block text-sm font-medium text-slate-700 mb-1">Owner</label>
+                                          <select
+                                            value={keyResultForm.ownerId}
+                                            onChange={(e) => setKeyResultForm({...keyResultForm, ownerId: e.target.value})}
+                                            required
+                                            className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                                          >
+                                            <option value="">Select owner</option>
+                                            {users.map(user => (
+                                              <option key={user.id} value={user.id}>
+                                                {user.name}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    
+                                    <div className="flex justify-end space-x-2 pt-3 border-t border-slate-200">
+                                      <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={handleCancelKeyResultEdit}
+                                        className="px-4"
+                                      >
+                                        Cancel
+                                      </Button>
+                                      <Button
+                                        type="submit"
+                                        size="sm"
+                                        className="bg-blue-600 hover:bg-blue-700 text-white px-4"
+                                      >
+                                        <Save className="w-3 h-3 mr-1" />
+                                        Save Changes
+                                      </Button>
+                                    </div>
+                                  </form>
+                                </div>
+                              )
+                            }
+                            
+                            // Show normal key result display
                             return (
                               <div key={kr.id} className="p-4 bg-white rounded-lg border border-slate-200 hover:border-slate-300 transition-all duration-200 shadow-sm">
                                 <div className="space-y-3">
@@ -1554,7 +1680,10 @@ export default function ManagePage() {
                         <BarChart3 className="h-8 w-8 text-slate-300 mx-auto mb-2" />
                         <p className="text-sm text-slate-500">No key results defined yet</p>
                         <Button 
-                          onClick={() => setShowKeyResultForm(true)}
+                          onClick={() => {
+                            setShowKeyResultForm(true)
+                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                          }}
                           variant="ghost"
                           size="sm"
                           className="mt-2 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
@@ -1586,7 +1715,10 @@ export default function ManagePage() {
                   </p>
                   {!searchTerm && !filterStatus && (
                     <Button 
-                      onClick={() => setShowObjectiveForm(true)}
+                      onClick={() => {
+                        setShowObjectiveForm(true)
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                      }}
                       className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       <Plus className="w-4 h-4 mr-2" />
