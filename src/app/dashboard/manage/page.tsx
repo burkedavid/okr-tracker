@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import DashboardHeader from '@/components/layout/DashboardHeader'
 import ExtendDeadlineModal from '@/components/ui/ExtendDeadlineModal'
+import Modal from '@/components/ui/Modal'
 import { 
   Plus, 
   Target, 
@@ -137,6 +138,11 @@ export default function ManagePage() {
     objectiveId: '',
     ownerId: ''
   })
+
+  // Search and filter states for key result form
+  const [keyResultObjectiveSearch, setKeyResultObjectiveSearch] = useState('')
+  const [keyResultOwnerFilter, setKeyResultOwnerFilter] = useState('')
+  const [keyResultCycleFilter, setKeyResultCycleFilter] = useState('')
 
   const [progressForm, setProgressForm] = useState({
     value: '',
@@ -309,6 +315,10 @@ export default function ManagePage() {
           objectiveId: '',
           ownerId: ''
         })
+        // Clear search and filter states
+        setKeyResultObjectiveSearch('')
+        setKeyResultOwnerFilter('')
+        setKeyResultCycleFilter('')
         fetchData()
       } else {
         console.error('Failed to create key result')
@@ -528,6 +538,21 @@ export default function ManagePage() {
     return 'bg-red-50 border-red-200'
   }
 
+  // Filter objectives for key result form
+  const getFilteredObjectivesForKeyResult = () => {
+    return objectives.filter(objective => {
+      const matchesSearch = !keyResultObjectiveSearch || 
+        objective.title.toLowerCase().includes(keyResultObjectiveSearch.toLowerCase()) ||
+        objective.description.toLowerCase().includes(keyResultObjectiveSearch.toLowerCase())
+      
+      const matchesOwner = !keyResultOwnerFilter || objective.ownerId === keyResultOwnerFilter
+      
+      const matchesCycle = !keyResultCycleFilter || objective.cycle.id === keyResultCycleFilter
+      
+      return matchesSearch && matchesOwner && matchesCycle
+    })
+  }
+
   const filteredObjectives = objectives.filter(objective => {
     const matchesSearch = objective.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          objective.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -636,7 +661,6 @@ export default function ManagePage() {
             label: 'Add Objective',
             onClick: () => {
               setShowObjectiveForm(true)
-              window.scrollTo({ top: 0, behavior: 'smooth' })
             },
             variant: 'default',
             icon: <Plus className="w-4 h-4" />
@@ -645,7 +669,6 @@ export default function ManagePage() {
             label: 'Add Key Result',
             onClick: () => {
               setShowKeyResultForm(true)
-              window.scrollTo({ top: 0, behavior: 'smooth' })
             },
             variant: 'secondary',
             icon: <BarChart3 className="w-4 h-4" />
@@ -662,8 +685,6 @@ export default function ManagePage() {
                   keyResultFilterUserId: session.user.id // Also filter key results by current user by default
                 }))
               }
-              // Scroll to top so user can see the progress form
-              window.scrollTo({ top: 0, behavior: 'smooth' })
             },
             variant: 'ghost',
             icon: <TrendingUp className="w-4 h-4" />
@@ -976,7 +997,7 @@ export default function ManagePage() {
                   <textarea
                     value={objectiveForm.description}
                     onChange={(e) => setObjectiveForm({...objectiveForm, description: e.target.value})}
-                    rows={3}
+                    rows={5}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Describe what you want to achieve and why it matters"
                   />
@@ -1073,6 +1094,10 @@ export default function ManagePage() {
                       objectiveId: '',
                       ownerId: ''
                     })
+                    // Clear search and filter states
+                    setKeyResultObjectiveSearch('')
+                    setKeyResultOwnerFilter('')
+                    setKeyResultCycleFilter('')
                   }}
                   className="text-gray-500 hover:text-gray-700"
                 >
@@ -1085,8 +1110,104 @@ export default function ManagePage() {
             </CardHeader>
             <CardContent className="p-6">
               <form onSubmit={handleCreateKeyResult} className="space-y-6">
+                {/* Search and Filter Controls */}
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <h6 className="text-sm font-medium text-slate-700 mb-3">Find Objective</h6>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Search Objectives</label>
+                      <div className="relative">
+                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400 w-3 h-3" />
+                        <input
+                          type="text"
+                          value={keyResultObjectiveSearch}
+                          onChange={(e) => setKeyResultObjectiveSearch(e.target.value)}
+                          placeholder="Search by title or description..."
+                          className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Filter by Owner</label>
+                      <select
+                        value={keyResultOwnerFilter}
+                        onChange={(e) => setKeyResultOwnerFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      >
+                        <option value="">All Owners</option>
+                        {users.map(user => (
+                          <option key={user.id} value={user.id}>
+                            {user.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-slate-600 mb-1">Filter by Cycle</label>
+                      <select
+                        value={keyResultCycleFilter}
+                        onChange={(e) => setKeyResultCycleFilter(e.target.value)}
+                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      >
+                        <option value="">All Cycles</option>
+                        {cycles.map(cycle => (
+                          <option key={cycle.id} value={cycle.id}>
+                            {cycle.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                  {(keyResultObjectiveSearch || keyResultOwnerFilter || keyResultCycleFilter) && (
+                    <div className="mt-2 flex items-center justify-between">
+                      <span className="text-xs text-slate-500">
+                        Showing {getFilteredObjectivesForKeyResult().length} of {objectives.length} objectives
+                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setKeyResultObjectiveSearch('')
+                          setKeyResultOwnerFilter('')
+                          setKeyResultCycleFilter('')
+                        }}
+                        className="text-xs text-slate-500 hover:text-slate-700"
+                      >
+                        Clear filters
+                      </Button>
+                    </div>
+                  )}
+                </div>
+                
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">Objective *</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Objective * 
+                    <span className="text-xs font-normal text-slate-500 ml-1">
+                      ({getFilteredObjectivesForKeyResult().length} available)
+                    </span>
+                  </label>
+                  {keyResultForm.objectiveId && (
+                    <div className="mb-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <CheckCircle className="w-4 h-4 text-green-600" />
+                          <span className="text-sm text-green-800 font-medium">
+                            Pre-selected: {objectives.find(obj => obj.id === keyResultForm.objectiveId)?.title}
+                          </span>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setKeyResultForm({...keyResultForm, objectiveId: ''})}
+                          className="text-green-600 hover:text-green-700 text-xs"
+                        >
+                          Change
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                   <select
                     value={keyResultForm.objectiveId}
                     onChange={(e) => setKeyResultForm({...keyResultForm, objectiveId: e.target.value})}
@@ -1094,7 +1215,7 @@ export default function ManagePage() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="">Select objective</option>
-                    {objectives.map(objective => (
+                    {getFilteredObjectivesForKeyResult().map(objective => (
                       <option key={objective.id} value={objective.id}>
                         {objective.title} ({objective.owner.name})
                       </option>
@@ -1103,11 +1224,11 @@ export default function ManagePage() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
-                  <input
-                    type="text"
+                  <textarea
                     value={keyResultForm.description}
                     onChange={(e) => setKeyResultForm({...keyResultForm, description: e.target.value})}
                     required
+                    rows={3}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Enter a specific, measurable key result"
                   />
@@ -1229,7 +1350,7 @@ export default function ManagePage() {
                     <option value="">All Users</option>
                     {users.map(user => (
                       <option key={user.id} value={user.id}>
-                        {user.name} ({user.position})
+                        {user.name}
                       </option>
                     ))}
                   </select>
@@ -1288,7 +1409,7 @@ export default function ManagePage() {
                   <textarea
                     value={progressForm.notes}
                     onChange={(e) => setProgressForm({...progressForm, notes: e.target.value})}
-                    rows={3}
+                    rows={4}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     placeholder="Add notes about this progress update, challenges, or achievements..."
                   />
@@ -1426,6 +1547,25 @@ export default function ManagePage() {
                         {/* Edit and Delete buttons for managers */}
                         {(session?.user?.role === 'MANAGER' || session?.user?.role === 'ADMIN') && (
                           <div className="flex items-center space-x-2 ml-4">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                // Pre-populate the objective and open the form
+                                setKeyResultForm(prev => ({
+                                  ...prev,
+                                  objectiveId: objective.id,
+                                  ownerId: session?.user?.id || ''
+                                }))
+                                setShowKeyResultForm(true)
+                              }}
+                              className="text-green-600 hover:text-green-700 hover:bg-green-50 px-2 py-1 text-xs font-medium"
+                              title="Add key result to this objective"
+                            >
+                              <Plus className="w-3 h-3 mr-1" />
+                              Add KR
+                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -1682,7 +1822,6 @@ export default function ManagePage() {
                         <Button 
                           onClick={() => {
                             setShowKeyResultForm(true)
-                            window.scrollTo({ top: 0, behavior: 'smooth' })
                           }}
                           variant="ghost"
                           size="sm"
@@ -1717,7 +1856,6 @@ export default function ManagePage() {
                     <Button 
                       onClick={() => {
                         setShowObjectiveForm(true)
-                        window.scrollTo({ top: 0, behavior: 'smooth' })
                       }}
                       className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
@@ -1743,6 +1881,458 @@ export default function ManagePage() {
         onExtend={handleExtendDeadline}
         isLoading={isExtending}
       />
+
+      {/* Objective Modal */}
+      <Modal
+        isOpen={showObjectiveForm}
+        onClose={() => {
+          setShowObjectiveForm(false)
+          setEditingObjective(null)
+          setObjectiveForm({
+            title: '',
+            description: '',
+            type: 'PERSONAL',
+            ownerId: '',
+            cycleId: ''
+          })
+        }}
+        title={editingObjective ? 'Edit Objective' : 'Create New Objective'}
+        description={editingObjective 
+          ? 'Update the details of this objective.'
+          : 'Fill in the details to create a new objective for your team or organisation.'
+        }
+        size="lg"
+        icon={<Target className="w-5 h-5 text-blue-600" />}
+      >
+        <form onSubmit={handleCreateObjective} className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Title *</label>
+            <input
+              type="text"
+              value={objectiveForm.title}
+              onChange={(e) => setObjectiveForm({...objectiveForm, title: e.target.value})}
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              placeholder="Enter a clear, inspiring objective title"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+            <textarea
+              value={objectiveForm.description}
+              onChange={(e) => setObjectiveForm({...objectiveForm, description: e.target.value})}
+              rows={5}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              placeholder="Describe what you want to achieve and why it matters"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Type *</label>
+              <select
+                value={objectiveForm.type}
+                onChange={(e) => setObjectiveForm({...objectiveForm, type: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="PERSONAL">Personal</option>
+                <option value="TEAM">Team</option>
+                <option value="COMPANY">Company</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Owner *</label>
+              <select
+                value={objectiveForm.ownerId}
+                onChange={(e) => setObjectiveForm({...objectiveForm, ownerId: e.target.value})}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">Select owner</option>
+                {users.map(user => (
+                  <option key={user.id} value={user.id}>
+                    {user.name} ({user.position})
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Cycle *</label>
+              <select
+                value={objectiveForm.cycleId}
+                onChange={(e) => setObjectiveForm({...objectiveForm, cycleId: e.target.value})}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">Select cycle</option>
+                {cycles.map(cycle => (
+                  <option key={cycle.id} value={cycle.id}>
+                    {cycle.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setShowObjectiveForm(false)}
+              className="px-6"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              {editingObjective ? 'Update Objective' : 'Create Objective'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Key Result Modal */}
+      <Modal
+        isOpen={showKeyResultForm}
+        onClose={() => {
+          setShowKeyResultForm(false)
+          setKeyResultForm({
+            description: '',
+            metricType: 'NUMBER',
+            targetValue: '',
+            unit: '',
+            objectiveId: '',
+            ownerId: ''
+          })
+          // Clear search and filter states
+          setKeyResultObjectiveSearch('')
+          setKeyResultOwnerFilter('')
+          setKeyResultCycleFilter('')
+        }}
+        title="Add Key Result"
+        description="Add a measurable key result to track progress on an objective."
+        size="xl"
+        icon={<BarChart3 className="w-5 h-5 text-green-600" />}
+      >
+        <form onSubmit={handleCreateKeyResult} className="space-y-6">
+          {/* Search and Filter Controls */}
+          <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+            <h6 className="text-sm font-medium text-slate-700 mb-3">Find Objective</h6>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Search Objectives</label>
+                <div className="relative">
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400 w-3 h-3" />
+                  <input
+                    type="text"
+                    value={keyResultObjectiveSearch}
+                    onChange={(e) => setKeyResultObjectiveSearch(e.target.value)}
+                    placeholder="Search by title or description..."
+                    className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Filter by Owner</label>
+                <select
+                  value={keyResultOwnerFilter}
+                  onChange={(e) => setKeyResultOwnerFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                >
+                  <option value="">All Owners</option>
+                  {users.map(user => (
+                    <option key={user.id} value={user.id}>
+                      {user.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-slate-600 mb-1">Filter by Cycle</label>
+                <select
+                  value={keyResultCycleFilter}
+                  onChange={(e) => setKeyResultCycleFilter(e.target.value)}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                >
+                  <option value="">All Cycles</option>
+                  {cycles.map(cycle => (
+                    <option key={cycle.id} value={cycle.id}>
+                      {cycle.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            {(keyResultObjectiveSearch || keyResultOwnerFilter || keyResultCycleFilter) && (
+              <div className="mt-2 flex items-center justify-between">
+                <span className="text-xs text-slate-500">
+                  Showing {getFilteredObjectivesForKeyResult().length} of {objectives.length} objectives
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setKeyResultObjectiveSearch('')
+                    setKeyResultOwnerFilter('')
+                    setKeyResultCycleFilter('')
+                  }}
+                  className="text-xs text-slate-500 hover:text-slate-700"
+                >
+                  Clear filters
+                </Button>
+              </div>
+            )}
+          </div>
+          
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Objective * 
+              <span className="text-xs font-normal text-slate-500 ml-1">
+                ({getFilteredObjectivesForKeyResult().length} available)
+              </span>
+            </label>
+            {keyResultForm.objectiveId && (
+              <div className="mb-2 p-2 bg-green-50 border border-green-200 rounded-md">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="w-4 h-4 text-green-600" />
+                    <span className="text-sm text-green-800 font-medium">
+                      Pre-selected: {objectives.find(obj => obj.id === keyResultForm.objectiveId)?.title}
+                    </span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setKeyResultForm({...keyResultForm, objectiveId: ''})}
+                    className="text-green-600 hover:text-green-700 text-xs"
+                  >
+                    Change
+                  </Button>
+                </div>
+              </div>
+            )}
+            <select
+              value={keyResultForm.objectiveId}
+              onChange={(e) => setKeyResultForm({...keyResultForm, objectiveId: e.target.value})}
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            >
+              <option value="">Select objective</option>
+              {getFilteredObjectivesForKeyResult().map(objective => (
+                <option key={objective.id} value={objective.id}>
+                  {objective.title} ({objective.owner.name})
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
+            <textarea
+              value={keyResultForm.description}
+              onChange={(e) => setKeyResultForm({...keyResultForm, description: e.target.value})}
+              required
+              rows={3}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              placeholder="Enter a specific, measurable key result"
+            />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Metric Type *</label>
+              <select
+                value={keyResultForm.metricType}
+                onChange={(e) => setKeyResultForm({...keyResultForm, metricType: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="NUMBER">Number</option>
+                <option value="PERCENTAGE">Percentage</option>
+                <option value="CURRENCY">Currency</option>
+                <option value="BOOLEAN">Yes/No</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Target Value *</label>
+              <input
+                type="number"
+                value={keyResultForm.targetValue}
+                onChange={(e) => setKeyResultForm({...keyResultForm, targetValue: e.target.value})}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                placeholder="100"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Unit</label>
+              <input
+                type="text"
+                value={keyResultForm.unit}
+                onChange={(e) => setKeyResultForm({...keyResultForm, unit: e.target.value})}
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                placeholder="%, $, etc."
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Owner *</label>
+              <select
+                value={keyResultForm.ownerId}
+                onChange={(e) => setKeyResultForm({...keyResultForm, ownerId: e.target.value})}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">Select owner</option>
+                {users.map(user => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => setShowKeyResultForm(false)}
+              className="px-6"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit"
+              className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white px-6"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Add Key Result
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* Progress Update Modal */}
+      <Modal
+        isOpen={showProgressForm}
+        onClose={() => {
+          setShowProgressForm(false)
+          setProgressForm({
+            value: '',
+            notes: '',
+            keyResultId: '',
+            createdById: '',
+            keyResultFilterUserId: ''
+          })
+        }}
+        title="Update Progress"
+        description="Update the progress of a key result with current metrics."
+        size="xl"
+        icon={<TrendingUp className="w-5 h-5 text-yellow-600" />}
+      >
+        <form onSubmit={handleUpdateProgress} className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Filter Key Results by User</label>
+            <select
+              value={progressForm.keyResultFilterUserId}
+              onChange={(e) => setProgressForm({...progressForm, keyResultFilterUserId: e.target.value, keyResultId: ''})}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            >
+              <option value="">All Users</option>
+              {users.map(user => (
+                <option key={user.id} value={user.id}>
+                  {user.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Key Result *</label>
+            <select
+              value={progressForm.keyResultId}
+              onChange={(e) => setProgressForm({...progressForm, keyResultId: e.target.value})}
+              required
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+            >
+              <option value="">Select key result</option>
+              {objectives.flatMap(obj => 
+                obj.keyResults
+                  .filter(kr => !progressForm.keyResultFilterUserId || kr.owner.id === progressForm.keyResultFilterUserId)
+                  .map(kr => (
+                    <option key={kr.id} value={kr.id}>
+                      {kr.description} (Target: {kr.targetValue}{kr.unit}) - {kr.owner.name}
+                    </option>
+                  ))
+              )}
+            </select>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Current Value *</label>
+              <input
+                type="number"
+                value={progressForm.value}
+                onChange={(e) => setProgressForm({...progressForm, value: e.target.value})}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                placeholder="Enter current value"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">Updated By *</label>
+              <select
+                value={progressForm.createdById}
+                onChange={(e) => setProgressForm({...progressForm, createdById: e.target.value})}
+                required
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              >
+                <option value="">Select user</option>
+                {users.map(user => (
+                  <option key={user.id} value={user.id}>
+                    {user.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
+            <textarea
+              value={progressForm.notes}
+              onChange={(e) => setProgressForm({...progressForm, notes: e.target.value})}
+              rows={4}
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+              placeholder="Add notes about this progress update, challenges, or achievements..."
+            />
+          </div>
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <Button 
+              type="button" 
+              variant="outline" 
+              onClick={() => {
+                setShowProgressForm(false)
+                setProgressForm({
+                  value: '',
+                  notes: '',
+                  keyResultId: '',
+                  createdById: '',
+                  keyResultFilterUserId: ''
+                })
+              }}
+              className="px-6"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit"
+              className="bg-gradient-to-r from-yellow-600 to-green-600 hover:from-yellow-700 hover:to-green-700 text-white px-6"
+            >
+              <Save className="w-4 h-4 mr-2" />
+              Update Progress
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 } 
+
