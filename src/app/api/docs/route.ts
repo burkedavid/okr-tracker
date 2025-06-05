@@ -384,7 +384,18 @@ export async function GET() {
                 <div class="endpoint-description">Get all objectives with progress calculation</div>
                 <div class="response">
                     <div class="response-title">Response:</div>
-                    <div class="response-description">Array of objectives with owners, cycles, key results, and calculated progress</div>
+                    <div class="response-description">Array of objectives with owners, cycles, key results, calculated progress, risk levels, and missed deadline tracking</div>
+                </div>
+                <div class="note">
+                    <div class="note-title">📊 Enhanced Data Model</div>
+                    <div class="note-text">
+                        Each objective includes comprehensive tracking data:<br>
+                        • Automatic progress calculation from key results<br>
+                        • Risk level assessment (LOW/MEDIUM/HIGH/CRITICAL)<br>
+                        • Missed deadline tracking and audit trail<br>
+                        • Extension history with justifications<br>
+                        • Manager approval workflow for deadline changes
+                    </div>
                 </div>
             </div>
             
@@ -463,7 +474,7 @@ export async function GET() {
                     <div class="param">
                         <span class="param-name">status</span>
                         <span class="param-type">string</span>
-                        <div class="param-description">NOT_STARTED, IN_PROGRESS, COMPLETED, or AT_RISK</div>
+                        <div class="param-description">NOT_STARTED, IN_PROGRESS, COMPLETED, AT_RISK, CANCELLED, or EXTENDED</div>
                     </div>
                     <div class="param">
                         <span class="param-name">ownerId</span>
@@ -480,6 +491,73 @@ export async function GET() {
                         <span class="param-type">string</span>
                         <div class="param-description">Parent objective ID (optional)</div>
                     </div>
+                    <div class="param">
+                        <span class="param-name">wasMissed</span>
+                        <span class="param-type">boolean</span>
+                        <div class="param-description">Whether the objective missed its original deadline</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">originalEndDate</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Original cycle end date (ISO 8601 format)</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">extendedDeadline</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Extended deadline date (ISO 8601 format)</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">missedReason</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Reason for missing the original deadline</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">extensionReason</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Justification for deadline extension</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/objectives/{objectiveId}/extend</span>
+                </div>
+                <div class="endpoint-description">Extend deadline for a missed objective (Manager/Admin only)</div>
+                <div class="params">
+                    <div class="params-title">URL Parameters:</div>
+                    <div class="param">
+                        <span class="param-name">objectiveId</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Objective ID to extend deadline for (required)</div>
+                    </div>
+                </div>
+                <div class="params">
+                    <div class="params-title">Request Body:</div>
+                    <div class="param">
+                        <span class="param-name">newDeadline</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">New deadline date (ISO 8601 format, required)</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">missedReason</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Reason for missing original deadline (required)</div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">extensionReason</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Justification for deadline extension (required)</div>
+                    </div>
+                </div>
+                <div class="response">
+                    <div class="response-title">Response:</div>
+                    <div class="response-description">Updated objective with extended deadline and audit trail. Creates notification for objective owner.</div>
+                </div>
+                <div class="note">
+                    <div class="note-title">🔐 Permission Required</div>
+                    <div class="note-text">Only users with MANAGER or ADMIN role can extend deadlines. STAFF users can view extension details but cannot grant extensions.</div>
                 </div>
             </div>
             
@@ -496,6 +574,118 @@ export async function GET() {
                         <span class="param-type">string</span>
                         <div class="param-description">Objective ID to delete (required)</div>
                     </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Missed OKR Tracking Section -->
+        <div class="endpoint-group">
+            <div class="group-header">
+                <div class="group-title">⚠️ Missed OKR Tracking & Risk Management</div>
+                <div class="group-description">Advanced features for tracking missed deadlines and managing objective risks</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/objectives?filter=missed</span>
+                </div>
+                <div class="endpoint-description">Get objectives that have missed their deadlines</div>
+                <div class="response">
+                    <div class="response-title">Response:</div>
+                    <div class="response-description">Array of objectives with wasMissed=true, including missed reasons and extension details</div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/objectives?filter=at-risk</span>
+                </div>
+                <div class="endpoint-description">Get objectives that are at risk of missing deadlines</div>
+                <div class="response">
+                    <div class="response-title">Response:</div>
+                    <div class="response-description">Array of objectives with progress significantly behind schedule based on time elapsed vs. progress made</div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/objectives?filter=extended</span>
+                </div>
+                <div class="endpoint-description">Get objectives with extended deadlines</div>
+                <div class="response">
+                    <div class="response-title">Response:</div>
+                    <div class="response-description">Array of objectives with status=EXTENDED, including extension history and audit trail</div>
+                </div>
+            </div>
+            
+            <div class="note">
+                <div class="note-title">📊 Risk Level Calculation</div>
+                <div class="note-text">
+                    Risk levels are automatically calculated based on progress vs. time elapsed:<br>
+                    • <strong>LOW</strong>: Progress ≥ expected progress<br>
+                    • <strong>MEDIUM</strong>: Progress 10-25% behind schedule<br>
+                    • <strong>HIGH</strong>: Progress 25-50% behind schedule<br>
+                    • <strong>CRITICAL</strong>: Progress >50% behind schedule or past deadline
+                </div>
+            </div>
+        </div>
+        
+        <!-- Timeline and Analytics Section -->
+        <div class="endpoint-group">
+            <div class="group-header">
+                <div class="group-title">📈 Timeline & Analytics</div>
+                <div class="group-description">Timeline visualization and analytics features for OKR tracking</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/timeline</span>
+                </div>
+                <div class="endpoint-description">Get timeline view data for all cycles and objectives</div>
+                <div class="response">
+                    <div class="response-title">Response:</div>
+                    <div class="response-description">Comprehensive timeline data with cycles, objectives, progress tracking, and achievement rates</div>
+                </div>
+                <div class="note">
+                    <div class="note-title">🔍 Timeline Features</div>
+                    <div class="note-text">
+                        Timeline view includes:<br>
+                        • Interactive horizontal scrolling with zoom controls (25-400%)<br>
+                        • Navigation buttons (Start/Left/Right/Today/End)<br>
+                        • Missed target indicators with red dots<br>
+                        • At-risk objectives with orange warnings<br>
+                        • Filtering by risk level and completion status<br>
+                        • Summary dashboard with statistics<br>
+                        • Hover details with progress gaps and risk assessments
+                    </div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/analytics/summary</span>
+                </div>
+                <div class="endpoint-description">Get analytics summary for dashboard</div>
+                <div class="response">
+                    <div class="response-title">Response:</div>
+                    <div class="response-description">Summary statistics including total, on-track, at-risk, missed, and extended objectives</div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/analytics/achievement-rates</span>
+                </div>
+                <div class="endpoint-description">Get achievement rates by cycle</div>
+                <div class="response">
+                    <div class="response-title">Response:</div>
+                    <div class="response-description">Historical achievement rates with completion percentages for completed cycles vs. time-based analysis for active cycles</div>
                 </div>
             </div>
         </div>
@@ -656,6 +846,55 @@ export async function GET() {
             </div>
         </div>
         
+        <!-- Notifications Endpoints -->
+        <div class="endpoint-group">
+            <div class="group-header">
+                <div class="group-title">🔔 Notifications</div>
+                <div class="group-description">Notification system for OKR events and updates</div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/notifications</span>
+                </div>
+                <div class="endpoint-description">Get user notifications</div>
+                <div class="response">
+                    <div class="response-title">Response:</div>
+                    <div class="response-description">Array of notifications including deadline extensions, progress requests, and system updates</div>
+                </div>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method put">PUT</span>
+                    <span class="endpoint-path">/notifications/{notificationId}/read</span>
+                </div>
+                <div class="endpoint-description">Mark notification as read</div>
+                <div class="params">
+                    <div class="params-title">URL Parameters:</div>
+                    <div class="param">
+                        <span class="param-name">notificationId</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">Notification ID to mark as read (required)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="note">
+                <div class="note-title">📬 Notification Types</div>
+                <div class="note-text">
+                    System automatically creates notifications for:<br>
+                    • Deadline extensions granted by managers<br>
+                    • Progress update reminders<br>
+                    • New objective assignments<br>
+                    • Review reminders<br>
+                    • Achievement celebrations<br>
+                    • Escalation alerts for missed deadlines
+                </div>
+            </div>
+        </div>
+        
         <!-- Team Endpoints -->
         <div class="endpoint-group">
             <div class="group-header">
@@ -753,7 +992,21 @@ export async function GET() {
                 <div class="endpoint-description">Get all OKR cycles</div>
                 <div class="response">
                     <div class="response-title">Response:</div>
-                    <div class="response-description">Array of cycles with active status and date information</div>
+                    <div class="response-description">Array of cycles with active status, date information, and comprehensive historical data spanning Q4 2024 through Q2 2026</div>
+                </div>
+                <div class="note">
+                    <div class="note-title">📅 Comprehensive Cycle Data</div>
+                    <div class="note-text">
+                        Available cycles include:<br>
+                        • Q4 2024 (Completed): Foundation building and initial automation setup<br>
+                        • Q1 2025 (Completed): Automation framework implementation and skill development<br>
+                        • Q2 2025 (Active): Advanced automation and quality improvement<br>
+                        • Q3 2025 (Planned): Scaling automation across the organization<br>
+                        • Q4 2025 (Planned): Innovation and advanced tooling implementation<br>
+                        • Q1 2026 (Planned): Next generation automation and AI integration<br>
+                        • Q2 2026 (Planned): Global automation standards and excellence<br><br>
+                        Each cycle contains fully populated objectives with comprehensive key results for realistic testing and demonstration.
+                    </div>
                 </div>
             </div>
         </div>

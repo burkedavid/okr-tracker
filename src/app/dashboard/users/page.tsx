@@ -120,11 +120,15 @@ export default function UsersPage() {
         departmentsRes.json()
       ])
 
-      setUsers(usersData)
-      setDepartments(departmentsData)
+      // Ensure data is always an array, even if API fails
+      setUsers(Array.isArray(usersData) ? usersData : [])
+      setDepartments(Array.isArray(departmentsData) ? departmentsData : [])
       setLoading(false)
     } catch (error) {
       console.error('Error fetching data:', error)
+      // Set empty arrays on error to prevent runtime errors
+      setUsers([])
+      setDepartments([])
       setLoading(false)
     }
   }
@@ -280,7 +284,7 @@ export default function UsersPage() {
     return colors[role as keyof typeof colors] || colors.STAFF
   }
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = (users || []).filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (user.position && user.position.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -498,7 +502,7 @@ export default function UsersPage() {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
                       <option value="">Select department</option>
-                      {departments.map(dept => (
+                      {(departments || []).map(dept => (
                         <option key={dept.id} value={dept.id}>
                           {dept.name}
                         </option>
@@ -515,7 +519,7 @@ export default function UsersPage() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   >
                     <option value="">Select manager</option>
-                    {users.filter(user => user.role === 'MANAGER' || user.role === 'ADMIN').map(manager => (
+                    {(users || []).filter(user => user.role === 'MANAGER' || user.role === 'ADMIN').map(manager => (
                       <option key={manager.id} value={manager.id}>
                         {manager.name} ({manager.position})
                       </option>
@@ -590,7 +594,7 @@ export default function UsersPage() {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
                       <option value="">No parent (top level)</option>
-                      {departments.map(dept => (
+                      {(departments || []).map(dept => (
                         <option key={dept.id} value={dept.id}>
                           {dept.name}
                         </option>
@@ -605,7 +609,7 @@ export default function UsersPage() {
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                     >
                       <option value="">Select department head</option>
-                      {users.filter(user => user.role === 'MANAGER' || user.role === 'ADMIN').map(user => (
+                      {(users || []).filter(user => user.role === 'MANAGER' || user.role === 'ADMIN').map(user => (
                         <option key={user.id} value={user.id}>
                           {user.name} ({user.position})
                         </option>
@@ -996,11 +1000,11 @@ export default function UsersPage() {
         {/* Departments Section */}
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold text-gray-900">Departments ({departments.length})</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Departments ({(departments || []).length})</h2>
           </div>
           
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {departments.map((department) => (
+            {(departments || []).map((department) => (
               <Card key={department.id} className="bg-white shadow-lg hover:shadow-xl transition-all duration-200 border-0 ring-1 ring-gray-200">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-3">

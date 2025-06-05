@@ -927,6 +927,586 @@ async function main() {
     },
   })
 
+  // ========== KEY RESULTS FOR Q3 2025 (FUTURE PLANNING) ==========
+
+  // David Burke Q3 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Establish automation centers of excellence in 4 business units',
+      metricType: 'NUMBER',
+      targetValue: 4,
+      currentValue: 0,
+      unit: ' business units',
+      objectiveId: davidQ3Scaling.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Train 50+ developers in automation best practices',
+      metricType: 'NUMBER',
+      targetValue: 50,
+      currentValue: 0,
+      unit: ' developers',
+      objectiveId: davidQ3Scaling.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Achieve 95% automation adoption across development teams',
+      metricType: 'PERCENTAGE',
+      targetValue: 95,
+      currentValue: 0,
+      objectiveId: davidQ3Scaling.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  // Kevin Hughes Q3 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Complete technical leadership certification program',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: kevinQ3Leadership.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Lead 3 major automation initiatives',
+      metricType: 'NUMBER',
+      targetValue: 3,
+      currentValue: 0,
+      unit: ' initiatives',
+      objectiveId: kevinQ3Leadership.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Mentor 4 junior engineers to independent proficiency',
+      metricType: 'NUMBER',
+      targetValue: 4,
+      currentValue: 0,
+      unit: ' engineers',
+      objectiveId: kevinQ3Leadership.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  // Shelley Rogan Q3 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Implement unified automation framework supporting web, mobile, and API testing',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: shelleyQ3Advanced.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Achieve 90% test coverage across all platforms',
+      metricType: 'PERCENTAGE',
+      targetValue: 90,
+      currentValue: 0,
+      objectiveId: shelleyQ3Advanced.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Create automated test suites for 5 mobile applications',
+      metricType: 'NUMBER',
+      targetValue: 5,
+      currentValue: 0,
+      unit: ' mobile apps',
+      objectiveId: shelleyQ3Advanced.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  // Allan Pettigrew Q3 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Establish physical innovation lab space with modern testing tools',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: allanQ3Innovation.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Research and prototype 5 emerging automation technologies',
+      metricType: 'NUMBER',
+      targetValue: 5,
+      currentValue: 0,
+      unit: ' technologies',
+      objectiveId: allanQ3Innovation.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Conduct 12 innovation workshops with development teams',
+      metricType: 'NUMBER',
+      targetValue: 12,
+      currentValue: 0,
+      unit: ' workshops',
+      objectiveId: allanQ3Innovation.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  // ========== KEY RESULTS FOR Q4 2025 (FUTURE PLANNING) ==========
+
+  // David Burke Q4 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Complete comprehensive 2026 automation strategy document',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: davidQ4Vision.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Define strategic roadmap for 6 product lines',
+      metricType: 'NUMBER',
+      targetValue: 6,
+      currentValue: 0,
+      unit: ' product lines',
+      objectiveId: davidQ4Vision.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Secure budget approval for 2026 automation initiatives',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: davidQ4Vision.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  // Kevin Hughes Q4 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Obtain advanced performance testing certifications',
+      metricType: 'NUMBER',
+      targetValue: 2,
+      currentValue: 0,
+      unit: ' certifications',
+      objectiveId: kevinQ4Specialization.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Implement performance testing for 4 critical applications',
+      metricType: 'NUMBER',
+      targetValue: 4,
+      currentValue: 0,
+      unit: ' applications',
+      objectiveId: kevinQ4Specialization.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Establish performance testing standards and documentation',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: kevinQ4Specialization.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  // Shelley Rogan Q4 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Design scalable test architecture supporting 100+ concurrent users',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: shelleyQ4Architecture.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Create modular framework components for reuse across projects',
+      metricType: 'NUMBER',
+      targetValue: 10,
+      currentValue: 0,
+      unit: ' components',
+      objectiveId: shelleyQ4Architecture.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Achieve 99.9% test execution reliability',
+      metricType: 'PERCENTAGE',
+      targetValue: 99.9,
+      currentValue: 0,
+      objectiveId: shelleyQ4Architecture.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  // Allan Pettigrew Q4 2025 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Implement Infrastructure as Code for 8 test environments',
+      metricType: 'NUMBER',
+      targetValue: 8,
+      currentValue: 0,
+      unit: ' environments',
+      objectiveId: allanQ4AutomationCode.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Reduce environment provisioning time by 80%',
+      metricType: 'PERCENTAGE',
+      targetValue: 80,
+      currentValue: 0,
+      objectiveId: allanQ4AutomationCode.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Train 6 team members in IaC tools and practices',
+      metricType: 'NUMBER',
+      targetValue: 6,
+      currentValue: 0,
+      unit: ' team members',
+      objectiveId: allanQ4AutomationCode.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  // ========== KEY RESULTS FOR Q1 2026 (FUTURE PLANNING) ==========
+
+  // David Burke Q1 2026 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Implement AI-powered test generation for 3 product lines',
+      metricType: 'NUMBER',
+      targetValue: 3,
+      currentValue: 0,
+      unit: ' product lines',
+      objectiveId: davidQ1AI.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Achieve 60% reduction in test maintenance effort through AI',
+      metricType: 'PERCENTAGE',
+      targetValue: 60,
+      currentValue: 0,
+      objectiveId: davidQ1AI.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Train team in AI/ML testing technologies',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: davidQ1AI.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  // Kevin Hughes Q1 2026 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Deploy analytics platform with real-time dashboards',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: kevinQ1Analytics.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Integrate analytics with 10 automation frameworks',
+      metricType: 'NUMBER',
+      targetValue: 10,
+      currentValue: 0,
+      unit: ' frameworks',
+      objectiveId: kevinQ1Analytics.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Generate automated insights for 15 development teams',
+      metricType: 'NUMBER',
+      targetValue: 15,
+      currentValue: 0,
+      unit: ' teams',
+      objectiveId: kevinQ1Analytics.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  // Shelley Rogan Q1 2026 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Migrate 100% of test automation to cloud-native architecture',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: shelleyQ1CloudNative.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Implement containerized testing for 12 applications',
+      metricType: 'NUMBER',
+      targetValue: 12,
+      currentValue: 0,
+      unit: ' applications',
+      objectiveId: shelleyQ1CloudNative.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Achieve 50% cost reduction through cloud optimization',
+      metricType: 'PERCENTAGE',
+      targetValue: 50,
+      currentValue: 0,
+      objectiveId: shelleyQ1CloudNative.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  // Allan Pettigrew Q1 2026 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Develop self-healing test automation system',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: allanQ1Autonomous.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Achieve 95% automatic test recovery from failures',
+      metricType: 'PERCENTAGE',
+      targetValue: 95,
+      currentValue: 0,
+      objectiveId: allanQ1Autonomous.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Implement autonomous testing for 6 critical workflows',
+      metricType: 'NUMBER',
+      targetValue: 6,
+      currentValue: 0,
+      unit: ' workflows',
+      objectiveId: allanQ1Autonomous.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  // ========== KEY RESULTS FOR Q2 2026 (FUTURE PLANNING) ==========
+
+  // David Burke Q2 2026 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Establish global automation standards adopted by 5 regions',
+      metricType: 'NUMBER',
+      targetValue: 5,
+      currentValue: 0,
+      unit: ' regions',
+      objectiveId: davidQ2Excellence.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Achieve industry recognition through 3 major conference presentations',
+      metricType: 'NUMBER',
+      targetValue: 3,
+      currentValue: 0,
+      unit: ' presentations',
+      objectiveId: davidQ2Excellence.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Publish 2 white papers on automation excellence',
+      metricType: 'NUMBER',
+      targetValue: 2,
+      currentValue: 0,
+      unit: ' white papers',
+      objectiveId: davidQ2Excellence.id,
+      ownerId: davidBurke.id,
+    },
+  })
+
+  // Kevin Hughes Q2 2026 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Patent 2 breakthrough automation technologies',
+      metricType: 'NUMBER',
+      targetValue: 2,
+      currentValue: 0,
+      unit: ' patents',
+      objectiveId: kevinQ2Innovation.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Lead research collaboration with 3 universities',
+      metricType: 'NUMBER',
+      targetValue: 3,
+      currentValue: 0,
+      unit: ' universities',
+      objectiveId: kevinQ2Innovation.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Prototype next-generation testing tools',
+      metricType: 'NUMBER',
+      targetValue: 4,
+      currentValue: 0,
+      unit: ' prototypes',
+      objectiveId: kevinQ2Innovation.id,
+      ownerId: kevinHughes.id,
+    },
+  })
+
+  // Shelley Rogan Q2 2026 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Integrate 20+ automation tools into unified ecosystem',
+      metricType: 'NUMBER',
+      targetValue: 20,
+      currentValue: 0,
+      unit: ' tools',
+      objectiveId: shelleyQ2Ecosystem.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Establish marketplace for automation components',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: shelleyQ2Ecosystem.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Achieve 500+ active users of automation ecosystem',
+      metricType: 'NUMBER',
+      targetValue: 500,
+      currentValue: 0,
+      unit: ' users',
+      objectiveId: shelleyQ2Ecosystem.id,
+      ownerId: shelleyRogan.id,
+    },
+  })
+
+  // Allan Pettigrew Q2 2026 Key Results
+  await prisma.keyResult.create({
+    data: {
+      description: 'Research quantum computing applications in testing',
+      metricType: 'PERCENTAGE',
+      targetValue: 100,
+      currentValue: 0,
+      objectiveId: allanQ2FutureTech.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Prototype 3 emerging technology integrations',
+      metricType: 'NUMBER',
+      targetValue: 3,
+      currentValue: 0,
+      unit: ' prototypes',
+      objectiveId: allanQ2FutureTech.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
+  await prisma.keyResult.create({
+    data: {
+      description: 'Establish partnerships with 2 technology vendors',
+      metricType: 'NUMBER',
+      targetValue: 2,
+      currentValue: 0,
+      unit: ' partnerships',
+      objectiveId: allanQ2FutureTech.id,
+      ownerId: allanPettigrew.id,
+    },
+  })
+
   console.log('Database seeded successfully with comprehensive QA Automation team data!')
   console.log('='.repeat(60))
   console.log('CYCLES CREATED:')

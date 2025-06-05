@@ -11,6 +11,15 @@ A modern, full-featured Objectives and Key Results (OKR) management system built
 - **Cycles**: Time-based OKR periods (quarters, years)
 - **Hierarchical Objectives**: Support for parent-child objective relationships
 
+### 🎯 Missed OKR Tracking & Deadline Extension System
+- **Intelligent Risk Assessment**: Automatic detection of at-risk and missed objectives
+- **Target Tracking Dashboard**: Real-time statistics for total, on-track, at-risk, missed, and extended objectives
+- **Smart Filtering**: Quick filters for missed targets, at-risk objectives, and extended deadlines
+- **Deadline Extension Management**: Professional extension workflow with audit trails
+- **Visual Risk Indicators**: Color-coded badges (🔴 Missed, 🟡 At Risk, 🟠 Extended)
+- **Notification System**: Automatic notifications for deadline extensions
+- **Audit Trail**: Complete tracking of who extended deadlines and when
+
 ### User Management & Authentication
 - **Role-Based Access Control**: Admin, Manager, and Staff roles
 - **Secure Authentication**: NextAuth.js with credential-based login
@@ -39,6 +48,7 @@ A modern, full-featured Objectives and Key Results (OKR) management system built
 - **ORM**: Prisma
 - **Authentication**: NextAuth.js
 - **Icons**: Lucide React
+- **Notifications**: Built-in notification system for deadline extensions
 
 ## 📋 Prerequisites
 
@@ -106,17 +116,21 @@ The system comes with pre-configured test accounts:
 - User management
 - Department management
 - Global OKR oversight
+- **Deadline extension authority**
 
 ### Manager
 - Team OKRs oversight
 - Department-level analytics
 - User creation within department
+- **Deadline extension authority for team objectives**
+- **Access to missed target analytics**
 
 ### Staff
 - Personal OKR management
 - Progress updates
 - Individual analytics
 - Read-only team visibility
+- **View missed target indicators on own objectives**
 
 ## 📱 Application Structure
 
@@ -151,27 +165,31 @@ The system comes with pre-configured test accounts:
 ### Role-Based Experience
 The application automatically adapts based on user roles:
 
-- **Staff users** see only their personal objectives
-- **Managers** can view and manage their team's OKRs
-- **Admins** have full system access
+- **Staff users** see only their personal objectives with risk indicators
+- **Managers** can view and manage their team's OKRs and extend deadlines
+- **Admins** have full system access including deadline extension authority
 
 ### Progress Tracking
 - Automatic progress calculation based on key results
 - Color-coded indicators (Green: 80%+, Amber: 60-79%, Red: <60%)
+- **Risk assessment with missed target detection**
+- **At-risk objective identification**
 - Historical progress updates
 - Real-time dashboard metrics
 
+### Missed OKR Management
+- **Intelligent detection** of missed and at-risk objectives
+- **Professional extension workflow** with proper documentation
+- **Audit trail** for all deadline changes
+- **Notification system** for stakeholders
+- **Visual indicators** for quick status identification
+
 ### Team OKRs
 - Filter objectives by team member
-- Quick status filters (In Progress, At Risk, Completed)
+- Quick status filters (In Progress, At Risk, Completed, **Missed**, **Extended**)
 - Team analytics and progress overview
 - Individual team member cards with detailed information
-
-### Professional UI
-- Consistent navigation across all pages
-- Responsive design for all screen sizes
-- Professional color scheme and typography
-- Smooth animations and transitions
+- **Manager tools for deadline extension**
 
 ## 🔄 Cycles Explained
 
@@ -327,3 +345,103 @@ For support and questions:
 ---
 
 Built with ❤️ for effective OKR management
+
+## 🎯 Missed OKR Tracking & Deadline Extension System
+
+### Overview
+The system includes comprehensive functionality for tracking missed objectives and managing deadline extensions with proper governance and audit trails.
+
+### 📊 Database Schema Enhancements
+
+#### New Objective Fields
+- **wasMissed**: Boolean flag indicating if the objective was missed
+- **originalEndDate**: Stores the original cycle end date when extended
+- **extendedDeadline**: New deadline when extended
+- **missedReason**: Reason for missing the original deadline
+- **extensionReason**: Justification for the deadline extension
+- **dateExtended**: Timestamp when the extension was granted
+- **extendedBy**: User ID who granted the extension
+- **extendedByUser**: Relationship to the user who granted the extension
+
+#### New Status
+- **EXTENDED**: Added to the Status enum for extended objectives
+
+### 🔧 API Endpoints
+
+#### `/api/objectives/[id]/extend` (POST)
+- Allows managers and admins to extend objective deadlines
+- Validates permissions (only MANAGER and ADMIN roles)
+- Updates objective with extension details
+- Creates notifications for objective owners
+- Records complete audit trail
+
+### 🎨 Enhanced UI Components
+
+#### Target Tracking & Risk Management Dashboard
+- **Statistics Cards**: Real-time metrics for Total, On Track, At Risk, Missed, and Extended objectives
+- **Smart Filtering**: 
+  - Show Missed Targets Only
+  - Show At Risk Only
+  - Show Extended Only
+  - Clear all filters functionality
+- **Real-time Calculations**: Dynamic statistics based on current filters
+
+#### ExtendDeadlineModal Component
+- Professional modal interface for extending deadlines
+- Objective summary with current progress display
+- Captures missed reason (optional) and extension justification (required)
+- Date picker with validation (must be future date)
+- Warning notices about extension implications
+- Loading states and comprehensive form validation
+
+#### Enhanced Objective Cards
+- **🔴 Missed Target Badge**: Red indicator with "Extend Deadline" button for managers
+- **🟡 At Risk Badge**: Amber indicator showing percentage behind schedule
+- **🟠 Extended Badge**: Orange indicator showing new deadline with details
+- **Smart Button Placement**: Context-aware action buttons based on objective status
+
+### 📈 Business Logic Features
+
+#### Intelligent Risk Assessment Algorithm
+- **Active Cycles**: Progress gap analysis
+  - >10% gap from expected progress = At Risk
+  - >20% gap from expected progress = Missed Target
+- **Completed Cycles**: Achievement rate analysis
+  - <80% achievement = Missed
+  - 80-90% achievement = At Risk
+- **Time Sensitivity**: Risk increases as more time elapses without progress
+- **Multiple Key Results**: Aggregated achievement calculation
+- **Extended Deadline Support**: Uses extended deadline when available
+
+#### Missed Target Detection
+- **Time-based Analysis**: Compares actual vs expected progress based on cycle timeline
+- **Risk Levels**: LOW, MEDIUM, HIGH, CRITICAL based on progress gap
+- **Completed Cycle Logic**: Different calculation for past cycles based on final achievement
+
+### 🔐 Permission System
+
+#### Role-based Access Control
+- **STAFF**: Can view their own objectives and missed target indicators
+- **MANAGER/ADMIN**: Can extend deadlines, view all objectives, manage extensions
+- **Audit Trail**: All extensions logged with user ID and timestamp
+
+### 📢 Notification System
+- Automatic notifications to objective owners when deadlines are extended
+- Action URLs directing users to relevant filtered views
+- Real-time updates across the application
+
+### 🎯 How the System Works
+
+1. **Detection**: System automatically calculates missed targets based on time elapsed vs progress made
+2. **Visualization**: Objectives show clear visual indicators (🔴 missed, 🟡 at risk, 🟠 extended)
+3. **Action**: Managers can click "Extend Deadline" on missed objectives
+4. **Documentation**: Extension modal captures both why it was missed and why extension is justified
+5. **Tracking**: All extensions are recorded with full audit trail
+6. **Notification**: Objective owners are automatically notified of new deadlines
+
+### Benefits
+- **Accountability**: Clear tracking of missed objectives with reasons
+- **Flexibility**: Ability to adapt to changing circumstances with proper governance
+- **Transparency**: Complete audit trail of all deadline changes
+- **Proactive Management**: Early warning system for at-risk objectives
+- **Professional Workflow**: Structured process for handling missed deadlines

@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import DashboardHeader from '@/components/layout/DashboardHeader'
+import ExtendDeadlineModal from '@/components/ui/ExtendDeadlineModal'
 import { 
   Plus, 
   Target, 
@@ -23,7 +24,11 @@ import {
   Search,
   Filter,
   Edit,
-  Trash2
+  Trash2,
+  XCircle,
+  AlertTriangle,
+  RefreshCw,
+  Eye
 } from 'lucide-react'
 
 interface Objective {
@@ -52,8 +57,20 @@ interface Objective {
     }
   }>
   cycle: {
+    id: string
     name: string
+    startDate: string
+    endDate: string
+    active: boolean
   }
+  // New fields for deadline extensions
+  wasMissed?: boolean
+  originalEndDate?: string
+  extendedDeadline?: string
+  extensionReason?: string
+  missedReason?: string
+  dateExtended?: string
+  extendedBy?: string
 }
 
 interface User {
@@ -70,6 +87,15 @@ interface Cycle {
   active: boolean
 }
 
+interface MissedTargetInfo {
+  isMissed: boolean
+  isAtRisk: boolean
+  expectedProgress: number
+  progressGap: number
+  daysRemaining: number
+  riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
+}
+
 export default function ManagePage() {
   const [objectives, setObjectives] = useState<Objective[]>([])
   const [users, setUsers] = useState<User[]>([])
@@ -83,6 +109,15 @@ export default function ManagePage() {
   const [filterStatus, setFilterStatus] = useState('')
   const [filterUser, setFilterUser] = useState('')
   const [searchTerm, setSearchTerm] = useState('')
+  
+  // New states for deadline extension functionality
+  const [showExtendModal, setShowExtendModal] = useState(false)
+  const [objectiveToExtend, setObjectiveToExtend] = useState<Objective | null>(null)
+  const [isExtending, setIsExtending] = useState(false)
+  const [showMissedOnly, setShowMissedOnly] = useState(false)
+  const [showAtRiskOnly, setShowAtRiskOnly] = useState(false)
+  const [showExtendedOnly, setShowExtendedOnly] = useState(false)
+  
   const { data: session } = useSession()
 
   // Form states
@@ -121,6 +156,78 @@ export default function ManagePage() {
       setFilterUser(session.user.id)
     }
   }, [session])
+
+  // Calculate missed target information for an objective
+  const calculateMissedTargetInfo = (objective: Objective): MissedTargetInfo => {
+    const now = new Date()
+    const cycleStart = new Date(objective.cycle.startDate)
+    const cycleEnd = new Date(objective.cycle.endDate)
+    
+    // Use extended deadline if available
+    const effectiveEndDate = objective.extendedDeadline ? new Date(objective.extendedDeadline) : cycleEnd
+    
+    // Calculate time progress through the cycle
+    const totalCycleDuration = effectiveEndDate.getTime() - cycleStart.getTime()
+    const elapsedTime = now.getTime() - cycleStart.getTime()
+    const timeProgress = Math.max(0, Math.min(100, (elapsedTime / totalCycleDuration) * 100))
+    
+    // For completed cycles (past cycles), use 100% time progress
+    const isCompletedCycle = now > effectiveEndDate
+    const effectiveTimeProgress = isCompletedCycle ? 100 : timeProgress
+    
+    // Expected progress should match time progress for linear progression
+    const expectedProgress = effectiveTimeProgress
+    const progressGap = expectedProgress - objective.progress
+    
+    // Calculate days remaining
+    const daysRemaining = Math.max(0, Math.ceil((effectiveEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)))
+    
+    // For completed cycles, determine missed targets based on final achievement
+    if (isCompletedCycle) {
+      const totalAchievementRate = objective.keyResults.length > 0 
+        ? objective.keyResults.reduce((sum, kr) => {
+            const rate = kr.targetValue > 0 ? (kr.currentValue / kr.targetValue) * 100 : 100
+            return sum + Math.min(rate, 100)
+          }, 0) / objective.keyResults.length
+        : objective.progress
+      
+      const isMissed = totalAchievementRate < 80
+      const isAtRisk = totalAchievementRate < 90 && !isMissed
+      
+      let riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' = 'LOW'
+      if (totalAchievementRate < 60) riskLevel = 'CRITICAL'
+      else if (totalAchievementRate < 70) riskLevel = 'HIGH'
+      else if (totalAchievementRate < 80) riskLevel = 'MEDIUM'
+      
+      return {
+        isMissed,
+        isAtRisk,
+        expectedProgress: 100,
+        progressGap: 100 - totalAchievementRate,
+        daysRemaining: 0,
+        riskLevel
+      }
+    }
+    
+    // For active/future cycles, use the original logic
+    const isMissed = progressGap > 20 && effectiveTimeProgress > 50
+    const isAtRisk = progressGap > 10 && effectiveTimeProgress > 25
+    
+    // Calculate risk level
+    let riskLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL' = 'LOW'
+    if (progressGap > 30) riskLevel = 'CRITICAL'
+    else if (progressGap > 20) riskLevel = 'HIGH'
+    else if (progressGap > 10) riskLevel = 'MEDIUM'
+    
+    return {
+      isMissed,
+      isAtRisk,
+      expectedProgress,
+      progressGap,
+      daysRemaining,
+      riskLevel
+    }
+  }
 
   const fetchData = async () => {
     try {
@@ -419,8 +526,81 @@ export default function ManagePage() {
                          objective.owner.name.toLowerCase().includes(searchTerm.toLowerCase())
     const matchesStatus = !filterStatus || objective.status === filterStatus
     const matchesUser = !filterUser || objective.ownerId === filterUser
+    
+    // New missed target filters
+    if (showMissedOnly) {
+      const missedInfo = calculateMissedTargetInfo(objective)
+      if (!missedInfo.isMissed) return false
+    }
+    
+    if (showAtRiskOnly) {
+      const missedInfo = calculateMissedTargetInfo(objective)
+      if (!missedInfo.isAtRisk) return false
+    }
+    
+    if (showExtendedOnly) {
+      if (!objective.wasMissed || !objective.extendedDeadline) return false
+    }
+    
     return matchesSearch && matchesStatus && matchesUser
   })
+
+  // Calculate statistics for the current filtered objectives
+  const objectiveStats = {
+    total: filteredObjectives.length,
+    missed: filteredObjectives.filter(obj => calculateMissedTargetInfo(obj).isMissed).length,
+    atRisk: filteredObjectives.filter(obj => calculateMissedTargetInfo(obj).isAtRisk).length,
+    extended: filteredObjectives.filter(obj => obj.wasMissed && obj.extendedDeadline).length,
+    onTrack: filteredObjectives.filter(obj => {
+      const info = calculateMissedTargetInfo(obj)
+      return !info.isMissed && !info.isAtRisk
+    }).length
+  }
+
+  // Handle extending deadline
+  const handleExtendDeadline = async (data: {
+    objectiveId: string
+    extendedDeadline: string
+    extensionReason: string
+    missedReason?: string
+  }) => {
+    setIsExtending(true)
+    try {
+      const response = await fetch(`/api/objectives/${data.objectiveId}/extend`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          extendedDeadline: data.extendedDeadline,
+          extensionReason: data.extensionReason,
+          missedReason: data.missedReason
+        }),
+      })
+
+      if (response.ok) {
+        setShowExtendModal(false)
+        setObjectiveToExtend(null)
+        await fetchData() // Refresh data
+        // Show success message (you could add a toast notification here)
+      } else {
+        const error = await response.json()
+        console.error('Failed to extend deadline:', error)
+        // Show error message
+      }
+    } catch (error) {
+      console.error('Error extending deadline:', error)
+      // Show error message
+    } finally {
+      setIsExtending(false)
+    }
+  }
+
+  // Open extend deadline modal
+  const openExtendModal = (objective: Objective) => {
+    setObjectiveToExtend(objective)
+    setShowExtendModal(true)
+  }
 
   if (loading) {
     return (
@@ -559,6 +739,9 @@ export default function ManagePage() {
                   }
                   setFilterStatus('')
                   setSearchTerm('')
+                  setShowMissedOnly(false)
+                  setShowAtRiskOnly(false)
+                  setShowExtendedOnly(false)
                 }}
                 className="text-slate-600 hover:bg-slate-50 hover:text-slate-700"
               >
@@ -573,6 +756,9 @@ export default function ManagePage() {
                   }
                   setFilterStatus('IN_PROGRESS')
                   setSearchTerm('')
+                  setShowMissedOnly(false)
+                  setShowAtRiskOnly(false)
+                  setShowExtendedOnly(false)
                 }}
                 className="text-blue-600 hover:bg-blue-50 hover:text-blue-700"
               >
@@ -587,6 +773,9 @@ export default function ManagePage() {
                   }
                   setFilterStatus('AT_RISK')
                   setSearchTerm('')
+                  setShowMissedOnly(false)
+                  setShowAtRiskOnly(false)
+                  setShowExtendedOnly(false)
                 }}
                 className="text-amber-600 hover:bg-amber-50 hover:text-amber-700"
               >
@@ -601,10 +790,116 @@ export default function ManagePage() {
                   }
                   setFilterStatus('COMPLETED')
                   setSearchTerm('')
+                  setShowMissedOnly(false)
+                  setShowAtRiskOnly(false)
+                  setShowExtendedOnly(false)
                 }}
                 className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
               >
                 Completed
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Missed Target Filters & Statistics */}
+        <Card className="bg-white shadow-sm border-slate-200">
+          <CardHeader className="border-b border-slate-100 pb-4">
+            <CardTitle className="flex items-center text-lg font-semibold text-slate-900">
+              <AlertTriangle className="w-5 h-5 mr-2 text-red-600" />
+              Target Tracking & Risk Management
+            </CardTitle>
+            <CardDescription>
+              Monitor missed targets and manage deadline extensions
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            {/* Statistics Dashboard */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+              <div className="bg-slate-50 p-4 rounded-lg border">
+                <div className="text-2xl font-bold text-slate-900">{objectiveStats.total}</div>
+                <div className="text-sm text-slate-600">Total</div>
+              </div>
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <div className="text-2xl font-bold text-green-700">{objectiveStats.onTrack}</div>
+                <div className="text-sm text-green-600">On Track</div>
+              </div>
+              <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
+                <div className="text-2xl font-bold text-amber-700">{objectiveStats.atRisk}</div>
+                <div className="text-sm text-amber-600">At Risk</div>
+              </div>
+              <div className="bg-red-50 p-4 rounded-lg border border-red-200">
+                <div className="text-2xl font-bold text-red-700">{objectiveStats.missed}</div>
+                <div className="text-sm text-red-600">Missed</div>
+              </div>
+              <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
+                <div className="text-2xl font-bold text-orange-700">{objectiveStats.extended}</div>
+                <div className="text-sm text-orange-600">Extended</div>
+              </div>
+            </div>
+
+            {/* Target Filters */}
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="font-medium text-slate-700">Target filters:</span>
+              <Button
+                variant={showMissedOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setShowMissedOnly(!showMissedOnly)
+                  setShowAtRiskOnly(false)
+                  setShowExtendedOnly(false)
+                  setFilterStatus('')
+                }}
+                className={showMissedOnly 
+                  ? "bg-red-600 hover:bg-red-700 text-white" 
+                  : "text-red-600 hover:bg-red-50 hover:text-red-700"
+                }
+              >
+                <XCircle className="w-4 h-4 mr-1" />
+                Show Missed Targets Only
+              </Button>
+              <Button
+                variant={showAtRiskOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setShowAtRiskOnly(!showAtRiskOnly)
+                  setShowMissedOnly(false)
+                  setShowExtendedOnly(false)
+                  setFilterStatus('')
+                }}
+                className={showAtRiskOnly 
+                  ? "bg-amber-600 hover:bg-amber-700 text-white" 
+                  : "text-amber-600 hover:bg-amber-50 hover:text-amber-700"
+                }
+              >
+                <AlertTriangle className="w-4 h-4 mr-1" />
+                Show At Risk Only
+              </Button>
+              <Button
+                variant={showExtendedOnly ? "default" : "outline"}
+                size="sm"
+                onClick={() => {
+                  setShowExtendedOnly(!showExtendedOnly)
+                  setShowMissedOnly(false)
+                  setShowAtRiskOnly(false)
+                  setFilterStatus('')
+                }}
+                className={showExtendedOnly 
+                  ? "bg-orange-600 hover:bg-orange-700 text-white" 
+                  : "text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                }
+              >
+                <Clock className="w-4 h-4 mr-1" />
+                Show Extended Only
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchData()}
+                className="text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+              >
+                <RefreshCw className="w-4 h-4 mr-1" />
+                Refresh
               </Button>
             </div>
           </CardContent>
@@ -1055,6 +1350,67 @@ export default function ManagePage() {
                         <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(objective.status)}`}>
                           {objective.status.replace('_', ' ')}
                         </span>
+                        
+                        {/* Missed Target Indicators */}
+                        {(() => {
+                          const missedInfo = calculateMissedTargetInfo(objective)
+                          if (missedInfo.isMissed) {
+                            return (
+                              <div className="flex items-center space-x-2">
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 border border-red-200 flex items-center">
+                                  <XCircle className="w-3 h-3 mr-1" />
+                                  Missed Target
+                                </span>
+                                {(session?.user?.role === 'MANAGER' || session?.user?.role === 'ADMIN') && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      openExtendModal(objective)
+                                    }}
+                                    className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 border-orange-200 text-xs px-2 py-1 h-auto"
+                                    title="Extend deadline"
+                                  >
+                                    <Clock className="w-3 h-3 mr-1" />
+                                    Extend Deadline
+                                  </Button>
+                                )}
+                              </div>
+                            )
+                          } else if (missedInfo.isAtRisk) {
+                            return (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200 flex items-center">
+                                <AlertTriangle className="w-3 h-3 mr-1" />
+                                At Risk ({Math.round(missedInfo.progressGap)}% behind)
+                              </span>
+                            )
+                          } else if (objective.wasMissed && objective.extendedDeadline) {
+                            return (
+                              <div className="flex items-center space-x-2">
+                                <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200 flex items-center">
+                                  <Clock className="w-3 h-3 mr-1" />
+                                  Extended to {new Date(objective.extendedDeadline).toLocaleDateString()}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    // Show extension details
+                                    alert(`Extension Reason: ${objective.extensionReason}\n${objective.missedReason ? `Missed Reason: ${objective.missedReason}` : ''}`)
+                                  }}
+                                  className="text-orange-600 hover:text-orange-700 hover:bg-orange-50 p-1 h-auto"
+                                  title="View extension details"
+                                >
+                                  <Eye className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            )
+                          }
+                          return null
+                        })()}
+                        
                         {/* Edit and Delete buttons for managers */}
                         {(session?.user?.role === 'MANAGER' || session?.user?.role === 'ADMIN') && (
                           <div className="flex items-center space-x-2 ml-4">
@@ -1243,6 +1599,18 @@ export default function ManagePage() {
           </div>
         </div>
       </div>
+
+      {/* Extend Deadline Modal */}
+      <ExtendDeadlineModal
+        objective={objectiveToExtend}
+        isOpen={showExtendModal}
+        onClose={() => {
+          setShowExtendModal(false)
+          setObjectiveToExtend(null)
+        }}
+        onExtend={handleExtendDeadline}
+        isLoading={isExtending}
+      />
     </div>
   )
 } 
