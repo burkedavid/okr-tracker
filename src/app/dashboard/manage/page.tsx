@@ -118,6 +118,7 @@ export default function ManagePage() {
   const [showMissedOnly, setShowMissedOnly] = useState(false)
   const [showAtRiskOnly, setShowAtRiskOnly] = useState(false)
   const [showExtendedOnly, setShowExtendedOnly] = useState(false)
+  const [showRecentlyCreated, setShowRecentlyCreated] = useState(false)
   
   const { data: session } = useSession()
 
@@ -575,6 +576,14 @@ export default function ManagePage() {
       if (!objective.wasMissed || !objective.extendedDeadline) return false
     }
     
+    // Recently created filter (objectives created in the last 7 days)
+    if (showRecentlyCreated) {
+      const oneWeekAgo = new Date()
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+      const objectiveCreatedDate = new Date(objective.cycle.startDate) // Using cycle start as proxy for creation date
+      if (objectiveCreatedDate < oneWeekAgo) return false
+    }
+    
     return matchesSearch && matchesStatus && matchesUser
   })
 
@@ -668,6 +677,19 @@ export default function ManagePage() {
           {
             label: 'Add Key Result',
             onClick: () => {
+              // Clear any pre-selected objective when opening from main menu
+              setKeyResultForm({
+                description: '',
+                metricType: 'NUMBER',
+                targetValue: '',
+                unit: '',
+                objectiveId: '', // Clear pre-selection
+                ownerId: ''
+              })
+              // Clear search and filter states
+              setKeyResultObjectiveSearch('')
+              setKeyResultOwnerFilter('')
+              setKeyResultCycleFilter('')
               setShowKeyResultForm(true)
             },
             variant: 'secondary',
@@ -762,82 +784,7 @@ export default function ManagePage() {
           </CardContent>
         </Card>
 
-        {/* Quick Filters */}
-        <Card className="bg-white shadow-sm border-slate-200">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-2 text-sm">
-              <span className="font-medium text-slate-700">Quick filters:</span>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (session?.user?.role !== 'STAFF') {
-                    setFilterUser('')
-                  }
-                  setFilterStatus('')
-                  setSearchTerm('')
-                  setShowMissedOnly(false)
-                  setShowAtRiskOnly(false)
-                  setShowExtendedOnly(false)
-                }}
-                className="text-slate-600 hover:bg-slate-50 hover:text-slate-700"
-              >
-                All Objectives
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (session?.user?.role !== 'STAFF') {
-                    setFilterUser('')
-                  }
-                  setFilterStatus('IN_PROGRESS')
-                  setSearchTerm('')
-                  setShowMissedOnly(false)
-                  setShowAtRiskOnly(false)
-                  setShowExtendedOnly(false)
-                }}
-                className="text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-              >
-                In Progress
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (session?.user?.role !== 'STAFF') {
-                    setFilterUser('')
-                  }
-                  setFilterStatus('AT_RISK')
-                  setSearchTerm('')
-                  setShowMissedOnly(false)
-                  setShowAtRiskOnly(false)
-                  setShowExtendedOnly(false)
-                }}
-                className="text-amber-600 hover:bg-amber-50 hover:text-amber-700"
-              >
-                At Risk
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  if (session?.user?.role !== 'STAFF') {
-                    setFilterUser('')
-                  }
-                  setFilterStatus('COMPLETED')
-                  setSearchTerm('')
-                  setShowMissedOnly(false)
-                  setShowAtRiskOnly(false)
-                  setShowExtendedOnly(false)
-                }}
-                className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
-              >
-                Completed
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Quick Filters - REMOVED */}
 
         {/* Missed Target Filters & Statistics */}
         <Card className="bg-white shadow-sm border-slate-200">
@@ -876,68 +823,148 @@ export default function ManagePage() {
             </div>
 
             {/* Target Filters */}
-            <div className="flex items-center space-x-2 text-sm">
-              <span className="font-medium text-slate-700">Target filters:</span>
-              <Button
-                variant={showMissedOnly ? "default" : "outline"}
-                size="sm"
-                onClick={() => {
-                  setShowMissedOnly(!showMissedOnly)
-                  setShowAtRiskOnly(false)
-                  setShowExtendedOnly(false)
-                  setFilterStatus('')
-                }}
-                className={showMissedOnly 
-                  ? "bg-red-600 hover:bg-red-700 text-white" 
-                  : "text-red-600 hover:bg-red-50 hover:text-red-700"
-                }
-              >
-                <XCircle className="w-4 h-4 mr-1" />
-                Show Missed Targets Only
-              </Button>
-              <Button
-                variant={showAtRiskOnly ? "default" : "outline"}
-                size="sm"
-                onClick={() => {
-                  setShowAtRiskOnly(!showAtRiskOnly)
-                  setShowMissedOnly(false)
-                  setShowExtendedOnly(false)
-                  setFilterStatus('')
-                }}
-                className={showAtRiskOnly 
-                  ? "bg-amber-600 hover:bg-amber-700 text-white" 
-                  : "text-amber-600 hover:bg-amber-50 hover:text-amber-700"
-                }
-              >
-                <AlertTriangle className="w-4 h-4 mr-1" />
-                Show At Risk Only
-              </Button>
-              <Button
-                variant={showExtendedOnly ? "default" : "outline"}
-                size="sm"
-                onClick={() => {
-                  setShowExtendedOnly(!showExtendedOnly)
-                  setShowMissedOnly(false)
-                  setShowAtRiskOnly(false)
-                  setFilterStatus('')
-                }}
-                className={showExtendedOnly 
-                  ? "bg-orange-600 hover:bg-orange-700 text-white" 
-                  : "text-orange-600 hover:bg-orange-50 hover:text-orange-700"
-                }
-              >
-                <Clock className="w-4 h-4 mr-1" />
-                Show Extended Only
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => fetchData()}
-                className="text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-              >
-                <RefreshCw className="w-4 h-4 mr-1" />
-                Refresh
-              </Button>
+            <div className="space-y-4">
+              {/* Status Filters */}
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="font-medium text-slate-700">Status filters:</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (session?.user?.role !== 'STAFF') {
+                      setFilterUser('')
+                    }
+                    setFilterStatus('')
+                    setSearchTerm('')
+                    setShowMissedOnly(false)
+                    setShowAtRiskOnly(false)
+                    setShowExtendedOnly(false)
+                    setShowRecentlyCreated(false)
+                  }}
+                  className="text-slate-600 hover:bg-slate-50 hover:text-slate-700"
+                >
+                  All Objectives
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (session?.user?.role !== 'STAFF') {
+                      setFilterUser('')
+                    }
+                    setFilterStatus('IN_PROGRESS')
+                    setSearchTerm('')
+                    setShowMissedOnly(false)
+                    setShowAtRiskOnly(false)
+                    setShowExtendedOnly(false)
+                    setShowRecentlyCreated(false)
+                  }}
+                  className="text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                >
+                  In Progress
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (session?.user?.role !== 'STAFF') {
+                      setFilterUser('')
+                    }
+                    setFilterStatus('COMPLETED')
+                    setSearchTerm('')
+                    setShowMissedOnly(false)
+                    setShowAtRiskOnly(false)
+                    setShowExtendedOnly(false)
+                    setShowRecentlyCreated(false)
+                  }}
+                  className="text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
+                >
+                  Completed
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    if (session?.user?.role !== 'STAFF') {
+                      setFilterUser('')
+                    }
+                    setFilterStatus('')
+                    setSearchTerm('')
+                    setShowMissedOnly(false)
+                    setShowAtRiskOnly(false)
+                    setShowExtendedOnly(false)
+                    setShowRecentlyCreated(!showRecentlyCreated)
+                  }}
+                  className="text-purple-600 hover:bg-purple-50 hover:text-purple-700"
+                >
+                  Recently Created
+                </Button>
+              </div>
+              
+              {/* Target Filters */}
+              <div className="flex items-center space-x-2 text-sm">
+                <span className="font-medium text-slate-700">Target filters:</span>
+                <Button
+                  variant={showMissedOnly ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setShowMissedOnly(!showMissedOnly)
+                    setShowAtRiskOnly(false)
+                    setShowExtendedOnly(false)
+                    setFilterStatus('')
+                  }}
+                  className={showMissedOnly 
+                    ? "bg-red-600 hover:bg-red-700 text-white" 
+                    : "text-red-600 hover:bg-red-50 hover:text-red-700"
+                  }
+                >
+                  <XCircle className="w-4 h-4 mr-1" />
+                  Show Missed Targets Only
+                </Button>
+                <Button
+                  variant={showAtRiskOnly ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setShowAtRiskOnly(!showAtRiskOnly)
+                    setShowMissedOnly(false)
+                    setShowExtendedOnly(false)
+                    setFilterStatus('')
+                  }}
+                  className={showAtRiskOnly 
+                    ? "bg-amber-600 hover:bg-amber-700 text-white" 
+                    : "text-amber-600 hover:bg-amber-50 hover:text-amber-700"
+                  }
+                >
+                  <AlertTriangle className="w-4 h-4 mr-1" />
+                  Show At Risk Only
+                </Button>
+                <Button
+                  variant={showExtendedOnly ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => {
+                    setShowExtendedOnly(!showExtendedOnly)
+                    setShowMissedOnly(false)
+                    setShowAtRiskOnly(false)
+                    setFilterStatus('')
+                  }}
+                  className={showExtendedOnly 
+                    ? "bg-orange-600 hover:bg-orange-700 text-white" 
+                    : "text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                  }
+                >
+                  <Clock className="w-4 h-4 mr-1" />
+                  Show Extended Only
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fetchData()}
+                  className="text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                >
+                  <RefreshCw className="w-4 h-4 mr-1" />
+                  Refresh
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -2335,4 +2362,6 @@ export default function ManagePage() {
     </div>
   )
 } 
+
+
 
