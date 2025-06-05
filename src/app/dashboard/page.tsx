@@ -19,7 +19,9 @@ import {
   ArrowRight,
   Zap,
   User,
-  Home
+  Home,
+  Clock,
+  AlertTriangle
 } from 'lucide-react'
 
 interface Objective {
@@ -43,7 +45,12 @@ interface Objective {
   }>
   cycle: {
     name: string
+    startDate: string
+    endDate: string
   }
+  // Extended deadline fields
+  extendedDeadline?: string
+  wasMissed?: boolean
 }
 
 export default function DashboardPage() {
@@ -86,7 +93,19 @@ export default function DashboardPage() {
     }
     // ADMIN users see all objectives by default
 
-    setObjectives(filteredObjectives)
+    // Sort objectives by deadline (most urgent first)
+    const sortedObjectives = filteredObjectives.sort((a, b) => {
+      const getEffectiveDeadline = (obj: Objective) => {
+        return obj.extendedDeadline ? new Date(obj.extendedDeadline) : new Date(obj.cycle.endDate)
+      }
+      
+      const deadlineA = getEffectiveDeadline(a)
+      const deadlineB = getEffectiveDeadline(b)
+      
+      return deadlineA.getTime() - deadlineB.getTime()
+    })
+
+    setObjectives(sortedObjectives)
   }, [allObjectives, session, viewMode])
 
   const stats = {
@@ -115,9 +134,56 @@ export default function DashboardPage() {
       'NOT_STARTED': 'bg-slate-100 text-slate-700 border-slate-200',
       'IN_PROGRESS': 'bg-blue-100 text-blue-700 border-blue-200',
       'COMPLETED': 'bg-emerald-100 text-emerald-700 border-emerald-200',
-      'ON_HOLD': 'bg-amber-100 text-amber-700 border-amber-200'
+      'AT_RISK': 'bg-amber-100 text-amber-700 border-amber-200',
+      'EXTENDED': 'bg-orange-100 text-orange-700 border-orange-200'
     }
     return statusConfig[status as keyof typeof statusConfig] || statusConfig.NOT_STARTED
+  }
+
+  // Helper function to get effective deadline
+  const getEffectiveDeadline = (objective: Objective) => {
+    return objective.extendedDeadline ? new Date(objective.extendedDeadline) : new Date(objective.cycle.endDate)
+  }
+
+  // Helper function to calculate days until deadline
+  const getDaysUntilDeadline = (objective: Objective) => {
+    const deadline = getEffectiveDeadline(objective)
+    const now = new Date()
+    const diffTime = deadline.getTime() - now.getTime()
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    return diffDays
+  }
+
+  // Helper function to format deadline display
+  const formatDeadline = (objective: Objective) => {
+    const deadline = getEffectiveDeadline(objective)
+    const daysUntil = getDaysUntilDeadline(objective)
+    
+    if (daysUntil < 0) {
+      return {
+        text: `${Math.abs(daysUntil)} days overdue`,
+        color: 'text-red-600',
+        icon: AlertTriangle
+      }
+    } else if (daysUntil === 0) {
+      return {
+        text: 'Due today',
+        color: 'text-red-600',
+        icon: AlertTriangle
+      }
+    } else if (daysUntil <= 7) {
+      return {
+        text: `${daysUntil} days left`,
+        color: 'text-amber-600',
+        icon: Clock
+      }
+    } else {
+      return {
+        text: `${daysUntil} days left`,
+        color: 'text-slate-600',
+        icon: Clock
+      }
+    }
   }
 
   if (loading) {
@@ -263,7 +329,7 @@ export default function DashboardPage() {
                       ? 'My Objectives'
                       : session?.user?.role === 'MANAGER' && viewMode === 'personal'
                         ? 'My Objectives'
-                        : 'Recent Objectives'
+                        : 'Upcoming Deadlines'
                     }
                   </CardTitle>
                   <CardDescription className="text-slate-600">
@@ -271,7 +337,7 @@ export default function DashboardPage() {
                       ? 'Your personal OKR updates and progress'
                       : session?.user?.role === 'MANAGER' && viewMode === 'personal'
                         ? 'Your personal OKR updates and progress'
-                        : 'Your most recent OKR updates and progress'
+                        : 'Objectives ordered by deadline urgency'
                     }
                   </CardDescription>
                 </div>
@@ -282,48 +348,62 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-6">
-                {objectives.slice(0, 3).map((objective) => (
-                  <div key={objective.id} className={`p-6 rounded-xl border-2 transition-all duration-200 ${getProgressBg(objective.progress)}`}>
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex-1 space-y-3">
-                        <div className="flex items-center space-x-3">
-                          <h3 className="font-semibold text-slate-900 text-lg">
-                            {objective.title}
-                          </h3>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(objective.status)}`}>
-                            {objective.status.replace('_', ' ')}
-                          </span>
+                {objectives.slice(0, 3).map((objective) => {
+                  const deadlineInfo = formatDeadline(objective)
+                  const DeadlineIcon = deadlineInfo.icon
+                  
+                  return (
+                    <div key={objective.id} className={`p-6 rounded-xl border-2 transition-all duration-200 ${getProgressBg(objective.progress)}`}>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1 space-y-3">
+                          <div className="flex items-center space-x-3">
+                            <h3 className="font-semibold text-slate-900 text-lg">
+                              {objective.title}
+                            </h3>
+                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(objective.status)}`}>
+                              {objective.status.replace('_', ' ')}
+                            </span>
+                            {objective.extendedDeadline && (
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
+                                Extended
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-slate-600 leading-relaxed">
+                            {objective.description}
+                          </p>
+                          <div className="flex items-center space-x-6 text-sm text-slate-500">
+                            <span className="flex items-center space-x-2">
+                              <Users className="w-4 h-4" />
+                              <span>{objective.owner.name}</span>
+                            </span>
+                            <span className="flex items-center space-x-2">
+                              <Calendar className="w-4 h-4" />
+                              <span>{objective.cycle.name}</span>
+                            </span>
+                            <span className="flex items-center space-x-2">
+                              <BarChart3 className="w-4 h-4" />
+                              <span>{objective.keyResults.length} key results</span>
+                            </span>
+                            <span className={`flex items-center space-x-2 font-medium ${deadlineInfo.color}`}>
+                              <DeadlineIcon className="w-4 h-4" />
+                              <span>{deadlineInfo.text}</span>
+                            </span>
+                          </div>
                         </div>
-                        <p className="text-slate-600 leading-relaxed">
-                          {objective.description}
-                        </p>
-                        <div className="flex items-center space-x-6 text-sm text-slate-500">
-                          <span className="flex items-center space-x-2">
-                            <Users className="w-4 h-4" />
-                            <span>{objective.owner.name}</span>
-                          </span>
-                          <span className="flex items-center space-x-2">
-                            <Calendar className="w-4 h-4" />
-                            <span>{objective.cycle.name}</span>
-                          </span>
-                          <span className="flex items-center space-x-2">
-                            <BarChart3 className="w-4 h-4" />
-                            <span>{objective.keyResults.length} key results</span>
-                          </span>
+                        <div className="text-right ml-6">
+                          <div className={`text-3xl font-bold ${getProgressColor(objective.progress)} mb-1`}>
+                            {objective.progress}%
+                          </div>
+                          <div className="text-sm text-slate-500">progress</div>
                         </div>
                       </div>
-                      <div className="text-right ml-6">
-                        <div className={`text-3xl font-bold ${getProgressColor(objective.progress)} mb-1`}>
-                          {objective.progress}%
-                        </div>
-                        <div className="text-sm text-slate-500">progress</div>
+                      <div className="space-y-2">
+                        <Progress value={objective.progress} className="h-3 bg-white/50" />
                       </div>
                     </div>
-                    <div className="space-y-2">
-                      <Progress value={objective.progress} className="h-3 bg-white/50" />
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
                 {objectives.length === 0 && (
                   <div className="text-center py-16">
                     <div className="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
@@ -363,6 +443,9 @@ export default function DashboardPage() {
                 {objectives.slice(0, 4).map((objective) => 
                   objective.keyResults.slice(0, 1).map((kr) => {
                     const progress = (kr.currentValue / kr.targetValue) * 100
+                    const deadlineInfo = formatDeadline(objective)
+                    const DeadlineIcon = deadlineInfo.icon
+                    
                     return (
                       <div key={kr.id} className="p-4 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors duration-200 border border-slate-200">
                         <div className="flex items-start space-x-3">
@@ -382,6 +465,10 @@ export default function DashboardPage() {
                               <span className={`text-sm font-semibold ${getProgressColor(progress)}`}>
                                 {Math.round(progress)}%
                               </span>
+                            </div>
+                            <div className={`flex items-center space-x-1 text-xs ${deadlineInfo.color}`}>
+                              <DeadlineIcon className="w-3 h-3" />
+                              <span>{deadlineInfo.text}</span>
                             </div>
                             <Progress value={progress} className="h-2 bg-white" />
                           </div>
