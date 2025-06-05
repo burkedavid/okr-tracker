@@ -187,6 +187,13 @@ exports.Prisma.ObjectiveScalarFieldEnum = {
   type: 'type',
   status: 'status',
   weight: 'weight',
+  wasMissed: 'wasMissed',
+  originalEndDate: 'originalEndDate',
+  extendedDeadline: 'extendedDeadline',
+  extensionReason: 'extensionReason',
+  missedReason: 'missedReason',
+  dateExtended: 'dateExtended',
+  extendedBy: 'extendedBy',
   ownerId: 'ownerId',
   cycleId: 'cycleId',
   parentId: 'parentId',
@@ -278,7 +285,8 @@ exports.Status = exports.$Enums.Status = {
   IN_PROGRESS: 'IN_PROGRESS',
   AT_RISK: 'AT_RISK',
   COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED'
+  CANCELLED: 'CANCELLED',
+  EXTENDED: 'EXTENDED'
 };
 
 exports.MetricType = exports.$Enums.MetricType = {

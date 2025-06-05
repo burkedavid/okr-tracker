@@ -8,7 +8,27 @@ export async function GET() {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OKR Tracker API Documentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -16,185 +36,298 @@ export async function GET() {
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: #f8fafc;
+            color: var(--gray-800);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
         }
         
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
         }
         
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 3rem 2rem;
-            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 3rem;
             margin-bottom: 2rem;
             text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
         
         .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
         }
         
         .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            font-weight: 400;
         }
         
-        .endpoint-group {
-            background: white;
-            border-radius: 12px;
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
             margin-bottom: 2rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            overflow: hidden;
         }
         
-        .group-header {
-            background: #f1f5f9;
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
             padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
         }
         
-        .group-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: #1e293b;
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
             margin-bottom: 0.5rem;
         }
         
+        .stat-label {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+        
+        .endpoint-group {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .endpoint-group:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .group-header {
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .group-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.01em;
+        }
+        
         .group-description {
-            color: #64748b;
+            color: var(--gray-600);
+            font-size: 1.1rem;
         }
         
         .endpoint {
-            padding: 1.5rem;
-            border-bottom: 1px solid #f1f5f9;
+            padding: 2rem;
+            border-bottom: 1px solid var(--gray-100);
+            transition: background-color 0.2s ease;
         }
         
         .endpoint:last-child {
             border-bottom: none;
         }
         
+        .endpoint:hover {
+            background: var(--gray-50);
+        }
+        
         .endpoint-header {
             display: flex;
             align-items: center;
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         
         .method {
-            padding: 0.25rem 0.75rem;
-            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
             font-weight: 600;
             font-size: 0.875rem;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         
-        .method.get { background: #dcfce7; color: #166534; }
-        .method.post { background: #dbeafe; color: #1d4ed8; }
-        .method.put { background: #fef3c7; color: #92400e; }
-        .method.delete { background: #fee2e2; color: #dc2626; }
+        .method.get { 
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        .method.post { 
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+        }
+        .method.put { 
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        .method.delete { 
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
         
         .endpoint-path {
-            font-family: 'Monaco', 'Menlo', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-size: 1.1rem;
             font-weight: 500;
-            color: #1e293b;
+            color: var(--gray-900);
+            background: var(--gray-100);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
         }
         
         .endpoint-description {
-            color: #64748b;
-            margin-bottom: 1rem;
+            color: var(--gray-600);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
         }
         
         .params {
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
         
         .params-title {
             font-weight: 600;
-            color: #374151;
-            margin-bottom: 0.5rem;
+            color: var(--gray-800);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
         }
         
         .param {
-            background: #f8fafc;
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-bottom: 0.5rem;
-            border-left: 3px solid #3b82f6;
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            padding: 1.25rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s ease;
+        }
+        
+        .param:hover {
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
         }
         
         .param-name {
-            font-family: 'Monaco', 'Menlo', monospace;
+            font-family: 'JetBrains Mono', monospace;
             font-weight: 600;
-            color: #1e293b;
+            color: var(--primary);
+            font-size: 0.95rem;
         }
         
         .param-type {
-            color: #7c3aed;
+            color: var(--secondary);
             font-size: 0.875rem;
-            margin-left: 0.5rem;
+            margin-left: 0.75rem;
+            font-weight: 500;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
         }
         
         .param-description {
-            color: #64748b;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            line-height: 1.5;
         }
         
         .response {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 6px;
-            padding: 1rem;
-            margin-top: 1rem;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border: 1px solid #a7f3d0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
         }
         
         .response-title {
             font-weight: 600;
-            color: #166534;
-            margin-bottom: 0.5rem;
+            color: var(--success);
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
         }
         
         .response-description {
-            color: #15803d;
-            font-size: 0.875rem;
+            color: #065f46;
+            font-size: 0.9rem;
+            line-height: 1.5;
         }
         
         .base-url {
-            background: #1e293b;
+            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
             color: white;
-            padding: 1rem;
-            border-radius: 8px;
-            font-family: 'Monaco', 'Menlo', monospace;
+            padding: 1.5rem;
+            border-radius: 16px;
+            font-family: 'JetBrains Mono', monospace;
             margin-bottom: 2rem;
             text-align: center;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
         
         .note {
-            background: #fef3c7;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             border: 1px solid #fbbf24;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 2rem;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
         }
         
         .note-title {
             font-weight: 600;
             color: #92400e;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1rem;
         }
         
         .note-text {
             color: #a16207;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                padding: 2rem 1.5rem;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .endpoint-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
         }
     </style>
 </head>
@@ -205,8 +338,27 @@ export async function GET() {
             <p>Complete API documentation for the OKR Management System</p>
         </div>
         
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">25+</div>
+                <div class="stat-label">Endpoints</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">REST</div>
+                <div class="stat-label">Architecture</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">JSON</div>
+                <div class="stat-label">Response Format</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">Auth</div>
+                <div class="stat-label">Secured</div>
+            </div>
+        </div>
+        
         <div class="base-url">
-            <strong>Base URL:</strong> ${process.env.NEXTAUTH_URL || 'http://localhost:3001'}/api
+            <strong>Base URL:</strong> ${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api
         </div>
         
         <div class="note">
@@ -373,7 +525,7 @@ export async function GET() {
         <div class="endpoint-group">
             <div class="group-header">
                 <div class="group-title">🎯 Objectives</div>
-                <div class="group-description">Objective management and tracking</div>
+                <div class="group-description">Objective management with intelligent tracking and deadline extensions</div>
             </div>
             
             <div class="endpoint">
@@ -381,21 +533,10 @@ export async function GET() {
                     <span class="method get">GET</span>
                     <span class="endpoint-path">/objectives</span>
                 </div>
-                <div class="endpoint-description">Get all objectives with progress calculation</div>
+                <div class="endpoint-description">Get all objectives with progress calculation and risk assessment</div>
                 <div class="response">
                     <div class="response-title">Response:</div>
                     <div class="response-description">Array of objectives with owners, cycles, key results, calculated progress, risk levels, and missed deadline tracking</div>
-                </div>
-                <div class="note">
-                    <div class="note-title">📊 Enhanced Data Model</div>
-                    <div class="note-text">
-                        Each objective includes comprehensive tracking data:<br>
-                        • Automatic progress calculation from key results<br>
-                        • Risk level assessment (LOW/MEDIUM/HIGH/CRITICAL)<br>
-                        • Missed deadline tracking and audit trail<br>
-                        • Extension history with justifications<br>
-                        • Manager approval workflow for deadline changes
-                    </div>
                 </div>
             </div>
             
@@ -526,24 +667,16 @@ export async function GET() {
                 </div>
                 <div class="endpoint-description">Extend deadline for a missed objective (Manager/Admin only)</div>
                 <div class="params">
-                    <div class="params-title">URL Parameters:</div>
-                    <div class="param">
-                        <span class="param-name">objectiveId</span>
-                        <span class="param-type">string</span>
-                        <div class="param-description">Objective ID to extend deadline for (required)</div>
-                    </div>
-                </div>
-                <div class="params">
                     <div class="params-title">Request Body:</div>
                     <div class="param">
-                        <span class="param-name">newDeadline</span>
+                        <span class="param-name">extendedDeadline</span>
                         <span class="param-type">string</span>
                         <div class="param-description">New deadline date (ISO 8601 format, required)</div>
                     </div>
                     <div class="param">
                         <span class="param-name">missedReason</span>
                         <span class="param-type">string</span>
-                        <div class="param-description">Reason for missing original deadline (required)</div>
+                        <div class="param-description">Reason for missing original deadline (optional)</div>
                     </div>
                     <div class="param">
                         <span class="param-name">extensionReason</span>
@@ -578,10 +711,10 @@ export async function GET() {
             </div>
         </div>
         
-        <!-- Missed OKR Tracking Section -->
+        <!-- Risk Management -->
         <div class="endpoint-group">
             <div class="group-header">
-                <div class="group-title">⚠️ Missed OKR Tracking & Risk Management</div>
+                <div class="group-title">⚠️ Risk Management</div>
                 <div class="group-description">Advanced features for tracking missed deadlines and managing objective risks</div>
             </div>
             
@@ -618,17 +751,6 @@ export async function GET() {
                 <div class="response">
                     <div class="response-title">Response:</div>
                     <div class="response-description">Array of objectives with status=EXTENDED, including extension history and audit trail</div>
-                </div>
-            </div>
-            
-            <div class="note">
-                <div class="note-title">📊 Risk Level Calculation</div>
-                <div class="note-text">
-                    Risk levels are automatically calculated based on progress vs. time elapsed:<br>
-                    • <strong>LOW</strong>: Progress ≥ expected progress<br>
-                    • <strong>MEDIUM</strong>: Progress 10-25% behind schedule<br>
-                    • <strong>HIGH</strong>: Progress 25-50% behind schedule<br>
-                    • <strong>CRITICAL</strong>: Progress >50% behind schedule or past deadline
                 </div>
             </div>
         </div>
@@ -846,11 +968,11 @@ export async function GET() {
             </div>
         </div>
         
-        <!-- Notifications Endpoints -->
+        <!-- Notifications -->
         <div class="endpoint-group">
             <div class="group-header">
                 <div class="group-title">🔔 Notifications</div>
-                <div class="group-description">Notification system for OKR events and updates</div>
+                <div class="group-description">Smart notification system for OKR events and updates</div>
             </div>
             
             <div class="endpoint">

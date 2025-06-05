@@ -101,7 +101,8 @@ export const Status: {
   IN_PROGRESS: 'IN_PROGRESS',
   AT_RISK: 'AT_RISK',
   COMPLETED: 'COMPLETED',
-  CANCELLED: 'CANCELLED'
+  CANCELLED: 'CANCELLED',
+  EXTENDED: 'EXTENDED'
 };
 
 export type Status = (typeof Status)[keyof typeof Status]
@@ -1963,6 +1964,7 @@ export namespace Prisma {
     employees: number
     ownedObjectives: number
     contributedObjectives: number
+    extendedObjectives: number
     keyResults: number
     progressUpdates: number
     reviews: number
@@ -1976,6 +1978,7 @@ export namespace Prisma {
     employees?: boolean | UserCountOutputTypeCountEmployeesArgs
     ownedObjectives?: boolean | UserCountOutputTypeCountOwnedObjectivesArgs
     contributedObjectives?: boolean | UserCountOutputTypeCountContributedObjectivesArgs
+    extendedObjectives?: boolean | UserCountOutputTypeCountExtendedObjectivesArgs
     keyResults?: boolean | UserCountOutputTypeCountKeyResultsArgs
     progressUpdates?: boolean | UserCountOutputTypeCountProgressUpdatesArgs
     reviews?: boolean | UserCountOutputTypeCountReviewsArgs
@@ -2014,6 +2017,13 @@ export namespace Prisma {
    * UserCountOutputType without action
    */
   export type UserCountOutputTypeCountContributedObjectivesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ObjectiveWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountExtendedObjectivesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ObjectiveWhereInput
   }
 
@@ -2456,6 +2466,7 @@ export namespace Prisma {
     employees?: boolean | User$employeesArgs<ExtArgs>
     ownedObjectives?: boolean | User$ownedObjectivesArgs<ExtArgs>
     contributedObjectives?: boolean | User$contributedObjectivesArgs<ExtArgs>
+    extendedObjectives?: boolean | User$extendedObjectivesArgs<ExtArgs>
     keyResults?: boolean | User$keyResultsArgs<ExtArgs>
     progressUpdates?: boolean | User$progressUpdatesArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
@@ -2522,6 +2533,7 @@ export namespace Prisma {
     employees?: boolean | User$employeesArgs<ExtArgs>
     ownedObjectives?: boolean | User$ownedObjectivesArgs<ExtArgs>
     contributedObjectives?: boolean | User$contributedObjectivesArgs<ExtArgs>
+    extendedObjectives?: boolean | User$extendedObjectivesArgs<ExtArgs>
     keyResults?: boolean | User$keyResultsArgs<ExtArgs>
     progressUpdates?: boolean | User$progressUpdatesArgs<ExtArgs>
     reviews?: boolean | User$reviewsArgs<ExtArgs>
@@ -2548,6 +2560,7 @@ export namespace Prisma {
       employees: Prisma.$UserPayload<ExtArgs>[]
       ownedObjectives: Prisma.$ObjectivePayload<ExtArgs>[]
       contributedObjectives: Prisma.$ObjectivePayload<ExtArgs>[]
+      extendedObjectives: Prisma.$ObjectivePayload<ExtArgs>[]
       keyResults: Prisma.$KeyResultPayload<ExtArgs>[]
       progressUpdates: Prisma.$ProgressUpdatePayload<ExtArgs>[]
       reviews: Prisma.$ReviewPayload<ExtArgs>[]
@@ -2968,6 +2981,7 @@ export namespace Prisma {
     employees<T extends User$employeesArgs<ExtArgs> = {}>(args?: Subset<T, User$employeesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     ownedObjectives<T extends User$ownedObjectivesArgs<ExtArgs> = {}>(args?: Subset<T, User$ownedObjectivesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ObjectivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     contributedObjectives<T extends User$contributedObjectivesArgs<ExtArgs> = {}>(args?: Subset<T, User$contributedObjectivesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ObjectivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    extendedObjectives<T extends User$extendedObjectivesArgs<ExtArgs> = {}>(args?: Subset<T, User$extendedObjectivesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ObjectivePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     keyResults<T extends User$keyResultsArgs<ExtArgs> = {}>(args?: Subset<T, User$keyResultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KeyResultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     progressUpdates<T extends User$progressUpdatesArgs<ExtArgs> = {}>(args?: Subset<T, User$progressUpdatesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ProgressUpdatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reviews<T extends User$reviewsArgs<ExtArgs> = {}>(args?: Subset<T, User$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -3499,6 +3513,30 @@ export namespace Prisma {
    * User.contributedObjectives
    */
   export type User$contributedObjectivesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Objective
+     */
+    select?: ObjectiveSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Objective
+     */
+    omit?: ObjectiveOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ObjectiveInclude<ExtArgs> | null
+    where?: ObjectiveWhereInput
+    orderBy?: ObjectiveOrderByWithRelationInput | ObjectiveOrderByWithRelationInput[]
+    cursor?: ObjectiveWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ObjectiveScalarFieldEnum | ObjectiveScalarFieldEnum[]
+  }
+
+  /**
+   * User.extendedObjectives
+   */
+  export type User$extendedObjectivesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Objective
      */
@@ -9177,6 +9215,13 @@ export namespace Prisma {
     type: $Enums.ObjectiveType | null
     status: $Enums.Status | null
     weight: number | null
+    wasMissed: boolean | null
+    originalEndDate: Date | null
+    extendedDeadline: Date | null
+    extensionReason: string | null
+    missedReason: string | null
+    dateExtended: Date | null
+    extendedBy: string | null
     ownerId: string | null
     cycleId: string | null
     parentId: string | null
@@ -9191,6 +9236,13 @@ export namespace Prisma {
     type: $Enums.ObjectiveType | null
     status: $Enums.Status | null
     weight: number | null
+    wasMissed: boolean | null
+    originalEndDate: Date | null
+    extendedDeadline: Date | null
+    extensionReason: string | null
+    missedReason: string | null
+    dateExtended: Date | null
+    extendedBy: string | null
     ownerId: string | null
     cycleId: string | null
     parentId: string | null
@@ -9205,6 +9257,13 @@ export namespace Prisma {
     type: number
     status: number
     weight: number
+    wasMissed: number
+    originalEndDate: number
+    extendedDeadline: number
+    extensionReason: number
+    missedReason: number
+    dateExtended: number
+    extendedBy: number
     ownerId: number
     cycleId: number
     parentId: number
@@ -9229,6 +9288,13 @@ export namespace Prisma {
     type?: true
     status?: true
     weight?: true
+    wasMissed?: true
+    originalEndDate?: true
+    extendedDeadline?: true
+    extensionReason?: true
+    missedReason?: true
+    dateExtended?: true
+    extendedBy?: true
     ownerId?: true
     cycleId?: true
     parentId?: true
@@ -9243,6 +9309,13 @@ export namespace Prisma {
     type?: true
     status?: true
     weight?: true
+    wasMissed?: true
+    originalEndDate?: true
+    extendedDeadline?: true
+    extensionReason?: true
+    missedReason?: true
+    dateExtended?: true
+    extendedBy?: true
     ownerId?: true
     cycleId?: true
     parentId?: true
@@ -9257,6 +9330,13 @@ export namespace Prisma {
     type?: true
     status?: true
     weight?: true
+    wasMissed?: true
+    originalEndDate?: true
+    extendedDeadline?: true
+    extensionReason?: true
+    missedReason?: true
+    dateExtended?: true
+    extendedBy?: true
     ownerId?: true
     cycleId?: true
     parentId?: true
@@ -9358,6 +9438,13 @@ export namespace Prisma {
     type: $Enums.ObjectiveType
     status: $Enums.Status
     weight: number | null
+    wasMissed: boolean | null
+    originalEndDate: Date | null
+    extendedDeadline: Date | null
+    extensionReason: string | null
+    missedReason: string | null
+    dateExtended: Date | null
+    extendedBy: string | null
     ownerId: string
     cycleId: string
     parentId: string | null
@@ -9391,11 +9478,19 @@ export namespace Prisma {
     type?: boolean
     status?: boolean
     weight?: boolean
+    wasMissed?: boolean
+    originalEndDate?: boolean
+    extendedDeadline?: boolean
+    extensionReason?: boolean
+    missedReason?: boolean
+    dateExtended?: boolean
+    extendedBy?: boolean
     ownerId?: boolean
     cycleId?: boolean
     parentId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    extendedByUser?: boolean | Objective$extendedByUserArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
     contributors?: boolean | Objective$contributorsArgs<ExtArgs>
     cycle?: boolean | CycleDefaultArgs<ExtArgs>
@@ -9413,11 +9508,19 @@ export namespace Prisma {
     type?: boolean
     status?: boolean
     weight?: boolean
+    wasMissed?: boolean
+    originalEndDate?: boolean
+    extendedDeadline?: boolean
+    extensionReason?: boolean
+    missedReason?: boolean
+    dateExtended?: boolean
+    extendedBy?: boolean
     ownerId?: boolean
     cycleId?: boolean
     parentId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    extendedByUser?: boolean | Objective$extendedByUserArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
     cycle?: boolean | CycleDefaultArgs<ExtArgs>
     parent?: boolean | Objective$parentArgs<ExtArgs>
@@ -9430,11 +9533,19 @@ export namespace Prisma {
     type?: boolean
     status?: boolean
     weight?: boolean
+    wasMissed?: boolean
+    originalEndDate?: boolean
+    extendedDeadline?: boolean
+    extensionReason?: boolean
+    missedReason?: boolean
+    dateExtended?: boolean
+    extendedBy?: boolean
     ownerId?: boolean
     cycleId?: boolean
     parentId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    extendedByUser?: boolean | Objective$extendedByUserArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
     cycle?: boolean | CycleDefaultArgs<ExtArgs>
     parent?: boolean | Objective$parentArgs<ExtArgs>
@@ -9447,6 +9558,13 @@ export namespace Prisma {
     type?: boolean
     status?: boolean
     weight?: boolean
+    wasMissed?: boolean
+    originalEndDate?: boolean
+    extendedDeadline?: boolean
+    extensionReason?: boolean
+    missedReason?: boolean
+    dateExtended?: boolean
+    extendedBy?: boolean
     ownerId?: boolean
     cycleId?: boolean
     parentId?: boolean
@@ -9454,8 +9572,9 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type ObjectiveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "type" | "status" | "weight" | "ownerId" | "cycleId" | "parentId" | "createdAt" | "updatedAt", ExtArgs["result"]["objective"]>
+  export type ObjectiveOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "title" | "description" | "type" | "status" | "weight" | "wasMissed" | "originalEndDate" | "extendedDeadline" | "extensionReason" | "missedReason" | "dateExtended" | "extendedBy" | "ownerId" | "cycleId" | "parentId" | "createdAt" | "updatedAt", ExtArgs["result"]["objective"]>
   export type ObjectiveInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    extendedByUser?: boolean | Objective$extendedByUserArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
     contributors?: boolean | Objective$contributorsArgs<ExtArgs>
     cycle?: boolean | CycleDefaultArgs<ExtArgs>
@@ -9466,11 +9585,13 @@ export namespace Prisma {
     _count?: boolean | ObjectiveCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ObjectiveIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    extendedByUser?: boolean | Objective$extendedByUserArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
     cycle?: boolean | CycleDefaultArgs<ExtArgs>
     parent?: boolean | Objective$parentArgs<ExtArgs>
   }
   export type ObjectiveIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    extendedByUser?: boolean | Objective$extendedByUserArgs<ExtArgs>
     owner?: boolean | UserDefaultArgs<ExtArgs>
     cycle?: boolean | CycleDefaultArgs<ExtArgs>
     parent?: boolean | Objective$parentArgs<ExtArgs>
@@ -9479,6 +9600,7 @@ export namespace Prisma {
   export type $ObjectivePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Objective"
     objects: {
+      extendedByUser: Prisma.$UserPayload<ExtArgs> | null
       owner: Prisma.$UserPayload<ExtArgs>
       contributors: Prisma.$UserPayload<ExtArgs>[]
       cycle: Prisma.$CyclePayload<ExtArgs>
@@ -9494,6 +9616,13 @@ export namespace Prisma {
       type: $Enums.ObjectiveType
       status: $Enums.Status
       weight: number | null
+      wasMissed: boolean | null
+      originalEndDate: Date | null
+      extendedDeadline: Date | null
+      extensionReason: string | null
+      missedReason: string | null
+      dateExtended: Date | null
+      extendedBy: string | null
       ownerId: string
       cycleId: string
       parentId: string | null
@@ -9893,6 +10022,7 @@ export namespace Prisma {
    */
   export interface Prisma__ObjectiveClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    extendedByUser<T extends Objective$extendedByUserArgs<ExtArgs> = {}>(args?: Subset<T, Objective$extendedByUserArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     owner<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     contributors<T extends Objective$contributorsArgs<ExtArgs> = {}>(args?: Subset<T, Objective$contributorsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     cycle<T extends CycleDefaultArgs<ExtArgs> = {}>(args?: Subset<T, CycleDefaultArgs<ExtArgs>>): Prisma__CycleClient<$Result.GetResult<Prisma.$CyclePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -9935,6 +10065,13 @@ export namespace Prisma {
     readonly type: FieldRef<"Objective", 'ObjectiveType'>
     readonly status: FieldRef<"Objective", 'Status'>
     readonly weight: FieldRef<"Objective", 'Float'>
+    readonly wasMissed: FieldRef<"Objective", 'Boolean'>
+    readonly originalEndDate: FieldRef<"Objective", 'DateTime'>
+    readonly extendedDeadline: FieldRef<"Objective", 'DateTime'>
+    readonly extensionReason: FieldRef<"Objective", 'String'>
+    readonly missedReason: FieldRef<"Objective", 'String'>
+    readonly dateExtended: FieldRef<"Objective", 'DateTime'>
+    readonly extendedBy: FieldRef<"Objective", 'String'>
     readonly ownerId: FieldRef<"Objective", 'String'>
     readonly cycleId: FieldRef<"Objective", 'String'>
     readonly parentId: FieldRef<"Objective", 'String'>
@@ -10331,6 +10468,25 @@ export namespace Prisma {
      * Limit how many Objectives to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Objective.extendedByUser
+   */
+  export type Objective$extendedByUserArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
   }
 
   /**
@@ -16189,6 +16345,13 @@ export namespace Prisma {
     type: 'type',
     status: 'status',
     weight: 'weight',
+    wasMissed: 'wasMissed',
+    originalEndDate: 'originalEndDate',
+    extendedDeadline: 'extendedDeadline',
+    extensionReason: 'extensionReason',
+    missedReason: 'missedReason',
+    dateExtended: 'dateExtended',
+    extendedBy: 'extendedBy',
     ownerId: 'ownerId',
     cycleId: 'cycleId',
     parentId: 'parentId',
@@ -16394,6 +16557,7 @@ export namespace Prisma {
     employees?: UserListRelationFilter
     ownedObjectives?: ObjectiveListRelationFilter
     contributedObjectives?: ObjectiveListRelationFilter
+    extendedObjectives?: ObjectiveListRelationFilter
     keyResults?: KeyResultListRelationFilter
     progressUpdates?: ProgressUpdateListRelationFilter
     reviews?: ReviewListRelationFilter
@@ -16421,6 +16585,7 @@ export namespace Prisma {
     employees?: UserOrderByRelationAggregateInput
     ownedObjectives?: ObjectiveOrderByRelationAggregateInput
     contributedObjectives?: ObjectiveOrderByRelationAggregateInput
+    extendedObjectives?: ObjectiveOrderByRelationAggregateInput
     keyResults?: KeyResultOrderByRelationAggregateInput
     progressUpdates?: ProgressUpdateOrderByRelationAggregateInput
     reviews?: ReviewOrderByRelationAggregateInput
@@ -16451,6 +16616,7 @@ export namespace Prisma {
     employees?: UserListRelationFilter
     ownedObjectives?: ObjectiveListRelationFilter
     contributedObjectives?: ObjectiveListRelationFilter
+    extendedObjectives?: ObjectiveListRelationFilter
     keyResults?: KeyResultListRelationFilter
     progressUpdates?: ProgressUpdateListRelationFilter
     reviews?: ReviewListRelationFilter
@@ -16828,11 +16994,19 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFilter<"Objective"> | $Enums.ObjectiveType
     status?: EnumStatusFilter<"Objective"> | $Enums.Status
     weight?: FloatNullableFilter<"Objective"> | number | null
+    wasMissed?: BoolNullableFilter<"Objective"> | boolean | null
+    originalEndDate?: DateTimeNullableFilter<"Objective"> | Date | string | null
+    extendedDeadline?: DateTimeNullableFilter<"Objective"> | Date | string | null
+    extensionReason?: StringNullableFilter<"Objective"> | string | null
+    missedReason?: StringNullableFilter<"Objective"> | string | null
+    dateExtended?: DateTimeNullableFilter<"Objective"> | Date | string | null
+    extendedBy?: StringNullableFilter<"Objective"> | string | null
     ownerId?: StringFilter<"Objective"> | string
     cycleId?: StringFilter<"Objective"> | string
     parentId?: StringNullableFilter<"Objective"> | string | null
     createdAt?: DateTimeFilter<"Objective"> | Date | string
     updatedAt?: DateTimeFilter<"Objective"> | Date | string
+    extendedByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     contributors?: UserListRelationFilter
     cycle?: XOR<CycleScalarRelationFilter, CycleWhereInput>
@@ -16849,11 +17023,19 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     weight?: SortOrderInput | SortOrder
+    wasMissed?: SortOrderInput | SortOrder
+    originalEndDate?: SortOrderInput | SortOrder
+    extendedDeadline?: SortOrderInput | SortOrder
+    extensionReason?: SortOrderInput | SortOrder
+    missedReason?: SortOrderInput | SortOrder
+    dateExtended?: SortOrderInput | SortOrder
+    extendedBy?: SortOrderInput | SortOrder
     ownerId?: SortOrder
     cycleId?: SortOrder
     parentId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    extendedByUser?: UserOrderByWithRelationInput
     owner?: UserOrderByWithRelationInput
     contributors?: UserOrderByRelationAggregateInput
     cycle?: CycleOrderByWithRelationInput
@@ -16873,11 +17055,19 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFilter<"Objective"> | $Enums.ObjectiveType
     status?: EnumStatusFilter<"Objective"> | $Enums.Status
     weight?: FloatNullableFilter<"Objective"> | number | null
+    wasMissed?: BoolNullableFilter<"Objective"> | boolean | null
+    originalEndDate?: DateTimeNullableFilter<"Objective"> | Date | string | null
+    extendedDeadline?: DateTimeNullableFilter<"Objective"> | Date | string | null
+    extensionReason?: StringNullableFilter<"Objective"> | string | null
+    missedReason?: StringNullableFilter<"Objective"> | string | null
+    dateExtended?: DateTimeNullableFilter<"Objective"> | Date | string | null
+    extendedBy?: StringNullableFilter<"Objective"> | string | null
     ownerId?: StringFilter<"Objective"> | string
     cycleId?: StringFilter<"Objective"> | string
     parentId?: StringNullableFilter<"Objective"> | string | null
     createdAt?: DateTimeFilter<"Objective"> | Date | string
     updatedAt?: DateTimeFilter<"Objective"> | Date | string
+    extendedByUser?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     owner?: XOR<UserScalarRelationFilter, UserWhereInput>
     contributors?: UserListRelationFilter
     cycle?: XOR<CycleScalarRelationFilter, CycleWhereInput>
@@ -16894,6 +17084,13 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     weight?: SortOrderInput | SortOrder
+    wasMissed?: SortOrderInput | SortOrder
+    originalEndDate?: SortOrderInput | SortOrder
+    extendedDeadline?: SortOrderInput | SortOrder
+    extensionReason?: SortOrderInput | SortOrder
+    missedReason?: SortOrderInput | SortOrder
+    dateExtended?: SortOrderInput | SortOrder
+    extendedBy?: SortOrderInput | SortOrder
     ownerId?: SortOrder
     cycleId?: SortOrder
     parentId?: SortOrderInput | SortOrder
@@ -16916,6 +17113,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeWithAggregatesFilter<"Objective"> | $Enums.ObjectiveType
     status?: EnumStatusWithAggregatesFilter<"Objective"> | $Enums.Status
     weight?: FloatNullableWithAggregatesFilter<"Objective"> | number | null
+    wasMissed?: BoolNullableWithAggregatesFilter<"Objective"> | boolean | null
+    originalEndDate?: DateTimeNullableWithAggregatesFilter<"Objective"> | Date | string | null
+    extendedDeadline?: DateTimeNullableWithAggregatesFilter<"Objective"> | Date | string | null
+    extensionReason?: StringNullableWithAggregatesFilter<"Objective"> | string | null
+    missedReason?: StringNullableWithAggregatesFilter<"Objective"> | string | null
+    dateExtended?: DateTimeNullableWithAggregatesFilter<"Objective"> | Date | string | null
+    extendedBy?: StringNullableWithAggregatesFilter<"Objective"> | string | null
     ownerId?: StringWithAggregatesFilter<"Objective"> | string
     cycleId?: StringWithAggregatesFilter<"Objective"> | string
     parentId?: StringNullableWithAggregatesFilter<"Objective"> | string | null
@@ -17322,6 +17526,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -17347,6 +17552,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -17372,6 +17578,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -17397,6 +17604,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -17801,8 +18009,15 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    extendedByUser?: UserCreateNestedOneWithoutExtendedObjectivesInput
     owner: UserCreateNestedOneWithoutOwnedObjectivesInput
     contributors?: UserCreateNestedManyWithoutContributedObjectivesInput
     cycle: CycleCreateNestedOneWithoutObjectivesInput
@@ -17819,6 +18034,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     cycleId: string
     parentId?: string | null
@@ -17837,8 +18059,15 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    extendedByUser?: UserUpdateOneWithoutExtendedObjectivesNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedObjectivesNestedInput
     contributors?: UserUpdateManyWithoutContributedObjectivesNestedInput
     cycle?: CycleUpdateOneRequiredWithoutObjectivesNestedInput
@@ -17855,6 +18084,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     cycleId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -17873,6 +18109,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     cycleId: string
     parentId?: string | null
@@ -17887,6 +18130,12 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17898,6 +18147,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     cycleId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -18793,6 +19049,22 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type BoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type CycleScalarRelationFilter = {
     is?: CycleWhereInput
     isNot?: CycleWhereInput
@@ -18810,6 +19082,13 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     weight?: SortOrder
+    wasMissed?: SortOrder
+    originalEndDate?: SortOrder
+    extendedDeadline?: SortOrder
+    extensionReason?: SortOrder
+    missedReason?: SortOrder
+    dateExtended?: SortOrder
+    extendedBy?: SortOrder
     ownerId?: SortOrder
     cycleId?: SortOrder
     parentId?: SortOrder
@@ -18828,6 +19107,13 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     weight?: SortOrder
+    wasMissed?: SortOrder
+    originalEndDate?: SortOrder
+    extendedDeadline?: SortOrder
+    extensionReason?: SortOrder
+    missedReason?: SortOrder
+    dateExtended?: SortOrder
+    extendedBy?: SortOrder
     ownerId?: SortOrder
     cycleId?: SortOrder
     parentId?: SortOrder
@@ -18842,6 +19128,13 @@ export namespace Prisma {
     type?: SortOrder
     status?: SortOrder
     weight?: SortOrder
+    wasMissed?: SortOrder
+    originalEndDate?: SortOrder
+    extendedDeadline?: SortOrder
+    extensionReason?: SortOrder
+    missedReason?: SortOrder
+    dateExtended?: SortOrder
+    extendedBy?: SortOrder
     ownerId?: SortOrder
     cycleId?: SortOrder
     parentId?: SortOrder
@@ -18887,6 +19180,28 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type EnumMetricTypeFilter<$PrismaModel = never> = {
@@ -19211,6 +19526,13 @@ export namespace Prisma {
     connect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
   }
 
+  export type ObjectiveCreateNestedManyWithoutExtendedByUserInput = {
+    create?: XOR<ObjectiveCreateWithoutExtendedByUserInput, ObjectiveUncheckedCreateWithoutExtendedByUserInput> | ObjectiveCreateWithoutExtendedByUserInput[] | ObjectiveUncheckedCreateWithoutExtendedByUserInput[]
+    connectOrCreate?: ObjectiveCreateOrConnectWithoutExtendedByUserInput | ObjectiveCreateOrConnectWithoutExtendedByUserInput[]
+    createMany?: ObjectiveCreateManyExtendedByUserInputEnvelope
+    connect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+  }
+
   export type KeyResultCreateNestedManyWithoutOwnerInput = {
     create?: XOR<KeyResultCreateWithoutOwnerInput, KeyResultUncheckedCreateWithoutOwnerInput> | KeyResultCreateWithoutOwnerInput[] | KeyResultUncheckedCreateWithoutOwnerInput[]
     connectOrCreate?: KeyResultCreateOrConnectWithoutOwnerInput | KeyResultCreateOrConnectWithoutOwnerInput[]
@@ -19277,6 +19599,13 @@ export namespace Prisma {
   export type ObjectiveUncheckedCreateNestedManyWithoutContributorsInput = {
     create?: XOR<ObjectiveCreateWithoutContributorsInput, ObjectiveUncheckedCreateWithoutContributorsInput> | ObjectiveCreateWithoutContributorsInput[] | ObjectiveUncheckedCreateWithoutContributorsInput[]
     connectOrCreate?: ObjectiveCreateOrConnectWithoutContributorsInput | ObjectiveCreateOrConnectWithoutContributorsInput[]
+    connect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+  }
+
+  export type ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput = {
+    create?: XOR<ObjectiveCreateWithoutExtendedByUserInput, ObjectiveUncheckedCreateWithoutExtendedByUserInput> | ObjectiveCreateWithoutExtendedByUserInput[] | ObjectiveUncheckedCreateWithoutExtendedByUserInput[]
+    connectOrCreate?: ObjectiveCreateOrConnectWithoutExtendedByUserInput | ObjectiveCreateOrConnectWithoutExtendedByUserInput[]
+    createMany?: ObjectiveCreateManyExtendedByUserInputEnvelope
     connect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
   }
 
@@ -19407,6 +19736,20 @@ export namespace Prisma {
     connect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
     update?: ObjectiveUpdateWithWhereUniqueWithoutContributorsInput | ObjectiveUpdateWithWhereUniqueWithoutContributorsInput[]
     updateMany?: ObjectiveUpdateManyWithWhereWithoutContributorsInput | ObjectiveUpdateManyWithWhereWithoutContributorsInput[]
+    deleteMany?: ObjectiveScalarWhereInput | ObjectiveScalarWhereInput[]
+  }
+
+  export type ObjectiveUpdateManyWithoutExtendedByUserNestedInput = {
+    create?: XOR<ObjectiveCreateWithoutExtendedByUserInput, ObjectiveUncheckedCreateWithoutExtendedByUserInput> | ObjectiveCreateWithoutExtendedByUserInput[] | ObjectiveUncheckedCreateWithoutExtendedByUserInput[]
+    connectOrCreate?: ObjectiveCreateOrConnectWithoutExtendedByUserInput | ObjectiveCreateOrConnectWithoutExtendedByUserInput[]
+    upsert?: ObjectiveUpsertWithWhereUniqueWithoutExtendedByUserInput | ObjectiveUpsertWithWhereUniqueWithoutExtendedByUserInput[]
+    createMany?: ObjectiveCreateManyExtendedByUserInputEnvelope
+    set?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+    disconnect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+    delete?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+    connect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+    update?: ObjectiveUpdateWithWhereUniqueWithoutExtendedByUserInput | ObjectiveUpdateWithWhereUniqueWithoutExtendedByUserInput[]
+    updateMany?: ObjectiveUpdateManyWithWhereWithoutExtendedByUserInput | ObjectiveUpdateManyWithWhereWithoutExtendedByUserInput[]
     deleteMany?: ObjectiveScalarWhereInput | ObjectiveScalarWhereInput[]
   }
 
@@ -19546,6 +19889,20 @@ export namespace Prisma {
     connect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
     update?: ObjectiveUpdateWithWhereUniqueWithoutContributorsInput | ObjectiveUpdateWithWhereUniqueWithoutContributorsInput[]
     updateMany?: ObjectiveUpdateManyWithWhereWithoutContributorsInput | ObjectiveUpdateManyWithWhereWithoutContributorsInput[]
+    deleteMany?: ObjectiveScalarWhereInput | ObjectiveScalarWhereInput[]
+  }
+
+  export type ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput = {
+    create?: XOR<ObjectiveCreateWithoutExtendedByUserInput, ObjectiveUncheckedCreateWithoutExtendedByUserInput> | ObjectiveCreateWithoutExtendedByUserInput[] | ObjectiveUncheckedCreateWithoutExtendedByUserInput[]
+    connectOrCreate?: ObjectiveCreateOrConnectWithoutExtendedByUserInput | ObjectiveCreateOrConnectWithoutExtendedByUserInput[]
+    upsert?: ObjectiveUpsertWithWhereUniqueWithoutExtendedByUserInput | ObjectiveUpsertWithWhereUniqueWithoutExtendedByUserInput[]
+    createMany?: ObjectiveCreateManyExtendedByUserInputEnvelope
+    set?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+    disconnect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+    delete?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+    connect?: ObjectiveWhereUniqueInput | ObjectiveWhereUniqueInput[]
+    update?: ObjectiveUpdateWithWhereUniqueWithoutExtendedByUserInput | ObjectiveUpdateWithWhereUniqueWithoutExtendedByUserInput[]
+    updateMany?: ObjectiveUpdateManyWithWhereWithoutExtendedByUserInput | ObjectiveUpdateManyWithWhereWithoutExtendedByUserInput[]
     deleteMany?: ObjectiveScalarWhereInput | ObjectiveScalarWhereInput[]
   }
 
@@ -19825,6 +20182,12 @@ export namespace Prisma {
     deleteMany?: ObjectiveScalarWhereInput | ObjectiveScalarWhereInput[]
   }
 
+  export type UserCreateNestedOneWithoutExtendedObjectivesInput = {
+    create?: XOR<UserCreateWithoutExtendedObjectivesInput, UserUncheckedCreateWithoutExtendedObjectivesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExtendedObjectivesInput
+    connect?: UserWhereUniqueInput
+  }
+
   export type UserCreateNestedOneWithoutOwnedObjectivesInput = {
     create?: XOR<UserCreateWithoutOwnedObjectivesInput, UserUncheckedCreateWithoutOwnedObjectivesInput>
     connectOrCreate?: UserCreateOrConnectWithoutOwnedObjectivesInput
@@ -19911,6 +20274,24 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type NullableBoolFieldUpdateOperationsInput = {
+    set?: boolean | null
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
+  export type UserUpdateOneWithoutExtendedObjectivesNestedInput = {
+    create?: XOR<UserCreateWithoutExtendedObjectivesInput, UserUncheckedCreateWithoutExtendedObjectivesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutExtendedObjectivesInput
+    upsert?: UserUpsertWithoutExtendedObjectivesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutExtendedObjectivesInput, UserUpdateWithoutExtendedObjectivesInput>, UserUncheckedUpdateWithoutExtendedObjectivesInput>
   }
 
   export type UserUpdateOneRequiredWithoutOwnedObjectivesNestedInput = {
@@ -20403,6 +20784,22 @@ export namespace Prisma {
     not?: NestedEnumStatusFilter<$PrismaModel> | $Enums.Status
   }
 
+  export type NestedBoolNullableFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableFilter<$PrismaModel> | boolean | null
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedEnumObjectiveTypeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ObjectiveType | EnumObjectiveTypeFieldRefInput<$PrismaModel>
     in?: $Enums.ObjectiveType[]
@@ -20437,6 +20834,28 @@ export namespace Prisma {
     _sum?: NestedFloatNullableFilter<$PrismaModel>
     _min?: NestedFloatNullableFilter<$PrismaModel>
     _max?: NestedFloatNullableFilter<$PrismaModel>
+  }
+
+  export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: boolean | BooleanFieldRefInput<$PrismaModel> | null
+    not?: NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedBoolNullableFilter<$PrismaModel>
+    _max?: NestedBoolNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | null
+    notIn?: Date[] | string[] | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type NestedEnumMetricTypeFilter<$PrismaModel = never> = {
@@ -20557,6 +20976,7 @@ export namespace Prisma {
     manager?: UserCreateNestedOneWithoutEmployeesInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -20581,6 +21001,7 @@ export namespace Prisma {
     managerId?: string | null
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -20610,6 +21031,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -20634,6 +21056,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -20659,8 +21082,15 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    extendedByUser?: UserCreateNestedOneWithoutExtendedObjectivesInput
     contributors?: UserCreateNestedManyWithoutContributedObjectivesInput
     cycle: CycleCreateNestedOneWithoutObjectivesInput
     parent?: ObjectiveCreateNestedOneWithoutChildrenInput
@@ -20676,6 +21106,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     cycleId: string
     parentId?: string | null
     createdAt?: Date | string
@@ -20702,8 +21139,15 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    extendedByUser?: UserCreateNestedOneWithoutExtendedObjectivesInput
     owner: UserCreateNestedOneWithoutOwnedObjectivesInput
     cycle: CycleCreateNestedOneWithoutObjectivesInput
     parent?: ObjectiveCreateNestedOneWithoutChildrenInput
@@ -20719,6 +21163,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     cycleId: string
     parentId?: string | null
@@ -20732,6 +21183,63 @@ export namespace Prisma {
   export type ObjectiveCreateOrConnectWithoutContributorsInput = {
     where: ObjectiveWhereUniqueInput
     create: XOR<ObjectiveCreateWithoutContributorsInput, ObjectiveUncheckedCreateWithoutContributorsInput>
+  }
+
+  export type ObjectiveCreateWithoutExtendedByUserInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type?: $Enums.ObjectiveType
+    status?: $Enums.Status
+    weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    owner: UserCreateNestedOneWithoutOwnedObjectivesInput
+    contributors?: UserCreateNestedManyWithoutContributedObjectivesInput
+    cycle: CycleCreateNestedOneWithoutObjectivesInput
+    parent?: ObjectiveCreateNestedOneWithoutChildrenInput
+    children?: ObjectiveCreateNestedManyWithoutParentInput
+    keyResults?: KeyResultCreateNestedManyWithoutObjectiveInput
+    reviews?: ReviewCreateNestedManyWithoutObjectiveInput
+  }
+
+  export type ObjectiveUncheckedCreateWithoutExtendedByUserInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type?: $Enums.ObjectiveType
+    status?: $Enums.Status
+    weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    ownerId: string
+    cycleId: string
+    parentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    contributors?: UserUncheckedCreateNestedManyWithoutContributedObjectivesInput
+    children?: ObjectiveUncheckedCreateNestedManyWithoutParentInput
+    keyResults?: KeyResultUncheckedCreateNestedManyWithoutObjectiveInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutObjectiveInput
+  }
+
+  export type ObjectiveCreateOrConnectWithoutExtendedByUserInput = {
+    where: ObjectiveWhereUniqueInput
+    create: XOR<ObjectiveCreateWithoutExtendedByUserInput, ObjectiveUncheckedCreateWithoutExtendedByUserInput>
+  }
+
+  export type ObjectiveCreateManyExtendedByUserInputEnvelope = {
+    data: ObjectiveCreateManyExtendedByUserInput | ObjectiveCreateManyExtendedByUserInput[]
   }
 
   export type KeyResultCreateWithoutOwnerInput = {
@@ -21008,6 +21516,7 @@ export namespace Prisma {
     manager?: UserUpdateOneWithoutEmployeesNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -21032,6 +21541,7 @@ export namespace Prisma {
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -21101,6 +21611,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFilter<"Objective"> | $Enums.ObjectiveType
     status?: EnumStatusFilter<"Objective"> | $Enums.Status
     weight?: FloatNullableFilter<"Objective"> | number | null
+    wasMissed?: BoolNullableFilter<"Objective"> | boolean | null
+    originalEndDate?: DateTimeNullableFilter<"Objective"> | Date | string | null
+    extendedDeadline?: DateTimeNullableFilter<"Objective"> | Date | string | null
+    extensionReason?: StringNullableFilter<"Objective"> | string | null
+    missedReason?: StringNullableFilter<"Objective"> | string | null
+    dateExtended?: DateTimeNullableFilter<"Objective"> | Date | string | null
+    extendedBy?: StringNullableFilter<"Objective"> | string | null
     ownerId?: StringFilter<"Objective"> | string
     cycleId?: StringFilter<"Objective"> | string
     parentId?: StringNullableFilter<"Objective"> | string | null
@@ -21122,6 +21639,22 @@ export namespace Prisma {
   export type ObjectiveUpdateManyWithWhereWithoutContributorsInput = {
     where: ObjectiveScalarWhereInput
     data: XOR<ObjectiveUpdateManyMutationInput, ObjectiveUncheckedUpdateManyWithoutContributorsInput>
+  }
+
+  export type ObjectiveUpsertWithWhereUniqueWithoutExtendedByUserInput = {
+    where: ObjectiveWhereUniqueInput
+    update: XOR<ObjectiveUpdateWithoutExtendedByUserInput, ObjectiveUncheckedUpdateWithoutExtendedByUserInput>
+    create: XOR<ObjectiveCreateWithoutExtendedByUserInput, ObjectiveUncheckedCreateWithoutExtendedByUserInput>
+  }
+
+  export type ObjectiveUpdateWithWhereUniqueWithoutExtendedByUserInput = {
+    where: ObjectiveWhereUniqueInput
+    data: XOR<ObjectiveUpdateWithoutExtendedByUserInput, ObjectiveUncheckedUpdateWithoutExtendedByUserInput>
+  }
+
+  export type ObjectiveUpdateManyWithWhereWithoutExtendedByUserInput = {
+    where: ObjectiveScalarWhereInput
+    data: XOR<ObjectiveUpdateManyMutationInput, ObjectiveUncheckedUpdateManyWithoutExtendedByUserInput>
   }
 
   export type KeyResultUpsertWithWhereUniqueWithoutOwnerInput = {
@@ -21340,6 +21873,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -21364,6 +21898,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -21404,6 +21939,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -21428,6 +21964,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -21452,6 +21989,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -21476,6 +22014,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -21516,6 +22055,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -21540,6 +22080,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -21617,6 +22158,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -21641,6 +22183,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -21741,8 +22284,15 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    extendedByUser?: UserCreateNestedOneWithoutExtendedObjectivesInput
     owner: UserCreateNestedOneWithoutOwnedObjectivesInput
     contributors?: UserCreateNestedManyWithoutContributedObjectivesInput
     parent?: ObjectiveCreateNestedOneWithoutChildrenInput
@@ -21758,6 +22308,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     parentId?: string | null
     createdAt?: Date | string
@@ -21793,6 +22350,61 @@ export namespace Prisma {
     data: XOR<ObjectiveUpdateManyMutationInput, ObjectiveUncheckedUpdateManyWithoutCycleInput>
   }
 
+  export type UserCreateWithoutExtendedObjectivesInput = {
+    id?: string
+    email: string
+    name: string
+    password: string
+    role?: $Enums.Role
+    position?: string | null
+    avatar?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    department?: DepartmentCreateNestedOneWithoutUsersInput
+    manager?: UserCreateNestedOneWithoutEmployeesInput
+    employees?: UserCreateNestedManyWithoutManagerInput
+    ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
+    contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
+    progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
+    reviews?: ReviewCreateNestedManyWithoutReviewerInput
+    reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutExtendedObjectivesInput = {
+    id?: string
+    email: string
+    name: string
+    password: string
+    role?: $Enums.Role
+    position?: string | null
+    avatar?: string | null
+    active?: boolean
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    departmentId?: string | null
+    managerId?: string | null
+    employees?: UserUncheckedCreateNestedManyWithoutManagerInput
+    ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
+    contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
+    progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
+    reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
+    reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutExtendedObjectivesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutExtendedObjectivesInput, UserUncheckedCreateWithoutExtendedObjectivesInput>
+  }
+
   export type UserCreateWithoutOwnedObjectivesInput = {
     id?: string
     email: string
@@ -21808,6 +22420,7 @@ export namespace Prisma {
     manager?: UserCreateNestedOneWithoutEmployeesInput
     employees?: UserCreateNestedManyWithoutManagerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -21832,6 +22445,7 @@ export namespace Prisma {
     managerId?: string | null
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -21861,6 +22475,7 @@ export namespace Prisma {
     manager?: UserCreateNestedOneWithoutEmployeesInput
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -21885,6 +22500,7 @@ export namespace Prisma {
     managerId?: string | null
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -21933,8 +22549,15 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    extendedByUser?: UserCreateNestedOneWithoutExtendedObjectivesInput
     owner: UserCreateNestedOneWithoutOwnedObjectivesInput
     contributors?: UserCreateNestedManyWithoutContributedObjectivesInput
     cycle: CycleCreateNestedOneWithoutObjectivesInput
@@ -21950,6 +22573,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     cycleId: string
     parentId?: string | null
@@ -21972,8 +22602,15 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    extendedByUser?: UserCreateNestedOneWithoutExtendedObjectivesInput
     owner: UserCreateNestedOneWithoutOwnedObjectivesInput
     contributors?: UserCreateNestedManyWithoutContributedObjectivesInput
     cycle: CycleCreateNestedOneWithoutObjectivesInput
@@ -21989,6 +22626,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     cycleId: string
     createdAt?: Date | string
@@ -22078,6 +22722,67 @@ export namespace Prisma {
     data: ReviewCreateManyObjectiveInput | ReviewCreateManyObjectiveInput[]
   }
 
+  export type UserUpsertWithoutExtendedObjectivesInput = {
+    update: XOR<UserUpdateWithoutExtendedObjectivesInput, UserUncheckedUpdateWithoutExtendedObjectivesInput>
+    create: XOR<UserCreateWithoutExtendedObjectivesInput, UserUncheckedCreateWithoutExtendedObjectivesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutExtendedObjectivesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutExtendedObjectivesInput, UserUncheckedUpdateWithoutExtendedObjectivesInput>
+  }
+
+  export type UserUpdateWithoutExtendedObjectivesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    position?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    department?: DepartmentUpdateOneWithoutUsersNestedInput
+    manager?: UserUpdateOneWithoutEmployeesNestedInput
+    employees?: UserUpdateManyWithoutManagerNestedInput
+    ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
+    contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
+    progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
+    reviews?: ReviewUpdateManyWithoutReviewerNestedInput
+    reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutExtendedObjectivesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumRoleFieldUpdateOperationsInput | $Enums.Role
+    position?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar?: NullableStringFieldUpdateOperationsInput | string | null
+    active?: BoolFieldUpdateOperationsInput | boolean
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    departmentId?: NullableStringFieldUpdateOperationsInput | string | null
+    managerId?: NullableStringFieldUpdateOperationsInput | string | null
+    employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
+    ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
+    contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
+    progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
+    reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type UserUpsertWithoutOwnedObjectivesInput = {
     update: XOR<UserUpdateWithoutOwnedObjectivesInput, UserUncheckedUpdateWithoutOwnedObjectivesInput>
     create: XOR<UserCreateWithoutOwnedObjectivesInput, UserUncheckedCreateWithoutOwnedObjectivesInput>
@@ -22104,6 +22809,7 @@ export namespace Prisma {
     manager?: UserUpdateOneWithoutEmployeesNestedInput
     employees?: UserUpdateManyWithoutManagerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -22128,6 +22834,7 @@ export namespace Prisma {
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -22204,8 +22911,15 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    extendedByUser?: UserUpdateOneWithoutExtendedObjectivesNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedObjectivesNestedInput
     contributors?: UserUpdateManyWithoutContributedObjectivesNestedInput
     cycle?: CycleUpdateOneRequiredWithoutObjectivesNestedInput
@@ -22221,6 +22935,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     cycleId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22286,8 +23007,15 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    extendedByUser?: UserCreateNestedOneWithoutExtendedObjectivesInput
     owner: UserCreateNestedOneWithoutOwnedObjectivesInput
     contributors?: UserCreateNestedManyWithoutContributedObjectivesInput
     cycle: CycleCreateNestedOneWithoutObjectivesInput
@@ -22303,6 +23031,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     cycleId: string
     parentId?: string | null
@@ -22334,6 +23069,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
@@ -22358,6 +23094,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
@@ -22416,8 +23153,15 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    extendedByUser?: UserUpdateOneWithoutExtendedObjectivesNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedObjectivesNestedInput
     contributors?: UserUpdateManyWithoutContributedObjectivesNestedInput
     cycle?: CycleUpdateOneRequiredWithoutObjectivesNestedInput
@@ -22433,6 +23177,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     cycleId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22470,6 +23221,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
@@ -22494,6 +23246,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
@@ -22567,6 +23320,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
@@ -22591,6 +23345,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
@@ -22670,6 +23425,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
@@ -22694,6 +23450,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
@@ -22709,8 +23466,15 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    extendedByUser?: UserCreateNestedOneWithoutExtendedObjectivesInput
     owner: UserCreateNestedOneWithoutOwnedObjectivesInput
     contributors?: UserCreateNestedManyWithoutContributedObjectivesInput
     cycle: CycleCreateNestedOneWithoutObjectivesInput
@@ -22726,6 +23490,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     cycleId: string
     parentId?: string | null
@@ -22757,6 +23528,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviewsReceived?: ReviewCreateNestedManyWithoutRevieweeInput
@@ -22781,6 +23553,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviewsReceived?: ReviewUncheckedCreateNestedManyWithoutRevieweeInput
@@ -22810,6 +23583,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -22834,6 +23608,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -22865,8 +23640,15 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    extendedByUser?: UserUpdateOneWithoutExtendedObjectivesNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedObjectivesNestedInput
     contributors?: UserUpdateManyWithoutContributedObjectivesNestedInput
     cycle?: CycleUpdateOneRequiredWithoutObjectivesNestedInput
@@ -22882,6 +23664,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     cycleId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -22919,6 +23708,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviewsReceived?: ReviewUpdateManyWithoutRevieweeNestedInput
@@ -22943,6 +23733,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviewsReceived?: ReviewUncheckedUpdateManyWithoutRevieweeNestedInput
@@ -22978,6 +23769,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -23002,6 +23794,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -23026,6 +23819,7 @@ export namespace Prisma {
     employees?: UserCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewCreateNestedManyWithoutReviewerInput
@@ -23050,6 +23844,7 @@ export namespace Prisma {
     employees?: UserUncheckedCreateNestedManyWithoutManagerInput
     ownedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutOwnerInput
     contributedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutContributorsInput
+    extendedObjectives?: ObjectiveUncheckedCreateNestedManyWithoutExtendedByUserInput
     keyResults?: KeyResultUncheckedCreateNestedManyWithoutOwnerInput
     progressUpdates?: ProgressUpdateUncheckedCreateNestedManyWithoutCreatedByInput
     reviews?: ReviewUncheckedCreateNestedManyWithoutReviewerInput
@@ -23090,6 +23885,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -23114,6 +23910,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -23143,6 +23940,33 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
+    cycleId: string
+    parentId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ObjectiveCreateManyExtendedByUserInput = {
+    id?: string
+    title: string
+    description?: string | null
+    type?: $Enums.ObjectiveType
+    status?: $Enums.Status
+    weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    ownerId: string
     cycleId: string
     parentId?: string | null
     createdAt?: Date | string
@@ -23240,6 +24064,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -23264,6 +24089,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -23294,8 +24120,15 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    extendedByUser?: UserUpdateOneWithoutExtendedObjectivesNestedInput
     contributors?: UserUpdateManyWithoutContributedObjectivesNestedInput
     cycle?: CycleUpdateOneRequiredWithoutObjectivesNestedInput
     parent?: ObjectiveUpdateOneWithoutChildrenNestedInput
@@ -23311,6 +24144,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     cycleId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23328,6 +24168,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     cycleId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23341,8 +24188,15 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    extendedByUser?: UserUpdateOneWithoutExtendedObjectivesNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedObjectivesNestedInput
     cycle?: CycleUpdateOneRequiredWithoutObjectivesNestedInput
     parent?: ObjectiveUpdateOneWithoutChildrenNestedInput
@@ -23358,6 +24212,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     cycleId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23375,6 +24236,81 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    cycleId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ObjectiveUpdateWithoutExtendedByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    owner?: UserUpdateOneRequiredWithoutOwnedObjectivesNestedInput
+    contributors?: UserUpdateManyWithoutContributedObjectivesNestedInput
+    cycle?: CycleUpdateOneRequiredWithoutObjectivesNestedInput
+    parent?: ObjectiveUpdateOneWithoutChildrenNestedInput
+    children?: ObjectiveUpdateManyWithoutParentNestedInput
+    keyResults?: KeyResultUpdateManyWithoutObjectiveNestedInput
+    reviews?: ReviewUpdateManyWithoutObjectiveNestedInput
+  }
+
+  export type ObjectiveUncheckedUpdateWithoutExtendedByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    ownerId?: StringFieldUpdateOperationsInput | string
+    cycleId?: StringFieldUpdateOperationsInput | string
+    parentId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    contributors?: UserUncheckedUpdateManyWithoutContributedObjectivesNestedInput
+    children?: ObjectiveUncheckedUpdateManyWithoutParentNestedInput
+    keyResults?: KeyResultUncheckedUpdateManyWithoutObjectiveNestedInput
+    reviews?: ReviewUncheckedUpdateManyWithoutObjectiveNestedInput
+  }
+
+  export type ObjectiveUncheckedUpdateManyWithoutExtendedByUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
+    status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
+    weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     cycleId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -23677,6 +24613,7 @@ export namespace Prisma {
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -23701,6 +24638,7 @@ export namespace Prisma {
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
     contributedObjectives?: ObjectiveUncheckedUpdateManyWithoutContributorsNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -23731,6 +24669,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     parentId?: string | null
     createdAt?: Date | string
@@ -23744,8 +24689,15 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    extendedByUser?: UserUpdateOneWithoutExtendedObjectivesNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedObjectivesNestedInput
     contributors?: UserUpdateManyWithoutContributedObjectivesNestedInput
     parent?: ObjectiveUpdateOneWithoutChildrenNestedInput
@@ -23761,6 +24713,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23778,6 +24737,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     parentId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23791,6 +24757,13 @@ export namespace Prisma {
     type?: $Enums.ObjectiveType
     status?: $Enums.Status
     weight?: number | null
+    wasMissed?: boolean | null
+    originalEndDate?: Date | string | null
+    extendedDeadline?: Date | string | null
+    extensionReason?: string | null
+    missedReason?: string | null
+    dateExtended?: Date | string | null
+    extendedBy?: string | null
     ownerId: string
     cycleId: string
     createdAt?: Date | string
@@ -23837,6 +24810,7 @@ export namespace Prisma {
     manager?: UserUpdateOneWithoutEmployeesNestedInput
     employees?: UserUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUpdateManyWithoutOwnerNestedInput
+    extendedObjectives?: ObjectiveUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUpdateManyWithoutReviewerNestedInput
@@ -23861,6 +24835,7 @@ export namespace Prisma {
     managerId?: NullableStringFieldUpdateOperationsInput | string | null
     employees?: UserUncheckedUpdateManyWithoutManagerNestedInput
     ownedObjectives?: ObjectiveUncheckedUpdateManyWithoutOwnerNestedInput
+    extendedObjectives?: ObjectiveUncheckedUpdateManyWithoutExtendedByUserNestedInput
     keyResults?: KeyResultUncheckedUpdateManyWithoutOwnerNestedInput
     progressUpdates?: ProgressUpdateUncheckedUpdateManyWithoutCreatedByNestedInput
     reviews?: ReviewUncheckedUpdateManyWithoutReviewerNestedInput
@@ -23892,8 +24867,15 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    extendedByUser?: UserUpdateOneWithoutExtendedObjectivesNestedInput
     owner?: UserUpdateOneRequiredWithoutOwnedObjectivesNestedInput
     contributors?: UserUpdateManyWithoutContributedObjectivesNestedInput
     cycle?: CycleUpdateOneRequiredWithoutObjectivesNestedInput
@@ -23909,6 +24891,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     cycleId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -23926,6 +24915,13 @@ export namespace Prisma {
     type?: EnumObjectiveTypeFieldUpdateOperationsInput | $Enums.ObjectiveType
     status?: EnumStatusFieldUpdateOperationsInput | $Enums.Status
     weight?: NullableFloatFieldUpdateOperationsInput | number | null
+    wasMissed?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    originalEndDate?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedDeadline?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extensionReason?: NullableStringFieldUpdateOperationsInput | string | null
+    missedReason?: NullableStringFieldUpdateOperationsInput | string | null
+    dateExtended?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    extendedBy?: NullableStringFieldUpdateOperationsInput | string | null
     ownerId?: StringFieldUpdateOperationsInput | string
     cycleId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

@@ -136,17 +136,22 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Analytics */}
+            {/* Developer API */}
             <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-xl border border-purple-200">
               <div className="flex items-center space-x-3 mb-3">
-                <BarChart3 className="h-6 w-6 text-purple-600" />
-                <h3 className="text-lg font-semibold text-gray-900">Advanced Analytics</h3>
+                <Settings className="h-6 w-6 text-purple-600" />
+                <h3 className="text-lg font-semibold text-gray-900">Developer API</h3>
               </div>
-              <p className="text-gray-600 text-sm mb-3">Real-time statistics and comprehensive reporting.</p>
+              <p className="text-gray-600 text-sm mb-3">
+                Comprehensive REST API with full documentation. 
+                <Link href="/api/docs" className="text-purple-600 hover:text-purple-800 underline ml-1">
+                  View API Docs →
+                </Link>
+              </p>
               <div className="flex flex-wrap gap-1">
-                <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs">Visualization</span>
-                <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs">Performance</span>
-                <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs">Historical</span>
+                <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs">REST API</span>
+                <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs">Integration</span>
+                <span className="bg-purple-200 text-purple-800 px-2 py-1 rounded text-xs">Analytics</span>
               </div>
             </div>
 

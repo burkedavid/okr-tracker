@@ -36,6 +36,7 @@ model User {
   // OKR relationships
   ownedObjectives      Objective[]     @relation("ObjectiveOwner")
   contributedObjectives Objective[]    @relation("ObjectiveContributor")
+  extendedObjectives   Objective[]     @relation("ObjectiveExtender")
   keyResults           KeyResult[]
   progressUpdates      ProgressUpdate[]
   reviews              Review[]        @relation("ReviewReviewer")
@@ -129,6 +130,16 @@ model Objective {
   type        ObjectiveType @default(PERSONAL)
   status      Status        @default(NOT_STARTED)
   weight      Float?        @default(1.0)
+  
+  // Deadline extension fields
+  wasMissed        Boolean?   
+  originalEndDate  DateTime?  
+  extendedDeadline DateTime?  
+  extensionReason  String?    
+  missedReason     String?    
+  dateExtended     DateTime?  
+  extendedBy       String?    
+  extendedByUser   User?      @relation("ObjectiveExtender", fields: [extendedBy], references: [id])
   
   // Relationships
   ownerId     String
@@ -265,6 +276,7 @@ enum Status {
   AT_RISK
   COMPLETED
   CANCELLED
+  EXTENDED
 }
 
 enum MetricType {
