@@ -319,9 +319,9 @@ export default function DashboardPage() {
 
         {/* Main Content Grid */}
         <div className="grid gap-8 lg:grid-cols-3">
-          {/* Recent Objectives */}
-          <Card className="lg:col-span-2 bg-white shadow-sm border-slate-200">
-            <CardHeader className="border-b border-slate-100 pb-4">
+          {/* All Objectives - Scrollable */}
+          <Card className="lg:col-span-2 bg-white shadow-sm border-slate-200 flex flex-col h-full">
+            <CardHeader className="border-b border-slate-100 pb-4 flex-shrink-0">
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <CardTitle className="text-xl font-semibold text-slate-900">
@@ -337,7 +337,7 @@ export default function DashboardPage() {
                       ? 'Your personal OKR updates and progress'
                       : session?.user?.role === 'MANAGER' && viewMode === 'personal'
                         ? 'Your personal OKR updates and progress'
-                        : 'Objectives ordered by deadline urgency'
+                        : `All ${objectives.length} objectives ordered by deadline urgency`
                     }
                   </CardDescription>
                 </div>
@@ -346,80 +346,98 @@ export default function DashboardPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-6">
-              <div className="space-y-6">
-                {objectives.slice(0, 3).map((objective) => {
-                  const deadlineInfo = formatDeadline(objective)
-                  const DeadlineIcon = deadlineInfo.icon
-                  
-                  return (
-                    <div key={objective.id} className={`p-6 rounded-xl border-2 transition-all duration-200 ${getProgressBg(objective.progress)}`}>
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1 space-y-3">
-                          <div className="flex items-center space-x-3">
-                            <h3 className="font-semibold text-slate-900 text-lg">
-                              {objective.title}
-                            </h3>
-                            <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(objective.status)}`}>
-                              {objective.status.replace('_', ' ')}
-                            </span>
-                            {objective.extendedDeadline && (
-                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
-                                Extended
-                              </span>
-                            )}
+            <CardContent className="p-0 flex flex-col h-full">
+              {objectives.length > 0 ? (
+                <div className="flex-1 overflow-y-auto">
+                  <div className="p-4 space-y-3">
+                    {objectives.map((objective, index) => {
+                      const deadlineInfo = formatDeadline(objective)
+                      const DeadlineIcon = deadlineInfo.icon
+                      
+                      return (
+                        <div key={objective.id} className={`p-3 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${getProgressBg(objective.progress)}`}>
+                          <div className="flex items-start justify-between mb-2">
+                            <div className="flex-1 space-y-2">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded">
+                                    #{index + 1}
+                                  </span>
+                                  <h3 className="font-semibold text-slate-900 text-base">
+                                    {objective.title}
+                                  </h3>
+                                </div>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusBadge(objective.status)}`}>
+                                  {objective.status.replace('_', ' ')}
+                                </span>
+                                {objective.extendedDeadline && (
+                                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700 border border-orange-200">
+                                    Extended
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-slate-600 text-sm leading-relaxed line-clamp-2">
+                                {objective.description}
+                              </p>
+                              <div className="flex items-center space-x-4 text-xs text-slate-500">
+                                <span className="flex items-center space-x-1">
+                                  <Users className="w-3 h-3" />
+                                  <span>{objective.owner.name}</span>
+                                </span>
+                                <span className="flex items-center space-x-1">
+                                  <Calendar className="w-3 h-3" />
+                                  <span>{objective.cycle.name}</span>
+                                </span>
+                                <span className="flex items-center space-x-1">
+                                  <BarChart3 className="w-3 h-3" />
+                                  <span>{objective.keyResults.length} KRs</span>
+                                </span>
+                                <span className={`flex items-center space-x-1 font-medium ${deadlineInfo.color}`}>
+                                  <DeadlineIcon className="w-3 h-3" />
+                                  <span>{deadlineInfo.text}</span>
+                                </span>
+                              </div>
+                            </div>
+                            <div className="text-right ml-4">
+                              <div className={`text-2xl font-bold ${getProgressColor(objective.progress)} mb-1`}>
+                                {objective.progress}%
+                              </div>
+                              <div className="text-xs text-slate-500">progress</div>
+                            </div>
                           </div>
-                          <p className="text-slate-600 leading-relaxed">
-                            {objective.description}
-                          </p>
-                          <div className="flex items-center space-x-6 text-sm text-slate-500">
-                            <span className="flex items-center space-x-2">
-                              <Users className="w-4 h-4" />
-                              <span>{objective.owner.name}</span>
-                            </span>
-                            <span className="flex items-center space-x-2">
-                              <Calendar className="w-4 h-4" />
-                              <span>{objective.cycle.name}</span>
-                            </span>
-                            <span className="flex items-center space-x-2">
-                              <BarChart3 className="w-4 h-4" />
-                              <span>{objective.keyResults.length} key results</span>
-                            </span>
-                            <span className={`flex items-center space-x-2 font-medium ${deadlineInfo.color}`}>
-                              <DeadlineIcon className="w-4 h-4" />
-                              <span>{deadlineInfo.text}</span>
-                            </span>
+                          <div className="space-y-1">
+                            <Progress value={objective.progress} className="h-2 bg-white/50" />
                           </div>
                         </div>
-                        <div className="text-right ml-6">
-                          <div className={`text-3xl font-bold ${getProgressColor(objective.progress)} mb-1`}>
-                            {objective.progress}%
-                          </div>
-                          <div className="text-sm text-slate-500">progress</div>
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <Progress value={objective.progress} className="h-3 bg-white/50" />
-                      </div>
-                    </div>
-                  )
-                })}
-                {objectives.length === 0 && (
-                  <div className="text-center py-16">
-                    <div className="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                      <Target className="h-8 w-8 text-slate-400" />
-                    </div>
-                    <h3 className="text-lg font-semibold text-slate-900 mb-2">No objectives found</h3>
-                    <p className="text-slate-500 mb-6">Get started by creating your first OKR</p>
-                    <Link href="/dashboard/manage">
-                      <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                        <Plus className="w-4 h-4 mr-2" />
-                        Create your first OKR
-                      </Button>
-                    </Link>
+                      )
+                    })}
                   </div>
-                )}
-              </div>
+                  {objectives.length > 5 && (
+                    <div className="border-t border-slate-100 p-3 bg-slate-50 mt-auto">
+                      <Link href="/dashboard/manage">
+                        <Button variant="ghost" className="w-full text-blue-600 hover:bg-blue-50 hover:text-blue-700 font-medium">
+                          View detailed management page
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center py-16">
+                  <div className="p-4 bg-slate-100 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                    <Target className="h-8 w-8 text-slate-400" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-slate-900 mb-2">No objectives found</h3>
+                  <p className="text-slate-500 mb-6">Get started by creating your first OKR</p>
+                  <Link href="/dashboard/manage">
+                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                      <Plus className="w-4 h-4 mr-2" />
+                      Create your first OKR
+                    </Button>
+                  </Link>
+                </div>
+              )}
             </CardContent>
           </Card>
           
@@ -440,7 +458,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="p-6">
               <div className="space-y-4">
-                {objectives.slice(0, 4).map((objective) => 
+                {objectives.slice(0, 6).map((objective) => 
                   objective.keyResults.slice(0, 1).map((kr) => {
                     const progress = (kr.currentValue / kr.targetValue) * 100
                     const deadlineInfo = formatDeadline(objective)
@@ -485,7 +503,7 @@ export default function DashboardPage() {
                     <p className="text-sm text-slate-500">No key results to display</p>
                   </div>
                 )}
-                {objectives.length > 0 && (
+                {objectives.length > 6 && (
                   <Link href="/dashboard/manage">
                     <Button variant="ghost" className="w-full mt-6 text-blue-600 hover:bg-blue-50 hover:text-blue-700 font-medium">
                       View all key results
