@@ -1,21 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
+import { getServerSession } from 'next-auth/next'
+import { Session } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions)
+    const session = await getServerSession(authOptions) as Session | null
     
-    if (!session?.user) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Type assertion for session user with our custom properties
+    const user = session.user as { id: string; role: string; email: string; name: string }
+
     // Only admins and managers can extend deadlines
-    if (session.user.role !== 'ADMIN' && session.user.role !== 'MANAGER') {
+    if (user.role !== 'ADMIN' && user.role !== 'MANAGER') {
       return NextResponse.json({ error: 'Insufficient permissions' }, { status: 403 })
     }
 
@@ -27,7 +31,7 @@ export async function POST(
       }, { status: 400 })
     }
 
-    const objectiveId = params.id
+    const objectiveId = context.params.id
 
     // Get the current objective with its cycle
     const currentObjective = await prisma.objective.findUnique({
@@ -49,7 +53,7 @@ export async function POST(
         extensionReason,
         missedReason: missedReason || null,
         dateExtended: new Date(),
-        extendedBy: session.user.id,
+        extendedBy: user.id,
         status: 'EXTENDED' as const
       },
       include: {
