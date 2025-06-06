@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
-export async function POST(_request: NextRequest) {
+export async function POST() {
   try {
     // Check if database is already set up
     const existingUsers = await prisma.user.count()

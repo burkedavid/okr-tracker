@@ -28,7 +28,15 @@ interface Objective {
 
 interface ObjectiveFormProps {
   objective?: Objective
-  onSubmit: (data: any) => void
+  onSubmit: (data: {
+    title: string
+    description: string
+    type: string
+    status: string
+    ownerId: string
+    cycleId: string
+    parentId: string
+  }) => void
   onCancel: () => void
   isLoading?: boolean
 }

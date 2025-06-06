@@ -805,7 +805,7 @@ export default function TimelinePage() {
                       style={{ width: `${totalTimelineWidth}%`, minWidth: `${Math.max(totalTimelineWidth, 200)}%` }}
                     >
                       {/* Cycle Bars */}
-                      {objectivesByCycle.map(({ cycle, objectives, position }) => (
+                      {objectivesByCycle.map(({ cycle, objectives: _objectives, position }) => (
                         <div
                           key={cycle.id}
                           className={`absolute top-6 h-8 rounded transition-all duration-300 ${
@@ -840,8 +840,8 @@ export default function TimelinePage() {
                       </div>
 
                       {/* Objectives as dots */}
-                      {objectivesByCycle.map(({ cycle, objectives, position }) =>
-                        objectives.map((objective, index) => {
+                      {objectivesByCycle.map(({ cycle: _cycle, objectives: _objectives, position }) =>
+                        _objectives.map((objective, index) => {
                           const missedInfo = calculateMissedTargetInfo(objective)
                           const objectivePosition = position.left + (position.width * 0.1) + (index * (15 / timelineZoom))
                           const verticalPosition = 60 + (index % 3) * 18
@@ -968,13 +968,12 @@ export default function TimelinePage() {
 
                 {/* Enhanced Cycle Details */}
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {objectivesByCycle.map(({ cycle, objectives }) => {
-                    const cycleMissed = objectives.filter(obj => calculateMissedTargetInfo(obj).isMissed)
-                    const cycleAtRisk = objectives.filter(obj => calculateMissedTargetInfo(obj).isAtRisk)
-                    const cycleCompleted = objectives.filter(obj => obj.status === 'COMPLETED')
+                  {objectivesByCycle.map(({ cycle, objectives: _objectives }) => {
+                    const cycleMissed = _objectives.filter(obj => calculateMissedTargetInfo(obj).isMissed)
+                    const cycleAtRisk = _objectives.filter(obj => calculateMissedTargetInfo(obj).isAtRisk)
+                    const cycleCompleted = _objectives.filter(obj => obj.status === 'COMPLETED')
                     const now = new Date()
                     const cycleEnd = new Date(cycle.endDate)
-                    const isCompletedCycle = now > cycleEnd
                     
                     return (
                       <Card key={cycle.id} className={`${cycle.active ? 'ring-2 ring-blue-400 bg-blue-50' : 'bg-white'} shadow-sm border-slate-200`}>
@@ -1004,14 +1003,14 @@ export default function TimelinePage() {
                           <div className="space-y-3">
                             <div className="flex justify-between text-sm">
                               <span className="text-slate-600">Objectives:</span>
-                              <span className="font-medium">{objectives.length}</span>
+                              <span className="font-medium">{_objectives.length}</span>
                             </div>
-                            {objectives.length > 0 && (
+                            {_objectives.length > 0 && (
                               <>
                                 <div className="flex justify-between text-sm">
                                   <span className="text-slate-600">Avg Progress:</span>
-                                  <span className={`font-medium ${getProgressColor(Math.round(objectives.reduce((sum, obj) => sum + obj.progress, 0) / objectives.length))}`}>
-                                    {Math.round(objectives.reduce((sum, obj) => sum + obj.progress, 0) / objectives.length)}%
+                                  <span className={`font-medium ${getProgressColor(Math.round(_objectives.reduce((sum, obj) => sum + obj.progress, 0) / _objectives.length))}`}>
+                                    {Math.round(_objectives.reduce((sum, obj) => sum + obj.progress, 0) / _objectives.length)}%
                                   </span>
                                 </div>
                                 
@@ -1029,7 +1028,7 @@ export default function TimelinePage() {
                                 )}
                                 
                                 <div className="space-y-1">
-                                  {objectives.slice(0, 3).map(objective => {
+                                  {_objectives.slice(0, 3).map(objective => {
                                     const missedInfo = calculateMissedTargetInfo(objective)
                                     return (
                                       <div key={objective.id} className="flex items-center space-x-2 text-xs">
@@ -1045,9 +1044,9 @@ export default function TimelinePage() {
                                       </div>
                                     )
                                   })}
-                                  {objectives.length > 3 && (
+                                  {_objectives.length > 3 && (
                                     <div className="text-xs text-slate-500 pl-4">
-                                      +{objectives.length - 3} more objectives
+                                      +{_objectives.length - 3} more objectives
                                     </div>
                                   )}
                                 </div>

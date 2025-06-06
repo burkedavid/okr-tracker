@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import DashboardHeader from '@/components/layout/DashboardHeader'
 import { 
@@ -82,7 +82,6 @@ export default function UsersPage() {
   const [showUserForm, setShowUserForm] = useState(false)
   const [showDepartmentForm, setShowDepartmentForm] = useState(false)
   const [editingUser, setEditingUser] = useState<User | null>(null)
-  const [editingDepartment, setEditingDepartment] = useState<Department | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [roleFilter, setRoleFilter] = useState('')
   const { data: session } = useSession()

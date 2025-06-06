@@ -147,16 +147,16 @@ export default function DashboardPage() {
 
   // Helper function to calculate days until deadline
   const getDaysUntilDeadline = (objective: Objective) => {
-    const _deadline = getEffectiveDeadline(objective)
+    const deadline = getEffectiveDeadline(objective)
     const now = new Date()
-    const diffTime = _deadline.getTime() - now.getTime()
+    const diffTime = deadline.getTime() - now.getTime()
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
     return diffDays
   }
 
   // Helper function to format deadline display
   const formatDeadline = (objective: Objective) => {
-    const _deadline = getEffectiveDeadline(objective)
+    const deadline = getEffectiveDeadline(objective)
     const daysUntil = getDaysUntilDeadline(objective)
     
     if (daysUntil < 0) {

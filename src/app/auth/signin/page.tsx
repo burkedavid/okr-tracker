@@ -30,10 +30,10 @@ export default function SignIn() {
         setError('Invalid email or password')
       } else {
         // Get the session to check user role
-        const _session = await getSession()
+        await getSession()
         router.push('/dashboard')
       }
-    } catch (_error) {
+    } catch {
       setError('An error occurred. Please try again.')
     } finally {
       setLoading(false)
