@@ -14,7 +14,7 @@ export async function GET(request: Request) {
       )
     }
 
-    let whereClause: any = {}
+    let whereClause: { managerId?: string; departmentId?: string } = {}
 
     if (managerId) {
       // Get team members who report to this manager

@@ -50,7 +50,7 @@ export async function POST(
         missedReason: missedReason || null,
         dateExtended: new Date(),
         extendedBy: session.user.id,
-        status: 'EXTENDED' as any
+        status: 'EXTENDED' as const
       },
       include: {
         owner: true,

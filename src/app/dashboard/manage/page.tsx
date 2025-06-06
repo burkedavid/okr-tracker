@@ -19,7 +19,6 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  Home,
   User,
   Building,
   Search,
@@ -373,7 +372,7 @@ export default function ManagePage() {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
-  const handleEditKeyResult = (keyResult: any, objectiveId: string) => {
+  const handleEditKeyResult = (keyResult: Objective['keyResults'][0], objectiveId: string) => {
     setEditingKeyResultInline(keyResult.id)
     setKeyResultForm({
       description: keyResult.description,

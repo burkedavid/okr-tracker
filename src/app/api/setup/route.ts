@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     // Check if database is already set up
     const existingUsers = await prisma.user.count()
@@ -170,7 +170,7 @@ export async function GET() {
       objectives: objectiveCount,
       cycles: cycleCount
     })
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to check database status' },
       { status: 500 }
