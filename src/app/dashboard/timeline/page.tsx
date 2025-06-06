@@ -67,7 +67,7 @@ interface Cycle {
   endDate: string
   active: boolean
 }
- 
+  
 interface MissedTargetInfo {
   isMissed: boolean
   isAtRisk: boolean
