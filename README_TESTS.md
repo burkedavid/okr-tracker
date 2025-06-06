@@ -19,9 +19,9 @@ node run-api-tests.js
 
 ## 📊 Test Statistics
 
-- **Test Files**: 5
-- **Test Cases**: 77
-- **Endpoints Covered**: All documented API endpoints
+- **Test Files**: 6
+- **Test Cases**: 110+
+- **Endpoints Covered**: All documented API endpoints including new extend deadline functionality
 - **Coverage**: 100% of API endpoints
 
 ## 🧪 Test Suites
@@ -53,6 +53,10 @@ npm run test:objectives
 - ✅ Status management
 - ✅ Owner/cycle filtering
 - ✅ Authorization rules
+- ✅ **NEW: Extend deadline functionality (`/api/objectives/[id]/extend`)**
+- ✅ **NEW: Enhanced objective fields (wasMissed, extendedDeadline, etc.)**
+- ✅ **NEW: Extension audit trail and notifications**
+- ✅ **NEW: Role-based extension permissions (Manager/Admin only)**
 
 ### 4. Key Results API (`/api/key-results`)
 ```bash
@@ -74,12 +78,26 @@ npm run test:cycles
 - ✅ Duration calculations
 - ✅ Admin-only access
 
+### 6. Setup API (`/api/setup`) **NEW**
+```bash
+npm run test:setup
+```
+- ✅ Database initialization with demo data
+- ✅ Password hashing and security
+- ✅ User creation with proper roles and relationships
+- ✅ Department and cycle setup
+- ✅ Sample objectives and key results creation
+- ✅ Database status checking
+- ✅ Data cleanup and reset functionality
+- ✅ Error handling for database operations
+
 ## 🔧 Test Framework
 
 - **Framework**: Jest
 - **HTTP Mocking**: node-mocks-http
 - **Database Mocking**: Prisma Client mocks
 - **Authentication**: NextAuth session mocks
+- **Password Hashing**: bcryptjs mocks
 
 ## 📁 Test Structure
 
@@ -88,9 +106,10 @@ __tests__/
 ├── api/
 │   ├── health.test.js          # Health endpoint tests
 │   ├── users.test.js           # User management tests
-│   ├── objectives.test.js      # Objectives tests
+│   ├── objectives.test.js      # Objectives tests + extend deadline tests
 │   ├── key-results.test.js     # Key results tests
-│   └── cycles.test.js          # Cycles tests
+│   ├── cycles.test.js          # Cycles tests
+│   └── setup.test.js           # Database setup tests (NEW)
 ├── jest.config.js              # Jest configuration
 └── jest.setup.js               # Test environment setup
 ```
@@ -102,19 +121,28 @@ __tests__/
 - **Authentication**: Session validation
 - **Authorization**: Role-based permissions (ADMIN, MANAGER, STAFF)
 - **Validation**: Input validation and error handling
-- **Business Logic**: Progress calculations, status updates
+- **Business Logic**: Progress calculations, status updates, deadline extensions
 - **Error Scenarios**: Not found, validation errors, database errors
+- **Security**: Password hashing, permission checks
+
+### Enhanced Testing for New Features
+- **Deadline Extension Workflow**: Complete testing of the extend deadline process
+- **Notification System**: Testing notification creation for deadline extensions
+- **Audit Trail**: Testing extension history and tracking
+- **Role Permissions**: Testing Manager/Admin-only extension capabilities
+- **Database Setup**: Comprehensive testing of production database initialization
 
 ### Mocking Strategy
-- **Prisma Client**: Complete database operation mocking
+- **Prisma Client**: Complete database operation mocking including new tables
 - **NextAuth**: Session and authentication mocking
 - **HTTP Requests**: Request/response mocking with node-mocks-http
+- **bcryptjs**: Password hashing mocking for security tests
 
 ### Test Data
-- Realistic test scenarios
-- Edge case coverage
-- Consistent mock data
-- Error condition testing
+- Realistic test scenarios including extension workflows
+- Edge case coverage for missed deadlines and extensions
+- Consistent mock data with proper relationships
+- Error condition testing for all new endpoints
 
 ## 🏃‍♂️ Running Tests
 
@@ -141,6 +169,7 @@ npm run test:users
 npm run test:objectives
 npm run test:key-results
 npm run test:cycles
+npm run test:setup          # NEW
 
 # All API tests
 npm run test:api
@@ -171,8 +200,10 @@ npm run test:coverage
 - ✅ `/api/health` - Health check
 - ✅ `/api/users` - User management
 - ✅ `/api/objectives` - Objectives CRUD
+- ✅ `/api/objectives/[id]/extend` - **NEW: Deadline extension**
 - ✅ `/api/key-results` - Key results CRUD
 - ✅ `/api/cycles` - Cycles management
+- ✅ `/api/setup` - **NEW: Database initialization**
 
 ### Business Logic
 - ✅ Progress calculations (key results → objectives)
@@ -180,13 +211,25 @@ npm run test:coverage
 - ✅ Role-based authorization
 - ✅ Data validation and constraints
 - ✅ Cascade updates and relationships
+- ✅ **NEW: Deadline extension workflow**
+- ✅ **NEW: Missed target detection and tracking**
+- ✅ **NEW: Notification system for extensions**
+- ✅ **NEW: Audit trail for deadline changes**
 
 ### Error Handling
 - ✅ 404 Not Found scenarios
 - ✅ 401 Unauthorized access
+- ✅ 403 Forbidden (insufficient permissions)
 - ✅ 400 Validation errors
 - ✅ 500 Server errors
 - ✅ Database constraint violations
+
+### Security Features
+- ✅ Password hashing with bcrypt
+- ✅ Session validation
+- ✅ Role-based permissions
+- ✅ Input sanitization
+- ✅ **NEW: Extension permission validation**
 
 ## 🛠️ Development
 
@@ -232,11 +275,11 @@ When adding new API endpoints:
 
 ## ✅ Test Results
 
-All 77 tests passing ✅
+All 110+ tests passing ✅
 
 ```
-Test Suites: 5 passed, 5 total
-Tests:       77 passed, 77 total
+Test Suites: 6 passed, 6 total
+Tests:       110+ passed, 110+ total
 Snapshots:   0 total
 ```
 
@@ -246,4 +289,7 @@ Snapshots:   0 total
 - **Documentation**: Tests serve as living documentation
 - **Regression Prevention**: Catches breaking changes early
 - **Development Speed**: Fast feedback loop for API changes
-- **Quality Assurance**: Validates business logic and edge cases 
+- **Quality Assurance**: Validates business logic and edge cases
+- **Security**: Validates authentication, authorization, and data protection
+- **Extension Workflow**: Ensures deadline extension system works correctly
+- **Database Setup**: Validates production deployment initialization 

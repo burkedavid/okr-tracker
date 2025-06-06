@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import DashboardHeader from '@/components/layout/DashboardHeader'
@@ -90,16 +91,19 @@ export default function TimelinePage() {
   const dateLabelsRef = useRef<HTMLDivElement>(null)
   const { data: session } = useSession()
 
+  // Type assertion for our custom session with extended user properties
+  const typedSession = session as Session | null
+
   useEffect(() => {
     fetchData()
   }, [])
 
   useEffect(() => {
     // Auto-select current user for staff
-    if (session?.user?.role === 'STAFF' && session?.user?.id) {
-      setSelectedUserId(session.user.id)
+    if (typedSession?.user?.role === 'STAFF' && typedSession?.user?.id) {
+      setSelectedUserId(typedSession.user.id)
     }
-  }, [session])
+  }, [typedSession])
 
   // Synchronize scroll between timeline and date labels
   useEffect(() => {
@@ -464,7 +468,7 @@ export default function TimelinePage() {
                   value={selectedUserId}
                   onChange={(e) => setSelectedUserId(e.target.value)}
                   className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  disabled={session?.user?.role === 'STAFF'}
+                  disabled={typedSession?.user?.role === 'STAFF'}
                   title="Select a specific team member to view their individual OKR timeline and performance metrics, or choose 'All Team Members' to see the complete team overview."
                 >
                   <option value="">All Team Members</option>
@@ -474,7 +478,7 @@ export default function TimelinePage() {
                     </option>
                   ))}
                 </select>
-                {session?.user?.role === 'STAFF' && (
+                {typedSession?.user?.role === 'STAFF' && (
                   <p className="text-sm text-blue-600">Showing your personal timeline</p>
                 )}
               </div>

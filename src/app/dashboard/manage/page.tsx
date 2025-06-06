@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -121,6 +122,9 @@ export default function ManagePage() {
   
   const { data: session } = useSession()
 
+  // Type assertion for our custom session with extended user properties
+  const typedSession = session as Session | null
+
   // Form states
   const [objectiveForm, setObjectiveForm] = useState({
     title: '',
@@ -158,10 +162,10 @@ export default function ManagePage() {
 
   useEffect(() => {
     // Auto-filter for non-manager users to show only their objectives
-    if (session?.user?.role === 'STAFF' && session?.user?.id) {
-      setFilterUser(session.user.id)
+    if (typedSession?.user?.role === 'STAFF' && typedSession?.user?.id) {
+      setFilterUser(typedSession.user.id)
     }
-  }, [session])
+  }, [typedSession])
 
   // Calculate missed target information for an objective
   const calculateMissedTargetInfo = (objective: Objective): MissedTargetInfo => {
@@ -699,11 +703,11 @@ export default function ManagePage() {
             onClick: () => {
               setShowProgressForm(true)
               // Set default user to current logged-in user
-              if (session?.user?.id) {
+              if (typedSession?.user?.id) {
                 setProgressForm(prev => ({
                   ...prev,
-                  createdById: session.user.id,
-                  keyResultFilterUserId: session.user.id // Also filter key results by current user by default
+                  createdById: typedSession.user.id,
+                  keyResultFilterUserId: typedSession.user.id // Also filter key results by current user by default
                 }))
               }
             },
@@ -726,7 +730,7 @@ export default function ManagePage() {
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Only show user filter for managers and admins */}
-              {session?.user?.role !== 'STAFF' && (
+              {typedSession?.user?.role !== 'STAFF' && (
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-slate-700">Team Member</label>
                   <select
@@ -744,7 +748,7 @@ export default function ManagePage() {
                 </div>
               )}
               {/* Show info message for staff users */}
-              {session?.user?.role === 'STAFF' && (
+              {typedSession?.user?.role === 'STAFF' && (
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-slate-700">Viewing</label>
                   <div className="w-full px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-blue-800 text-sm">
@@ -830,7 +834,7 @@ export default function ManagePage() {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    if (session?.user?.role !== 'STAFF') {
+                    if (typedSession?.user?.role !== 'STAFF') {
                       setFilterUser('')
                     }
                     setFilterStatus('')
@@ -848,7 +852,7 @@ export default function ManagePage() {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    if (session?.user?.role !== 'STAFF') {
+                    if (typedSession?.user?.role !== 'STAFF') {
                       setFilterUser('')
                     }
                     setFilterStatus('IN_PROGRESS')
@@ -866,7 +870,7 @@ export default function ManagePage() {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    if (session?.user?.role !== 'STAFF') {
+                    if (typedSession?.user?.role !== 'STAFF') {
                       setFilterUser('')
                     }
                     setFilterStatus('COMPLETED')
@@ -884,7 +888,7 @@ export default function ManagePage() {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    if (session?.user?.role !== 'STAFF') {
+                    if (typedSession?.user?.role !== 'STAFF') {
                       setFilterUser('')
                     }
                     setFilterStatus('')
@@ -1476,7 +1480,7 @@ export default function ManagePage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-slate-900">
-                {session?.user?.role === 'STAFF' 
+                {typedSession?.user?.role === 'STAFF' 
                   ? 'My Objectives'
                   : filterUser 
                     ? `${users.find(u => u.id === filterUser)?.name}'s Objectives`
@@ -1484,7 +1488,7 @@ export default function ManagePage() {
                 }
               </h2>
               <p className="text-sm text-slate-500 mt-1">
-                {session?.user?.role === 'STAFF' || filterUser 
+                {typedSession?.user?.role === 'STAFF' || filterUser 
                   ? `${filteredObjectives.length} objective${filteredObjectives.length !== 1 ? 's' : ''}`
                   : `${filteredObjectives.length} of ${objectives.length} objective${objectives.length !== 1 ? 's' : ''}`
                 }
@@ -1520,7 +1524,7 @@ export default function ManagePage() {
                                   <XCircle className="w-3 h-3 mr-1" />
                                   Missed Target
                                 </span>
-                                {(session?.user?.role === 'MANAGER' || session?.user?.role === 'ADMIN') && (
+                                {(typedSession?.user?.role === 'MANAGER' || typedSession?.user?.role === 'ADMIN') && (
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -1571,7 +1575,7 @@ export default function ManagePage() {
                         })()}
                         
                         {/* Edit and Delete buttons for managers */}
-                        {(session?.user?.role === 'MANAGER' || session?.user?.role === 'ADMIN') && (
+                        {(typedSession?.user?.role === 'MANAGER' || typedSession?.user?.role === 'ADMIN') && (
                           <div className="flex items-center space-x-2 ml-4">
                             <Button
                               variant="ghost"
@@ -1582,7 +1586,7 @@ export default function ManagePage() {
                                 setKeyResultForm(prev => ({
                                   ...prev,
                                   objectiveId: objective.id,
-                                  ownerId: session?.user?.id || ''
+                                  ownerId: typedSession?.user?.id || ''
                                 }))
                                 setShowKeyResultForm(true)
                               }}
@@ -1802,7 +1806,7 @@ export default function ManagePage() {
                                         </div>
                                       </div>
                                       {/* Edit and Delete buttons for managers */}
-                                      {(session?.user?.role === 'MANAGER' || session?.user?.role === 'ADMIN') && (
+                                      {(typedSession?.user?.role === 'MANAGER' || typedSession?.user?.role === 'ADMIN') && (
                                         <div className="flex flex-col space-y-1">
                                           <Button
                                             variant="ghost"

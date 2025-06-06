@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import DashboardHeader from '@/components/layout/DashboardHeader'
@@ -73,6 +74,9 @@ export default function TeamManagementPage() {
   const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { data: session } = useSession()
+
+  // Type assertion for our custom session with extended user properties
+  const typedSession = session as Session | null
 
   const fetchData = useCallback(async () => {
     try {
@@ -228,7 +232,7 @@ export default function TeamManagementPage() {
   }
 
   // Redirect Staff users - they shouldn't access team OKRs
-  if (session?.user?.role === 'STAFF') {
+  if (typedSession?.user?.role === 'STAFF') {
     return (
       <div className="min-h-screen bg-slate-50">
         <div className="flex items-center justify-center h-screen">

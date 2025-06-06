@@ -1,11 +1,11 @@
 'use client'
 
 import { SessionProvider } from 'next-auth/react'
-import { Session } from 'next-auth'
 
 interface ProvidersProps {
   children: React.ReactNode
-  session: Session | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  session?: any
 }
 
 export function Providers({ children, session }: ProvidersProps) {

@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { Session } from 'next-auth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
@@ -60,6 +61,9 @@ export default function DashboardPage() {
   const [viewMode, setViewMode] = useState<'team' | 'personal'>('team')
   const { data: session } = useSession()
 
+  // Type assertion for our custom session with extended user properties
+  const typedSession = session as Session | null
+
   useEffect(() => {
     fetch('/api/objectives')
       .then(res => res.json())
@@ -74,17 +78,17 @@ export default function DashboardPage() {
   }, [])
 
   useEffect(() => {
-    if (!session?.user?.id || allObjectives.length === 0) return
+    if (!typedSession?.user?.id || allObjectives.length === 0) return
 
     let filteredObjectives = allObjectives
 
-    if (session.user.role === 'STAFF') {
+    if (typedSession.user.role === 'STAFF') {
       // Staff users only see their own objectives
-      filteredObjectives = allObjectives.filter(obj => obj.ownerId === session.user.id)
-    } else if (session.user.role === 'MANAGER') {
+      filteredObjectives = allObjectives.filter(obj => obj.ownerId === typedSession.user.id)
+    } else if (typedSession.user.role === 'MANAGER') {
       if (viewMode === 'personal') {
         // Manager viewing their personal objectives
-        filteredObjectives = allObjectives.filter(obj => obj.ownerId === session.user.id)
+        filteredObjectives = allObjectives.filter(obj => obj.ownerId === typedSession.user.id)
       } else {
         // Manager viewing team objectives (default)
         // For now, show all objectives - this could be enhanced to filter by team/department
@@ -106,7 +110,7 @@ export default function DashboardPage() {
     })
 
     setObjectives(sortedObjectives)
-  }, [allObjectives, session, viewMode])
+  }, [allObjectives, typedSession, viewMode])
 
   const stats = {
     activeObjectives: objectives.length,
@@ -204,15 +208,15 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-slate-50">
       {/* Header Section */}
       <DashboardHeader
-        title={session?.user?.role === 'STAFF' 
+        title={typedSession?.user?.role === 'STAFF' 
           ? 'My OKR Dashboard'
-          : session?.user?.role === 'MANAGER' && viewMode === 'personal'
+          : typedSession?.user?.role === 'MANAGER' && viewMode === 'personal'
             ? 'My OKR Dashboard'
             : 'OKR Dashboard'
         }
-        description={session?.user?.role === 'STAFF' 
+        description={typedSession?.user?.role === 'STAFF' 
           ? 'Track your personal objectives and key results'
-          : session?.user?.role === 'MANAGER' && viewMode === 'personal'
+          : typedSession?.user?.role === 'MANAGER' && viewMode === 'personal'
             ? 'Track your personal objectives and key results'
             : 'Track objectives and key results across the organisation'
         }
@@ -228,7 +232,7 @@ export default function DashboardPage() {
         {/* Stats Cards */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {/* View Mode Indicator for Staff and Manager Personal View */}
-          {(session?.user?.role === 'STAFF' || (session?.user?.role === 'MANAGER' && viewMode === 'personal')) && (
+          {(typedSession?.user?.role === 'STAFF' || (typedSession?.user?.role === 'MANAGER' && viewMode === 'personal')) && (
             <div className="lg:col-span-4 mb-2">
               <div className="flex items-center justify-center">
                 <div className="flex items-center space-x-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-full text-sm font-medium border border-blue-200">
@@ -269,9 +273,9 @@ export default function DashboardPage() {
               <div className="text-3xl font-bold text-slate-900 mb-3">{stats.averageProgress}%</div>
               <Progress value={stats.averageProgress} className="h-2 bg-slate-100" />
               <p className="text-sm text-slate-500 mt-2">
-                {session?.user?.role === 'STAFF' 
+                {typedSession?.user?.role === 'STAFF' 
                   ? 'Your personal progress'
-                  : session?.user?.role === 'MANAGER' && viewMode === 'personal'
+                  : typedSession?.user?.role === 'MANAGER' && viewMode === 'personal'
                     ? 'Your personal progress'
                     : 'Overall team progress'
                 }
@@ -326,17 +330,17 @@ export default function DashboardPage() {
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <CardTitle className="text-xl font-semibold text-slate-900">
-                    {session?.user?.role === 'STAFF' 
+                    {typedSession?.user?.role === 'STAFF' 
                       ? 'My Objectives'
-                      : session?.user?.role === 'MANAGER' && viewMode === 'personal'
+                      : typedSession?.user?.role === 'MANAGER' && viewMode === 'personal'
                         ? 'My Objectives'
                         : 'Upcoming Deadlines'
                     }
                   </CardTitle>
                   <CardDescription className="text-slate-600">
-                    {session?.user?.role === 'STAFF' 
+                    {typedSession?.user?.role === 'STAFF' 
                       ? 'Your personal OKR updates and progress'
-                      : session?.user?.role === 'MANAGER' && viewMode === 'personal'
+                      : typedSession?.user?.role === 'MANAGER' && viewMode === 'personal'
                         ? 'Your personal OKR updates and progress'
                         : `All ${objectives.length} objectives ordered by deadline urgency`
                     }

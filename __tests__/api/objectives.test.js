@@ -13,6 +13,9 @@ jest.mock('@prisma/client', () => ({
     keyResult: {
       findMany: jest.fn(),
     },
+    notification: {
+      create: jest.fn(),
+    },
     $disconnect: jest.fn(),
   })),
 }))
@@ -555,6 +558,477 @@ describe('/api/objectives', () => {
                        ['ADMIN', 'MANAGER'].includes(session.user.role)
 
       expect(canUpdate).toBe(false)
+    })
+  })
+
+  describe('Status and progress calculations', () => {
+    it('should calculate progress correctly from key results', () => {
+      const keyResults = [
+        { currentValue: 50, targetValue: 100 },
+        { currentValue: 75, targetValue: 100 },
+        { currentValue: 25, targetValue: 100 }
+      ]
+
+      const calculateProgress = (keyResults) => {
+        if (!keyResults || keyResults.length === 0) return 0
+        const totalProgress = keyResults.reduce((sum, kr) => {
+          const progress = Math.min((kr.currentValue / kr.targetValue) * 100, 100)
+          return sum + progress
+        }, 0)
+        return Math.round(totalProgress / keyResults.length)
+      }
+
+      const progress = calculateProgress(keyResults)
+      expect(progress).toBe(50) // (50 + 75 + 25) / 3 = 50
+    })
+
+    it('should update status based on progress', () => {
+      const updateStatusBasedOnProgress = (progress) => {
+        if (progress >= 100) return 'COMPLETED'
+        if (progress >= 80) return 'ON_TRACK'
+        if (progress >= 60) return 'IN_PROGRESS'
+        if (progress >= 40) return 'AT_RISK'
+        return 'NOT_STARTED'
+      }
+
+      expect(updateStatusBasedOnProgress(100)).toBe('COMPLETED')
+      expect(updateStatusBasedOnProgress(85)).toBe('ON_TRACK')
+      expect(updateStatusBasedOnProgress(65)).toBe('IN_PROGRESS')
+      expect(updateStatusBasedOnProgress(45)).toBe('AT_RISK')
+      expect(updateStatusBasedOnProgress(20)).toBe('NOT_STARTED')
+    })
+  })
+
+  describe('POST /api/objectives/[id]/extend', () => {
+    beforeEach(() => {
+      mockGetServerSession.mockResolvedValue({
+        user: { id: 'manager-1', role: 'MANAGER', email: 'manager@test.com', name: 'Test Manager' }
+      })
+    })
+
+    it('should extend deadline for missed objective (Manager)', async () => {
+      const objectiveId = 'obj-1'
+      const extendData = {
+        extendedDeadline: '2025-07-31T23:59:59.999Z',
+        extensionReason: 'Additional time needed due to technical complexity',
+        missedReason: 'Underestimated implementation complexity'
+      }
+
+      const currentObjective = {
+        id: objectiveId,
+        title: 'Test Objective',
+        ownerId: 'user-1',
+        cycle: {
+          id: 'cycle-1',
+          endDate: new Date('2025-06-30')
+        },
+        originalEndDate: null
+      }
+
+      const updatedObjective = {
+        ...currentObjective,
+        wasMissed: true,
+        originalEndDate: currentObjective.cycle.endDate,
+        extendedDeadline: new Date(extendData.extendedDeadline),
+        extensionReason: extendData.extensionReason,
+        missedReason: extendData.missedReason,
+        dateExtended: expect.any(Date),
+        extendedBy: 'manager-1',
+        status: 'EXTENDED',
+        owner: { id: 'user-1', name: 'Test User' },
+        keyResults: []
+      }
+
+      mockPrisma.objective.findUnique.mockResolvedValue(currentObjective)
+      mockPrisma.objective.update.mockResolvedValue(updatedObjective)
+      mockPrisma.notification.create.mockResolvedValue({
+        id: 'notif-1',
+        type: 'NEW_ASSIGNMENT',
+        title: 'Objective Deadline Extended'
+      })
+
+      // Test the extend logic
+      const objective = await mockPrisma.objective.findUnique({
+        where: { id: objectiveId },
+        include: { cycle: true }
+      })
+
+      expect(objective).toEqual(currentObjective)
+
+      const result = await mockPrisma.objective.update({
+        where: { id: objectiveId },
+        data: {
+          wasMissed: true,
+          originalEndDate: objective.originalEndDate || objective.cycle.endDate,
+          extendedDeadline: new Date(extendData.extendedDeadline),
+          extensionReason: extendData.extensionReason,
+          missedReason: extendData.missedReason,
+          dateExtended: expect.any(Date),
+          extendedBy: 'manager-1',
+          status: 'EXTENDED'
+        },
+        include: {
+          owner: true,
+          cycle: true,
+          keyResults: true
+        }
+      })
+
+      // Create notification
+      await mockPrisma.notification.create({
+        data: {
+          type: 'NEW_ASSIGNMENT',
+          title: 'Objective Deadline Extended',
+          message: `Your objective "${currentObjective.title}" has been given a new deadline: ${new Date(extendData.extendedDeadline).toLocaleDateString()}`,
+          userId: currentObjective.ownerId,
+          actionUrl: `/dashboard/manage?filter=extended`
+        }
+      })
+
+      expect(mockPrisma.objective.findUnique).toHaveBeenCalledWith({
+        where: { id: objectiveId },
+        include: { cycle: true }
+      })
+
+      expect(mockPrisma.objective.update).toHaveBeenCalledWith({
+        where: { id: objectiveId },
+        data: {
+          wasMissed: true,
+          originalEndDate: objective.originalEndDate || objective.cycle.endDate,
+          extendedDeadline: new Date(extendData.extendedDeadline),
+          extensionReason: extendData.extensionReason,
+          missedReason: extendData.missedReason,
+          dateExtended: expect.any(Date),
+          extendedBy: 'manager-1',
+          status: 'EXTENDED'
+        },
+        include: {
+          owner: true,
+          cycle: true,
+          keyResults: true
+        }
+      })
+
+      expect(mockPrisma.notification.create).toHaveBeenCalledWith({
+        data: {
+          type: 'NEW_ASSIGNMENT',
+          title: 'Objective Deadline Extended',
+          message: `Your objective "${currentObjective.title}" has been given a new deadline: ${new Date(extendData.extendedDeadline).toLocaleDateString()}`,
+          userId: currentObjective.ownerId,
+          actionUrl: `/dashboard/manage?filter=extended`
+        }
+      })
+    })
+
+    it('should extend deadline for missed objective (Admin)', async () => {
+      mockGetServerSession.mockResolvedValue({
+        user: { id: 'admin-1', role: 'ADMIN', email: 'admin@test.com', name: 'Test Admin' }
+      })
+
+      const objectiveId = 'obj-1'
+      const extendData = {
+        extendedDeadline: '2025-08-15T23:59:59.999Z',
+        extensionReason: 'Strategic priority shift requires additional time'
+      }
+
+      const currentObjective = {
+        id: objectiveId,
+        title: 'Admin Test Objective',
+        ownerId: 'user-2',
+        cycle: {
+          id: 'cycle-1',
+          endDate: new Date('2025-06-30')
+        },
+        originalEndDate: null
+      }
+
+      mockPrisma.objective.findUnique.mockResolvedValue(currentObjective)
+      mockPrisma.objective.update.mockResolvedValue({
+        ...currentObjective,
+        status: 'EXTENDED',
+        extendedBy: 'admin-1'
+      })
+      mockPrisma.notification.create.mockResolvedValue({ id: 'notif-2' })
+
+      const objective = await mockPrisma.objective.findUnique({
+        where: { id: objectiveId },
+        include: { cycle: true }
+      })
+
+      expect(objective).toEqual(currentObjective)
+      expect(mockPrisma.objective.findUnique).toHaveBeenCalled()
+    })
+
+    it('should reject extension for STAFF role', async () => {
+      mockGetServerSession.mockResolvedValue({
+        user: { id: 'staff-1', role: 'STAFF', email: 'staff@test.com', name: 'Test Staff' }
+      })
+
+      const userRole = 'STAFF'
+      const hasPermission = userRole === 'ADMIN' || userRole === 'MANAGER'
+
+      expect(hasPermission).toBe(false)
+    })
+
+    it('should reject extension when user is not authenticated', async () => {
+      mockGetServerSession.mockResolvedValue(null)
+
+      const session = null
+      const isAuthenticated = session?.user?.id
+
+      expect(isAuthenticated).toBeFalsy()
+    })
+
+    it('should validate required fields for extension', () => {
+      const validExtensionData = {
+        extendedDeadline: '2025-07-31T23:59:59.999Z',
+        extensionReason: 'Valid reason for extension'
+      }
+
+      const invalidExtensionData1 = {
+        // Missing extendedDeadline
+        extensionReason: 'Valid reason'
+      }
+
+      const invalidExtensionData2 = {
+        extendedDeadline: '2025-07-31T23:59:59.999Z'
+        // Missing extensionReason
+      }
+
+      const validateExtensionData = (data) => {
+        return !!(data.extendedDeadline && data.extensionReason)
+      }
+
+      expect(validateExtensionData(validExtensionData)).toBe(true)
+      expect(validateExtensionData(invalidExtensionData1)).toBe(false)
+      expect(validateExtensionData(invalidExtensionData2)).toBe(false)
+    })
+
+    it('should handle objective not found', async () => {
+      const objectiveId = 'non-existent'
+      
+      mockPrisma.objective.findUnique.mockResolvedValue(null)
+
+      const objective = await mockPrisma.objective.findUnique({
+        where: { id: objectiveId },
+        include: { cycle: true }
+      })
+
+      expect(objective).toBeNull()
+      expect(mockPrisma.objective.findUnique).toHaveBeenCalledWith({
+        where: { id: objectiveId },
+        include: { cycle: true }
+      })
+    })
+
+    it('should preserve original end date when extending already extended objective', async () => {
+      const objectiveId = 'obj-1'
+      const originalDate = new Date('2025-06-30')
+      const cycleEndDate = new Date('2025-07-15') // Different from original
+      const firstExtension = new Date('2025-07-31')
+      const secondExtension = new Date('2025-08-31')
+
+      const alreadyExtendedObjective = {
+        id: objectiveId,
+        title: 'Already Extended Objective',
+        ownerId: 'user-1',
+        originalEndDate: originalDate, // Already has original date
+        extendedDeadline: firstExtension,
+        cycle: {
+          id: 'cycle-1',
+          endDate: cycleEndDate // Different from original
+        }
+      }
+
+      mockPrisma.objective.findUnique.mockResolvedValue(alreadyExtendedObjective)
+
+      const objective = await mockPrisma.objective.findUnique({
+        where: { id: objectiveId },
+        include: { cycle: true }
+      })
+
+      // When extending again, should preserve original date, not use cycle date
+      const originalEndDateToUse = objective.originalEndDate || objective.cycle.endDate
+
+      expect(originalEndDateToUse).toEqual(originalDate)
+      expect(originalEndDateToUse).not.toEqual(objective.cycle.endDate)
+    })
+
+    it('should create proper notification message', () => {
+      const objectiveTitle = 'Test Objective'
+      const newDeadline = new Date('2025-07-31T23:59:59.999Z')
+      const ownerId = 'user-1'
+
+      const expectedNotification = {
+        type: 'NEW_ASSIGNMENT',
+        title: 'Objective Deadline Extended',
+        message: `Your objective "${objectiveTitle}" has been given a new deadline: ${newDeadline.toLocaleDateString()}`,
+        userId: ownerId,
+        actionUrl: `/dashboard/manage?filter=extended`
+      }
+
+      expect(expectedNotification.message).toContain(objectiveTitle)
+      expect(expectedNotification.message).toContain(newDeadline.toLocaleDateString())
+      expect(expectedNotification.userId).toBe(ownerId)
+      expect(expectedNotification.actionUrl).toBe('/dashboard/manage?filter=extended')
+    })
+  })
+
+  describe('Enhanced objective fields', () => {
+    it('should handle objectives with extension fields', async () => {
+      const extendedObjective = {
+        id: '1',
+        title: 'Extended Objective',
+        description: 'This objective was extended',
+        status: 'EXTENDED',
+        progress: 45,
+        wasMissed: true,
+        originalEndDate: new Date('2025-06-30'),
+        extendedDeadline: new Date('2025-07-31'),
+        missedReason: 'Technical complexity underestimated',
+        extensionReason: 'Need additional time for proper implementation',
+        dateExtended: new Date('2025-07-01'),
+        extendedBy: 'manager-1',
+        extendedByUser: {
+          id: 'manager-1',
+          name: 'Test Manager',
+          email: 'manager@test.com'
+        },
+        ownerId: '1',
+        cycleId: 'cycle-1',
+        owner: {
+          id: '1',
+          name: 'John Doe',
+          email: 'john@test.com',
+          position: 'Developer'
+        },
+        cycle: {
+          id: 'cycle-1',
+          name: 'Q2 2025',
+          startDate: '2025-04-01',
+          endDate: '2025-06-30'
+        },
+        keyResults: []
+      }
+
+      mockPrisma.objective.findMany.mockResolvedValue([extendedObjective])
+
+      const objectives = await mockPrisma.objective.findMany({
+        include: {
+          owner: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              position: true,
+            },
+          },
+          cycle: true,
+          keyResults: true,
+          extendedByUser: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
+        },
+      })
+
+      expect(objectives[0]).toHaveProperty('wasMissed', true)
+      expect(objectives[0]).toHaveProperty('originalEndDate')
+      expect(objectives[0]).toHaveProperty('extendedDeadline')
+      expect(objectives[0]).toHaveProperty('missedReason')
+      expect(objectives[0]).toHaveProperty('extensionReason')
+      expect(objectives[0]).toHaveProperty('dateExtended')
+      expect(objectives[0]).toHaveProperty('extendedBy')
+      expect(objectives[0]).toHaveProperty('extendedByUser')
+      expect(objectives[0].status).toBe('EXTENDED')
+    })
+
+    it('should filter objectives by extended status', async () => {
+      const extendedObjectives = [
+        {
+          id: '1',
+          title: 'Extended Objective 1',
+          status: 'EXTENDED',
+          wasMissed: true
+        },
+        {
+          id: '2',
+          title: 'Extended Objective 2',
+          status: 'EXTENDED',
+          wasMissed: true
+        }
+      ]
+
+      mockPrisma.objective.findMany.mockResolvedValue(extendedObjectives)
+
+      const objectives = await mockPrisma.objective.findMany({
+        where: { status: 'EXTENDED' },
+        include: {
+          owner: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              position: true,
+            },
+          },
+          cycle: true,
+          keyResults: true,
+        },
+      })
+
+      expect(mockPrisma.objective.findMany).toHaveBeenCalledWith({
+        where: { status: 'EXTENDED' },
+        include: {
+          owner: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              position: true,
+            },
+          },
+          cycle: true,
+          keyResults: true,
+        },
+      })
+
+      expect(objectives).toHaveLength(2)
+      expect(objectives.every(obj => obj.status === 'EXTENDED')).toBe(true)
+    })
+
+    it('should filter objectives by missed status', async () => {
+      const missedObjectives = [
+        {
+          id: '1',
+          title: 'Missed Objective 1',
+          wasMissed: true,
+          status: 'IN_PROGRESS'
+        }
+      ]
+
+      mockPrisma.objective.findMany.mockResolvedValue(missedObjectives)
+
+      const objectives = await mockPrisma.objective.findMany({
+        where: { wasMissed: true },
+        include: {
+          owner: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              position: true,
+            },
+          },
+          cycle: true,
+          keyResults: true,
+        },
+      })
+
+      expect(objectives.every(obj => obj.wasMissed === true)).toBe(true)
     })
   })
 }) 

@@ -6,7 +6,7 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions) as Session | null
@@ -31,7 +31,7 @@ export async function POST(
       }, { status: 400 })
     }
 
-    const objectiveId = context.params.id
+    const { id: objectiveId } = await params
 
     // Get the current objective with its cycle
     const currentObjective = await prisma.objective.findUnique({
