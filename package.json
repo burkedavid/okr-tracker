@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "postinstall": "prisma generate",
+    "db:init-prod": "node scripts/init-production-db.js",
     "db:seed": "tsx prisma/seed.ts",
     "db:reset": "npx prisma db reset",
     "db:studio": "npx prisma studio",
