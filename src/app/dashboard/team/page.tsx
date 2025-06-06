@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import DashboardHeader from '@/components/layout/DashboardHeader'
 import { 
@@ -11,10 +11,8 @@ import {
   Target, 
   TrendingUp, 
   CheckCircle, 
-  Building,
-  Mail,
-  User,
   Shield,
+  User,
   Home,
   Search,
   Filter,
@@ -76,11 +74,7 @@ export default function TeamManagementPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { data: session } = useSession()
 
-  useEffect(() => {
-    fetchData()
-  }, [selectedManager, selectedDepartment])
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       let teamData = []
       
@@ -144,7 +138,11 @@ export default function TeamManagementPage() {
       setManagers([])
       setLoading(false)
     }
-  }
+  }, [selectedManager, selectedDepartment])
+
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
   const filteredMembers = Array.isArray(teamMembers) ? teamMembers.filter(member =>
     member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -400,7 +398,7 @@ export default function TeamManagementPage() {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-slate-900">Team Members ({filteredMembers.length})</h2>
-              <p className="text-slate-600 mt-1">Click on a team member's name to view their OKRs and progress</p>
+              <p className="text-slate-600 mt-1">Click on a team member&apos;s name to view their OKRs and progress</p>
             </div>
           </div>
 

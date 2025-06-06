@@ -4,26 +4,18 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Progress } from '@/components/ui/progress'
 import DashboardHeader from '@/components/layout/DashboardHeader'
 import { 
   Calendar,
-  Clock,
   Target,
-  TrendingUp,
   User,
   CheckCircle,
   AlertCircle,
-  BarChart3,
   Filter,
   ChevronRight,
-  Circle,
-  Square,
   XCircle,
   TrendingDown,
   AlertTriangle,
-  Eye,
-  EyeOff,
   ChevronLeft,
   SkipBack,
   SkipForward,
@@ -174,12 +166,6 @@ export default function TimelinePage() {
     
     // For completed cycles, determine missed targets based on final achievement
     if (isCompletedCycle) {
-      // Check if key results met their targets
-      const keyResultsMetTargets = objective.keyResults.every(kr => {
-        const achievementRate = kr.targetValue > 0 ? (kr.currentValue / kr.targetValue) * 100 : 100
-        return achievementRate >= 100 // Met or exceeded target
-      })
-      
       // Calculate overall achievement rate
       const totalAchievementRate = objective.keyResults.length > 0 
         ? objective.keyResults.reduce((sum, kr) => {
