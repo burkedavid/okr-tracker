@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Database setup error:', error)
     return NextResponse.json(
-      { error: 'Failed to initialize database', details: error.message },
+      { error: 'Failed to initialize database', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }
