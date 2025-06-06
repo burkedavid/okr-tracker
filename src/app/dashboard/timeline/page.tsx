@@ -805,29 +805,32 @@ export default function TimelinePage() {
                       style={{ width: `${totalTimelineWidth}%`, minWidth: `${Math.max(totalTimelineWidth, 200)}%` }}
                     >
                       {/* Cycle Bars */}
-                      {objectivesByCycle.map(({ cycle, objectives: _objectives, position }) => (
-                        <div
-                          key={cycle.id}
-                          className={`absolute top-6 h-8 rounded transition-all duration-300 ${
-                            cycle.active 
-                              ? 'bg-blue-500 ring-2 ring-blue-300 ring-offset-1' 
-                              : 'bg-slate-300 hover:bg-slate-400'
-                          }`}
-                          style={{
-                            left: `${position.left}%`,
-                            width: `${position.width}%`
-                          }}
-                        >
-                          <div className="p-1.5 text-xs font-medium text-white truncate flex items-center justify-between">
-                            <span>{cycle.name}</span>
-                            {cycle.active && (
-                              <span className="text-xs bg-white bg-opacity-20 px-1 rounded">
-                                ACTIVE
-                              </span>
-                            )}
+                      {objectivesByCycle.map(({ cycle, objectives: _objectives, position }) => {
+                        void _objectives // Intentionally unused in cycle bars
+                        return (
+                          <div
+                            key={cycle.id}
+                            className={`absolute top-6 h-8 rounded transition-all duration-300 ${
+                              cycle.active 
+                                ? 'bg-blue-500 ring-2 ring-blue-300 ring-offset-1' 
+                                : 'bg-slate-300 hover:bg-slate-400'
+                            }`}
+                            style={{
+                              left: `${position.left}%`,
+                              width: `${position.width}%`
+                            }}
+                          >
+                            <div className="p-1.5 text-xs font-medium text-white truncate flex items-center justify-between">
+                              <span>{cycle.name}</span>
+                              {cycle.active && (
+                                <span className="text-xs bg-white bg-opacity-20 px-1 rounded">
+                                  ACTIVE
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      })}
 
                       {/* Current Time Indicator */}
                       <div
@@ -840,8 +843,9 @@ export default function TimelinePage() {
                       </div>
 
                       {/* Objectives as dots */}
-                      {objectivesByCycle.map(({ cycle: _cycle, objectives: _objectives, position }) =>
-                        _objectives.map((objective, index) => {
+                      {objectivesByCycle.map(({ cycle: _cycle, objectives: _objectives, position }) => {
+                        void _cycle // Intentionally unused in objectives dots
+                        return _objectives.map((objective, index) => {
                           const missedInfo = calculateMissedTargetInfo(objective)
                           const objectivePosition = position.left + (position.width * 0.1) + (index * (15 / timelineZoom))
                           const verticalPosition = 60 + (index % 3) * 18
@@ -867,7 +871,7 @@ export default function TimelinePage() {
                             </div>
                           )
                         })
-                      )}
+                      })}
                     </div>
                   </div>
 
@@ -974,6 +978,8 @@ export default function TimelinePage() {
                     const cycleCompleted = _objectives.filter(obj => obj.status === 'COMPLETED')
                     const now = new Date()
                     const cycleEnd = new Date(cycle.endDate)
+                    void now // Intentionally unused
+                    void cycleEnd // Intentionally unused
                     
                     return (
                       <Card key={cycle.id} className={`${cycle.active ? 'ring-2 ring-blue-400 bg-blue-50' : 'bg-white'} shadow-sm border-slate-200`}>

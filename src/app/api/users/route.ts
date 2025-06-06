@@ -161,7 +161,8 @@ export async function POST(request: Request) {
     })
 
     // Remove password from response
-    const { password: __, ...userResponse } = user
+    const { password: userPassword, ...userResponse } = user
+    void userPassword // Intentionally unused
     return NextResponse.json(userResponse, { status: 201 })
   } catch (error) {
     console.error('Error creating user:', error)
@@ -216,7 +217,8 @@ export async function PUT(request: Request) {
     })
 
     // Remove password from response
-    const { password: __, ...userResponse } = user
+    const { password: updatedUserPassword, ...userResponse } = user
+    void updatedUserPassword // Intentionally unused
     return NextResponse.json(userResponse)
   } catch (error) {
     console.error('Error updating user:', error)

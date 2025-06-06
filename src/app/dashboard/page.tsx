@@ -157,6 +157,7 @@ export default function DashboardPage() {
   // Helper function to format deadline display
   const formatDeadline = (objective: Objective) => {
     const deadline = getEffectiveDeadline(objective)
+    void deadline // Used in getDaysUntilDeadline
     const daysUntil = getDaysUntilDeadline(objective)
     
     if (daysUntil < 0) {

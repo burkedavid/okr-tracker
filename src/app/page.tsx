@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ArrowRight, Target, Users, TrendingUp, Shield, AlertTriangle, Bell, Eye, Settings, UserCheck, CheckCircle, Award, Trophy } from 'lucide-react'
+import { ArrowRight, Target, Users, TrendingUp, Shield, AlertTriangle, Bell, Eye, Settings, UserCheck, CheckCircle, Award } from 'lucide-react'
 
 export default function HomePage() {
   return (
