@@ -118,8 +118,19 @@ export async function PUT(request: Request) {
       )
     }
 
+    // Define type for update data
+    interface KeyResultUpdateData {
+      updatedAt: Date;
+      description?: string;
+      targetValue?: number;
+      currentValue?: number;
+      unit?: string;
+      ownerId?: string;
+      metricType?: string;
+    }
+
     // Prepare update data, ensuring we don't set null values
-    const updateData: any = {
+    const updateData: KeyResultUpdateData = {
       updatedAt: new Date()
     }
     

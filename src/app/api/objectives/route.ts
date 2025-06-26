@@ -42,16 +42,42 @@ export async function GET() {
       }
     })
 
+    // Define key result type for better type safety
+    interface KeyResult {
+      id: string;
+      targetValue: number;
+      currentValue: number;
+    }
+
+    // Define objective type with key results
+    interface ObjectiveWithKeyResults {
+      id: string;
+      title: string;
+      description: string;
+      status: string;
+      keyResults: KeyResult[];
+      ownerId: string;
+      owner?: {
+        id: string;
+        name: string;
+      };
+      cycle?: {
+        id: string;
+        name: string;
+      };
+      [key: string]: any; // For other properties that might be accessed
+    }
+
     // Calculate progress for each objective
-    const objectivesWithProgress = objectives.map(objective => {
+    const objectivesWithProgress = objectives.map((objective: ObjectiveWithKeyResults) => {
       const totalKeyResults = objective.keyResults.length
-      const completedKeyResults = objective.keyResults.filter(kr => {
+      const completedKeyResults = objective.keyResults.filter((kr: KeyResult) => {
         const progress = kr.targetValue > 0 ? (kr.currentValue / kr.targetValue) * 100 : 0
         return progress >= 100
       }).length
 
       const averageProgress = totalKeyResults > 0 
-        ? objective.keyResults.reduce((sum, kr) => {
+        ? objective.keyResults.reduce((sum: number, kr: KeyResult) => {
             const progress = kr.targetValue > 0 ? (kr.currentValue / kr.targetValue) * 100 : 0
             return sum + Math.min(progress, 100)
           }, 0) / totalKeyResults
@@ -136,8 +162,19 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const { title, description, type, status, ownerId, cycleId, parentId } = body
 
+    // Define type for update data
+    interface ObjectiveUpdateData {
+      title?: string;
+      description?: string;
+      type?: string;
+      status?: string;
+      ownerId?: string;
+      cycleId?: string;
+      parentId?: string;
+    }
+
     // Prepare update data, ensuring we don't set null values
-    const updateData: any = {}
+    const updateData: ObjectiveUpdateData = {}
     
     if (title !== null && title !== undefined) updateData.title = title
     if (description !== null && description !== undefined) updateData.description = description
