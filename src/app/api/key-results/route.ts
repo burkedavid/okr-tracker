@@ -109,7 +109,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json()
-    const { id, description, targetValue, currentValue, unit } = body
+    const { id, description, targetValue, currentValue, unit, ownerId } = body
 
     if (!id) {
       return NextResponse.json(
@@ -118,15 +118,20 @@ export async function PUT(request: Request) {
       )
     }
 
+    // Prepare update data, ensuring we don't set null values
+    const updateData: any = {
+      updatedAt: new Date()
+    }
+    
+    if (description !== null && description !== undefined) updateData.description = description
+    if (targetValue !== null && targetValue !== undefined) updateData.targetValue = parseFloat(targetValue)
+    if (currentValue !== null && currentValue !== undefined) updateData.currentValue = parseFloat(currentValue)
+    if (unit !== null && unit !== undefined) updateData.unit = unit
+    if (ownerId !== null && ownerId !== undefined) updateData.ownerId = ownerId
+
     const keyResult = await prisma.keyResult.update({
       where: { id },
-      data: {
-        ...(description && { description }),
-        ...(targetValue !== undefined && { targetValue: parseFloat(targetValue) }),
-        ...(currentValue !== undefined && { currentValue: parseFloat(currentValue) }),
-        ...(unit !== undefined && { unit }),
-        updatedAt: new Date()
-      },
+      data: updateData,
       include: {
         owner: {
           select: {

@@ -380,10 +380,10 @@ export default function ManagePage() {
     setEditingObjective(objective)
     const cycleId = objective.cycle ? cycles.find(c => c.name === objective.cycle.name)?.id || '' : ''
     setObjectiveForm({
-      title: objective.title,
-      description: objective.description,
+      title: objective.title || '',
+      description: objective.description || '',
       type: 'PERSONAL', // You might want to add type to the Objective interface
-      ownerId: objective.ownerId,
+      ownerId: objective.ownerId || '',
       cycleId: cycleId
     })
     setShowObjectiveForm(true)
@@ -394,12 +394,12 @@ export default function ManagePage() {
   const handleEditKeyResult = (keyResult: Objective['keyResults'][0], objectiveId: string) => {
     setEditingKeyResultInline(keyResult.id)
     setKeyResultForm({
-      description: keyResult.description,
-      metricType: keyResult.metricType,
-      targetValue: keyResult.targetValue.toString(),
+      description: keyResult.description || '',
+      metricType: keyResult.metricType || 'NUMBER',
+      targetValue: keyResult.targetValue ? keyResult.targetValue.toString() : '',
       unit: keyResult.unit || '',
-      objectiveId: objectiveId,
-      ownerId: keyResult.owner.id
+      objectiveId: objectiveId || '',
+      ownerId: keyResult.owner?.id || ''
     })
   }
 
@@ -1049,7 +1049,7 @@ export default function ManagePage() {
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
                   <textarea
-                    value={objectiveForm.description}
+                    value={objectiveForm.description || ''}
                     onChange={(e) => setObjectiveForm({...objectiveForm, description: e.target.value})}
                     rows={5}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
@@ -1279,7 +1279,7 @@ export default function ManagePage() {
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
                   <textarea
-                    value={keyResultForm.description}
+                    value={keyResultForm.description || ''}
                     onChange={(e) => setKeyResultForm({...keyResultForm, description: e.target.value})}
                     required
                     rows={3}
@@ -1316,7 +1316,7 @@ export default function ManagePage() {
                     <label className="block text-sm font-semibold text-gray-700 mb-2">Unit</label>
                     <input
                       type="text"
-                      value={keyResultForm.unit}
+                      value={keyResultForm.unit || ''}
                       onChange={(e) => setKeyResultForm({...keyResultForm, unit: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                       placeholder="%, $, etc."
@@ -1461,7 +1461,7 @@ export default function ManagePage() {
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
                   <textarea
-                    value={progressForm.notes}
+                    value={progressForm.notes || ''}
                     onChange={(e) => setProgressForm({...progressForm, notes: e.target.value})}
                     rows={4}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
@@ -1648,7 +1648,7 @@ export default function ManagePage() {
                         )}
                       </div>
                       <CardDescription className="text-slate-600 leading-relaxed">
-                        {objective.description}
+                        {objective.description || ''}
                       </CardDescription>
                       <div className="flex items-center space-x-6 text-sm text-slate-500">
                         <span className="flex items-center space-x-2">
@@ -1670,7 +1670,7 @@ export default function ManagePage() {
                       </div>
                     </div>
                     <div className="text-right ml-6">
-                      <div className={`text-4xl font-bold ${getProgressColor(objective.progress)} mb-1`}>
+                      <div className={`text-4xl font-bold ${getProgressColor(objective.progress)}`}>
                         {objective.progress}%
                       </div>
                       <div className="text-sm text-slate-500">progress</div>
@@ -1717,7 +1717,7 @@ export default function ManagePage() {
                                         <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
                                         <input
                                           type="text"
-                                          value={keyResultForm.description}
+                                          value={keyResultForm.description || ''}
                                           onChange={(e) => setKeyResultForm({...keyResultForm, description: e.target.value})}
                                           required
                                           className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
@@ -1754,7 +1754,7 @@ export default function ManagePage() {
                                           <label className="block text-sm font-medium text-slate-700 mb-1">Unit</label>
                                           <input
                                             type="text"
-                                            value={keyResultForm.unit}
+                                            value={keyResultForm.unit || ''}
                                             onChange={(e) => setKeyResultForm({...keyResultForm, unit: e.target.value})}
                                             className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                                             placeholder="%, $, etc."
@@ -1813,7 +1813,7 @@ export default function ManagePage() {
                                         className="font-medium text-slate-900 leading-relaxed cursor-pointer hover:text-blue-600 transition-colors"
                                         onClick={() => handleEditKeyResult(kr, objective.id)}
                                       >
-                                        {kr.description}
+                                        {kr.description || ''}
                                       </p>
                                       <div className="flex items-center space-x-2 mt-1 text-sm text-slate-500">
                                         <User className="w-3 h-3" />
@@ -1843,6 +1843,35 @@ export default function ManagePage() {
                                             title="Edit key result"
                                           >
                                             <Edit className="w-3 h-3" />
+                                          </Button>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={(e) => {
+                                              e.stopPropagation()
+                                              // Open progress update form with this key result pre-selected
+                                              setShowProgressForm(true)
+                                              // Set current user as default updater
+                                              if (typedSession?.user?.id) {
+                                                setProgressForm({
+                                                  value: '',
+                                                  notes: '',
+                                                  keyResultId: kr.id,
+                                                  createdById: typedSession.user.id,
+                                                  keyResultFilterUserId: ''
+                                                })
+                                              } else {
+                                                setProgressForm(prev => ({
+                                                  ...prev,
+                                                  keyResultId: kr.id,
+                                                  keyResultFilterUserId: ''
+                                                }))
+                                              }
+                                            }}
+                                            className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 p-1 h-8 w-8"
+                                            title="Update Progress"
+                                          >
+                                            <TrendingUp className="w-3 h-3" />
                                           </Button>
                                           <Button
                                             variant="ghost"
@@ -1987,7 +2016,7 @@ export default function ManagePage() {
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Description</label>
             <textarea
-              value={objectiveForm.description}
+              value={objectiveForm.description || ''}
               onChange={(e) => setObjectiveForm({...objectiveForm, description: e.target.value})}
               rows={5}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
@@ -2199,7 +2228,7 @@ export default function ManagePage() {
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
             <textarea
-              value={keyResultForm.description}
+              value={keyResultForm.description || ''}
               onChange={(e) => setKeyResultForm({...keyResultForm, description: e.target.value})}
               required
               rows={3}
@@ -2236,7 +2265,7 @@ export default function ManagePage() {
               <label className="block text-sm font-semibold text-gray-700 mb-2">Unit</label>
               <input
                 type="text"
-                value={keyResultForm.unit}
+                value={keyResultForm.unit || ''}
                 onChange={(e) => setKeyResultForm({...keyResultForm, unit: e.target.value})}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                 placeholder="%, $, etc."
@@ -2365,7 +2394,7 @@ export default function ManagePage() {
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Notes</label>
             <textarea
-              value={progressForm.notes}
+              value={progressForm.notes || ''}
               onChange={(e) => setProgressForm({...progressForm, notes: e.target.value})}
               rows={4}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"

@@ -136,17 +136,20 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const { title, description, type, status, ownerId, cycleId, parentId } = body
 
+    // Prepare update data, ensuring we don't set null values
+    const updateData: any = {}
+    
+    if (title !== null && title !== undefined) updateData.title = title
+    if (description !== null && description !== undefined) updateData.description = description
+    if (type !== null && type !== undefined) updateData.type = type
+    if (status !== null && status !== undefined) updateData.status = status
+    if (ownerId !== null && ownerId !== undefined) updateData.ownerId = ownerId
+    if (cycleId !== null && cycleId !== undefined) updateData.cycleId = cycleId
+    if (parentId !== null && parentId !== undefined) updateData.parentId = parentId
+
     const objective = await prisma.objective.update({
       where: { id },
-      data: {
-        ...(title && { title }),
-        ...(description !== undefined && { description }),
-        ...(type && { type }),
-        ...(status && { status }),
-        ...(ownerId && { ownerId }),
-        ...(cycleId && { cycleId }),
-        ...(parentId !== undefined && { parentId })
-      },
+      data: updateData,
       include: {
         owner: {
           select: {
