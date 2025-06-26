@@ -69,4 +69,13 @@ declare module 'lucide-react' {
   export const UserMinus: Icon;
   export const UserCheck: Icon;
   export const UserX: Icon;
+  
+  // Additional icons found in the codebase
+  export const Building: Icon;
+  export const Clock: Icon;
+  export const RefreshCw: Icon;
+  export const Crown: Icon;
+  export const Shield: Icon;
+  export const Award: Icon;
+  export const AlertTriangle: Icon;
 }
