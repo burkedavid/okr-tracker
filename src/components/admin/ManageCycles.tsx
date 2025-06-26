@@ -1,18 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 interface Cycle {
@@ -125,19 +113,22 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
   if (error && !cycles.length) return <p className="text-red-500">Error: {error}</p>;
 
   return (
-    <Card>
-      <CardHeader>
+    <div className="bg-white shadow rounded-lg">
+      <div className="p-4 border-b">
         <div className="flex justify-between items-center">
           <div>
-            <CardTitle>Manage OKR Cycles</CardTitle>
-            <CardDescription>Create, edit, and delete OKR cycles for your organization.</CardDescription>
+            <h2 className="text-xl font-bold">Manage OKR Cycles</h2>
+            <p className="text-sm text-gray-500">Create, edit, and delete OKR cycles for your organization.</p>
           </div>
-          <Button onClick={() => handleOpenDialog(null)}>
+          <button 
+            className="px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center" 
+            onClick={() => handleOpenDialog(null)}
+          >
             <Plus className="mr-2 h-4 w-4" /> New Cycle
-          </Button>
+          </button>
         </div>
-      </CardHeader>
-      <CardContent>
+      </div>
+      <div className="p-4">
         <div className="space-y-4">
           {cycles.map((cycle) => (
             <div key={cycle.id} className="flex items-center justify-between p-3 border rounded-lg bg-slate-50">
@@ -149,50 +140,96 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
                 </p>
               </div>
               <div className="flex gap-2">
-                <Button variant="outline" size="icon" onClick={() => handleOpenDialog(cycle)}>
+                <button 
+                  className="p-2 border rounded-md hover:bg-gray-100" 
+                  onClick={() => handleOpenDialog(cycle)}
+                >
                   <Edit className="h-4 w-4" />
-                </Button>
-                <Button variant="destructive" size="icon" onClick={() => handleDelete(cycle.id)}>
+                </button>
+                <button 
+                  className="p-2 border bg-red-50 text-red-600 rounded-md hover:bg-red-100" 
+                  onClick={() => handleDelete(cycle.id)}
+                >
                   <Trash2 className="h-4 w-4" />
-                </Button>
+                </button>
               </div>
             </div>
           ))}
-          {cycles.length === 0 && <p className='text-center text-slate-500 py-4'>No cycles found. Create one to get started.</p>}
+          {cycles.length === 0 && <p className='text-center text-gray-500 py-4'>No cycles found. Create one to get started.</p>}
         </div>
-      </CardContent>
+      </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>{editingCycle ? 'Edit Cycle' : 'Create New Cycle'}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">Name</Label>
-                <Input id="name" value={cycleForm.name} onChange={(e) => setCycleForm({ ...cycleForm, name: e.target.value })} className="col-span-3" required />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="description" className="text-right">Description</Label>
-                <Textarea id="description" value={cycleForm.description} onChange={(e) => setCycleForm({ ...cycleForm, description: e.target.value })} className="col-span-3" />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="startDate" className="text-right">Start Date</Label>
-                <Input id="startDate" type="date" value={cycleForm.startDate} onChange={(e) => setCycleForm({ ...cycleForm, startDate: e.target.value })} className="col-span-3" required />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="endDate" className="text-right">End Date</Label>
-                <Input id="endDate" type="date" value={cycleForm.endDate} onChange={(e) => setCycleForm({ ...cycleForm, endDate: e.target.value })} className="col-span-3" required />
-              </div>
+      {isDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
+            <div className="mb-4">
+              <h3 className="text-lg font-medium">{editingCycle ? 'Edit Cycle' : 'Create New Cycle'}</h3>
             </div>
-            <DialogFooter>
-              <Button type="button" variant="secondary" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
-              <Button type="submit">{editingCycle ? 'Save Changes' : 'Create Cycle'}</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </Card>
+            <form onSubmit={handleSubmit}>
+              <div className="grid gap-4 py-4">
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="name" className="text-right font-medium">Name</label>
+                  <input 
+                    id="name" 
+                    type="text"
+                    value={cycleForm.name} 
+                    onChange={(e) => setCycleForm({ ...cycleForm, name: e.target.value })} 
+                    className="col-span-3 px-3 py-2 border rounded-md" 
+                    required 
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="description" className="text-right font-medium">Description</label>
+                  <textarea 
+                    id="description" 
+                    value={cycleForm.description} 
+                    onChange={(e) => setCycleForm({ ...cycleForm, description: e.target.value })} 
+                    className="col-span-3 px-3 py-2 border rounded-md" 
+                    rows={3}
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="startDate" className="text-right font-medium">Start Date</label>
+                  <input 
+                    id="startDate" 
+                    type="date" 
+                    value={cycleForm.startDate} 
+                    onChange={(e) => setCycleForm({ ...cycleForm, startDate: e.target.value })} 
+                    className="col-span-3 px-3 py-2 border rounded-md" 
+                    required 
+                  />
+                </div>
+                <div className="grid grid-cols-4 items-center gap-4">
+                  <label htmlFor="endDate" className="text-right font-medium">End Date</label>
+                  <input 
+                    id="endDate" 
+                    type="date" 
+                    value={cycleForm.endDate} 
+                    onChange={(e) => setCycleForm({ ...cycleForm, endDate: e.target.value })} 
+                    className="col-span-3 px-3 py-2 border rounded-md" 
+                    required 
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-4">
+                <button 
+                  type="button" 
+                  className="px-4 py-2 border rounded-md hover:bg-gray-100" 
+                  onClick={() => setIsDialogOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                >
+                  {editingCycle ? 'Save Changes' : 'Create Cycle'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
