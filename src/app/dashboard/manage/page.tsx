@@ -31,11 +31,7 @@ import {
   RefreshCw,
   Eye
 } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-} from '@/components/ui/dialog';
-import ManageCycles from '@/components/admin/ManageCycles';
+// Dialog imports and ManageCycles removed as they're not currently used
 
 interface Objective {
   id: string
@@ -124,7 +120,7 @@ export default function ManagePage() {
   const [showAtRiskOnly, setShowAtRiskOnly] = useState(false)
   const [showExtendedOnly, setShowExtendedOnly] = useState(false)
   const [showRecentlyCreated, setShowRecentlyCreated] = useState(false)
-  const [showManageCycles, setShowManageCycles] = useState(false)
+  // showManageCycles state removed as it's not currently used
   
   const { data: session } = useSession()
 
@@ -722,7 +718,7 @@ export default function ManagePage() {
           },
           {
             label: 'Manage Cycles',
-            onClick: () => setShowManageCycles(true),
+            onClick: () => console.log('Manage Cycles feature coming soon'),
             variant: 'ghost',
             icon: <Calendar className="w-4 h-4" />
           }
