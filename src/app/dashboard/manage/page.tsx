@@ -9,6 +9,7 @@ import { Progress } from '@/components/ui/progress'
 import DashboardHeader from '@/components/layout/DashboardHeader'
 import ExtendDeadlineModal from '@/components/ui/ExtendDeadlineModal'
 import Modal from '@/components/ui/Modal'
+import ManageCycles from '@/components/admin/ManageCycles'
 import { 
   Plus, 
   Target, 
@@ -31,7 +32,6 @@ import {
   RefreshCw,
   Eye
 } from 'lucide-react'
-// Dialog imports and ManageCycles removed as they're not currently used
 
 interface Objective {
   id: string
@@ -120,7 +120,7 @@ export default function ManagePage() {
   const [showAtRiskOnly, setShowAtRiskOnly] = useState(false)
   const [showExtendedOnly, setShowExtendedOnly] = useState(false)
   const [showRecentlyCreated, setShowRecentlyCreated] = useState(false)
-  // showManageCycles state removed as it's not currently used
+  const [showManageCycles, setShowManageCycles] = useState(false)
   
   const { data: session } = useSession()
 
@@ -718,7 +718,7 @@ export default function ManagePage() {
           },
           {
             label: 'Manage Cycles',
-            onClick: () => console.log('Manage Cycles feature coming soon'),
+            onClick: () => setShowManageCycles(true),
             variant: 'ghost',
             icon: <Calendar className="w-4 h-4" />
           }
@@ -1908,17 +1908,31 @@ export default function ManagePage() {
         </div>
       </div>
 
-      {/* Extend Deadline Modal */}
-      <ExtendDeadlineModal
-        objective={objectiveToExtend}
-        isOpen={showExtendModal}
-        onClose={() => {
-          setShowExtendModal(false)
-          setObjectiveToExtend(null)
-        }}
-        onExtend={handleExtendDeadline}
-        isLoading={isExtending}
-      />
+      {/* Deadline Extension Modal */}
+      {showExtendModal && objectiveToExtend && (
+        <ExtendDeadlineModal
+          isOpen={showExtendModal}
+          objective={objectiveToExtend}
+          onClose={() => {
+            setShowExtendModal(false)
+            setObjectiveToExtend(null)
+          }}
+          onSubmit={handleExtendDeadline}
+          isLoading={isExtending}
+        />
+      )}
+
+      {/* Manage Cycles Modal */}
+      {showManageCycles && (
+        <Modal
+          isOpen={showManageCycles}
+          title="Manage OKR Cycles"
+          onClose={() => setShowManageCycles(false)}
+          size="xl"
+        >
+          <ManageCycles onCyclesUpdated={handleCyclesUpdate} />
+        </Modal>
+      )}
 
       {/* Objective Modal */}
       <Modal
