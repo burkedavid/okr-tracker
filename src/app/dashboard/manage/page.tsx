@@ -573,9 +573,12 @@ export default function ManagePage() {
   }
 
   const filteredObjectives = objectives.filter(objective => {
-    const matchesSearch = objective.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         objective.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         objective.owner.name.toLowerCase().includes(searchTerm.toLowerCase())
+    // Add null checks to prevent errors when properties are undefined
+    const matchesSearch = !searchTerm || (
+      (objective.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      (objective.description?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+      ((objective.owner?.name || '').toLowerCase()).includes(searchTerm.toLowerCase())
+    )
     const matchesStatus = !filterStatus || objective.status === filterStatus
     const matchesUser = !filterUser || objective.ownerId === filterUser
     
