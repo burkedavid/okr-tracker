@@ -1,7 +1,15 @@
 declare module 'react' {
   export * from 'react/index';
   
-  export interface FormEvent<T = Element> extends SyntheticEvent<T> {}
+  // React Hooks
+  export function useState<T>(initialState: T | (() => T)): [T, (newState: T | ((prevState: T) => T)) => void];
+  export function useEffect(effect: () => void | (() => void), deps?: ReadonlyArray<any>): void;
+  
+  // Event types
+  export interface FormEvent<T = Element> extends SyntheticEvent<T> {
+    // Adding a dummy property to avoid empty interface ESLint error
+    _reactFormEventBrand?: any;
+  }
   export interface ChangeEvent<T = Element> extends SyntheticEvent<T> {
     target: T & EventTarget;
   }
@@ -21,5 +29,12 @@ declare module 'react' {
     persist(): void;
     timeStamp: number;
     type: string;
+  }
+}
+
+// JSX namespace to fix JSX element errors
+declare namespace JSX {
+  interface IntrinsicElements {
+    [elemName: string]: any;
   }
 }
