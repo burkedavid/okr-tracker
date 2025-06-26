@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Plus, Edit, Trash2 } from 'lucide-react';
 
 interface Cycle {
@@ -36,7 +36,7 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
       const data = await response.json();
       setCycles(data);
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -46,7 +46,7 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
     fetchCycles();
   }, []);
 
-  const handleOpenDialog = (cycle: Cycle | null) => {
+  const handleOpenDialog = (cycle: Cycle | null): void => {
     setEditingCycle(cycle);
     if (cycle) {
       setCycleForm({
@@ -61,7 +61,7 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
     setIsDialogOpen(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     const url = editingCycle ? `/api/cycles` : '/api/cycles';
     const method = editingCycle ? 'PUT' : 'POST';
@@ -83,11 +83,11 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
       onCyclesUpdate(); // Trigger refresh on parent page
       setIsDialogOpen(false);
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     }
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string): Promise<void> => {
     if (!window.confirm('Are you sure you want to delete this cycle? This cannot be undone.')) return;
 
     try {
@@ -105,7 +105,7 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
       await fetchCycles(); // Refresh the list
       onCyclesUpdate(); // Trigger refresh on parent page
     } catch (err) {
-      alert(`Error: ${err.message}`);
+      alert(`Error: ${err instanceof Error ? err.message : 'An unknown error occurred'}`);
     }
   };
 
@@ -130,7 +130,7 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
       </div>
       <div className="p-4">
         <div className="space-y-4">
-          {cycles.map((cycle) => (
+          {cycles.map((cycle: Cycle) => (
             <div key={cycle.id} className="flex items-center justify-between p-3 border rounded-lg bg-slate-50">
               <div>
                 <p className="font-semibold text-slate-800">{cycle.name}</p>
@@ -170,31 +170,33 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="name" className="text-right font-medium">Name</label>
                   <input 
+                    type="text" 
                     id="name" 
-                    type="text"
-                    value={cycleForm.name} 
-                    onChange={(e) => setCycleForm({ ...cycleForm, name: e.target.value })} 
-                    className="col-span-3 px-3 py-2 border rounded-md" 
+                    name="name" 
                     required 
+                    value={cycleForm.name} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCycleForm({ ...cycleForm, name: e.target.value })} 
+                    className="w-full p-2 border rounded" 
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="description" className="text-right font-medium">Description</label>
                   <textarea 
                     id="description" 
-                    value={cycleForm.description} 
-                    onChange={(e) => setCycleForm({ ...cycleForm, description: e.target.value })} 
-                    className="col-span-3 px-3 py-2 border rounded-md" 
+                    name="description" 
+                    value={cycleForm.description || ''} 
+                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCycleForm({ ...cycleForm, description: e.target.value })} 
+                    className="w-full p-2 border rounded" 
                     rows={3}
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <label htmlFor="startDate" className="text-right font-medium">Start Date</label>
                   <input 
-                    id="startDate" 
                     type="date" 
+                    id="startDate" 
                     value={cycleForm.startDate} 
-                    onChange={(e) => setCycleForm({ ...cycleForm, startDate: e.target.value })} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCycleForm({ ...cycleForm, startDate: e.target.value })} 
                     className="col-span-3 px-3 py-2 border rounded-md" 
                     required 
                   />
@@ -205,7 +207,7 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
                     id="endDate" 
                     type="date" 
                     value={cycleForm.endDate} 
-                    onChange={(e) => setCycleForm({ ...cycleForm, endDate: e.target.value })} 
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCycleForm({ ...cycleForm, endDate: e.target.value })} 
                     className="col-span-3 px-3 py-2 border rounded-md" 
                     required 
                   />
