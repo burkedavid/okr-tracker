@@ -54,4 +54,19 @@ declare module 'lucide-react' {
   export const Clipboard: Icon;
   export const Star: Icon;
   export const Trash: Icon;
+  export const BarChart3: Icon;
+  export const TrendingUp: Icon;
+  export const BarChart: Icon;
+  export const BarChart2: Icon;
+  export const BarChart4: Icon;
+  export const LineChart: Icon;
+  export const PieChart: Icon;
+  export const Activity: Icon;
+  export const TrendingDown: Icon;
+  export const Layers: Icon;
+  export const Users: Icon;
+  export const UserPlus: Icon;
+  export const UserMinus: Icon;
+  export const UserCheck: Icon;
+  export const UserX: Icon;
 }
