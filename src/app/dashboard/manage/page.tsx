@@ -31,6 +31,11 @@ import {
   RefreshCw,
   Eye
 } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+} from '@/components/ui/dialog';
+import ManageCycles from '@/components/admin/ManageCycles';
 
 interface Objective {
   id: string
@@ -119,6 +124,7 @@ export default function ManagePage() {
   const [showAtRiskOnly, setShowAtRiskOnly] = useState(false)
   const [showExtendedOnly, setShowExtendedOnly] = useState(false)
   const [showRecentlyCreated, setShowRecentlyCreated] = useState(false)
+  const [showManageCycles, setShowManageCycles] = useState(false)
   
   const { data: session } = useSession()
 
@@ -713,6 +719,12 @@ export default function ManagePage() {
             },
             variant: 'ghost',
             icon: <TrendingUp className="w-4 h-4" />
+          },
+          {
+            label: 'Manage Cycles',
+            onClick: () => setShowManageCycles(true),
+            variant: 'ghost',
+            icon: <Calendar className="w-4 h-4" />
           }
         ]}
       />

@@ -10,7 +10,8 @@
     "postinstall": "prisma generate",
     "db:init-prod": "node scripts/init-production-db.js",
     "db:seed": "tsx prisma/seed.ts",
-    "db:reset": "npx prisma db reset",
+    "db:seed-real": "tsx prisma/seed-real.ts",
+    "db:reset": "npx prisma db reset --force",
     "db:studio": "npx prisma studio",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -22,7 +23,12 @@
     "test:key-results": "jest __tests__/api/key-results.test.js",
     "test:cycles": "jest __tests__/api/cycles.test.js",
     "test:setup": "jest __tests__/api/setup.test.js",
-    "test:verbose": "jest --verbose"
+    "test:verbose": "jest --verbose",
+    "db:force-reset": "tsx prisma/force-reset.ts",
+    "db:setup-real": "npm run db:force-reset && npx prisma db push && npm run db:seed-real"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed-real.ts"
   },
   "dependencies": {
     "@next-auth/prisma-adapter": "^1.0.7",
@@ -51,6 +57,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^16.5.0",
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "jest": "^29.7.0",
@@ -59,8 +66,5 @@
     "tailwindcss": "^4",
     "tsx": "^4.19.4",
     "typescript": "^5"
-  },
-  "prisma": {
-    "seed": "tsx prisma/seed.ts"
   }
 }
