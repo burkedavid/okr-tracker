@@ -121,11 +121,24 @@ export default function ManagePage() {
   const [showExtendedOnly, setShowExtendedOnly] = useState(false)
   const [showRecentlyCreated, setShowRecentlyCreated] = useState(false)
   const [showManageCycles, setShowManageCycles] = useState(false)
-  
+
   const { data: session } = useSession()
 
   // Type assertion for our custom session with extended user properties
   const typedSession = session as Session | null
+
+  // Handler function to refresh cycles data when cycles are updated
+  const handleCyclesUpdate = async () => {
+    try {
+      const response = await fetch('/api/cycles')
+      if (response.ok) {
+        const data = await response.json()
+        setCycles(data)
+      }
+    } catch (error) {
+      console.error('Failed to refresh cycles:', error)
+    }
+  };
 
   // Form states
   const [objectiveForm, setObjectiveForm] = useState({
@@ -1917,7 +1930,7 @@ export default function ManagePage() {
             setShowExtendModal(false)
             setObjectiveToExtend(null)
           }}
-          onSubmit={handleExtendDeadline}
+          onExtend={handleExtendDeadline}
           isLoading={isExtending}
         />
       )}
@@ -1930,7 +1943,7 @@ export default function ManagePage() {
           onClose={() => setShowManageCycles(false)}
           size="xl"
         >
-          <ManageCycles onCyclesUpdated={handleCyclesUpdate} />
+          <ManageCycles onCyclesUpdate={handleCyclesUpdate} />
         </Modal>
       )}
 
