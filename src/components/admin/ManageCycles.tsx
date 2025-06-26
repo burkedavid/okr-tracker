@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar } from 'lucide-react';
 
 interface Cycle {
   id: string;
@@ -160,70 +160,99 @@ export default function ManageCycles({ onCyclesUpdate }: ManageCyclesProps) {
       </div>
 
       {isDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
-            <div className="mb-4">
-              <h3 className="text-lg font-medium">{editingCycle ? 'Edit Cycle' : 'Create New Cycle'}</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl p-7 max-w-lg w-full border border-slate-200 transform transition-all">
+            <div className="mb-6 border-b border-slate-100 pb-4">
+              <h3 className="text-xl font-semibold text-slate-800 flex items-center">
+                {editingCycle ? (
+                  <Edit className="h-5 w-5 mr-2 text-blue-600" />
+                ) : (
+                  <Plus className="h-5 w-5 mr-2 text-green-600" />
+                )}
+                {editingCycle ? 'Edit Cycle' : 'Create New Cycle'}
+              </h3>
+              <p className="text-sm text-slate-500 mt-1">
+                {editingCycle 
+                  ? 'Update the details of this OKR cycle.'
+                  : 'Define a new period for tracking objectives and key results.'}
+              </p>
             </div>
-            <form onSubmit={handleSubmit}>
-              <div className="grid gap-4 py-4">
+            
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-5">
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="name" className="text-right font-medium">Name</label>
-                  <input 
-                    type="text" 
-                    id="name" 
-                    name="name" 
-                    required 
-                    value={cycleForm.name} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCycleForm({ ...cycleForm, name: e.target.value })} 
-                    className="w-full p-2 border rounded" 
-                  />
+                  <label htmlFor="name" className="text-right font-medium text-slate-700 text-sm">Name</label>
+                  <div className="col-span-3">
+                    <input 
+                      type="text" 
+                      id="name" 
+                      name="name" 
+                      required 
+                      placeholder="e.g. Q3 2025"
+                      value={cycleForm.name} 
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCycleForm({ ...cycleForm, name: e.target.value })} 
+                      className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all" 
+                    />
+                  </div>
                 </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="description" className="text-right font-medium">Description</label>
-                  <textarea 
-                    id="description" 
-                    name="description" 
-                    value={cycleForm.description || ''} 
-                    onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCycleForm({ ...cycleForm, description: e.target.value })} 
-                    className="w-full p-2 border rounded" 
-                    rows={3}
-                  />
+                
+                <div className="grid grid-cols-4 items-start gap-4">
+                  <label htmlFor="description" className="text-right font-medium text-slate-700 text-sm pt-2">Description</label>
+                  <div className="col-span-3">
+                    <textarea 
+                      id="description" 
+                      name="description" 
+                      placeholder="Optional details about this cycle"
+                      value={cycleForm.description || ''} 
+                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setCycleForm({ ...cycleForm, description: e.target.value })} 
+                      className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none" 
+                      rows={3}
+                    />
+                  </div>
                 </div>
+                
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="startDate" className="text-right font-medium">Start Date</label>
-                  <input 
-                    type="date" 
-                    id="startDate" 
-                    value={cycleForm.startDate} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCycleForm({ ...cycleForm, startDate: e.target.value })} 
-                    className="col-span-3 px-3 py-2 border rounded-md" 
-                    required 
-                  />
+                  <label htmlFor="startDate" className="text-right font-medium text-slate-700 text-sm">Start Date</label>
+                  <div className="col-span-3 relative">
+                    <input 
+                      type="date" 
+                      id="startDate" 
+                      value={cycleForm.startDate} 
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCycleForm({ ...cycleForm, startDate: e.target.value })} 
+                      className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-10" 
+                      required 
+                    />
+                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                  </div>
                 </div>
+                
                 <div className="grid grid-cols-4 items-center gap-4">
-                  <label htmlFor="endDate" className="text-right font-medium">End Date</label>
-                  <input 
-                    id="endDate" 
-                    type="date" 
-                    value={cycleForm.endDate} 
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCycleForm({ ...cycleForm, endDate: e.target.value })} 
-                    className="col-span-3 px-3 py-2 border rounded-md" 
-                    required 
-                  />
+                  <label htmlFor="endDate" className="text-right font-medium text-slate-700 text-sm">End Date</label>
+                  <div className="col-span-3 relative">
+                    <input 
+                      id="endDate" 
+                      type="date" 
+                      value={cycleForm.endDate} 
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCycleForm({ ...cycleForm, endDate: e.target.value })} 
+                      className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all pr-10" 
+                      required 
+                    />
+                    <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+                  </div>
                 </div>
               </div>
-              <div className="flex justify-end gap-2 mt-4">
+              
+              <div className="flex justify-end space-x-3 pt-5 border-t border-slate-200 mt-6">
                 <button 
                   type="button" 
-                  className="px-4 py-2 border rounded-md hover:bg-gray-100" 
+                  className="px-4 py-2 border border-slate-300 rounded-md hover:bg-slate-50 transition-colors text-slate-700 font-medium" 
                   onClick={() => setIsDialogOpen(false)}
                 >
                   Cancel
                 </button>
                 <button 
                   type="submit" 
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="px-5 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium flex items-center justify-center"
                 >
                   {editingCycle ? 'Save Changes' : 'Create Cycle'}
                 </button>
