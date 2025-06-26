@@ -78,4 +78,6 @@ declare module 'lucide-react' {
   export const Shield: Icon;
   export const Award: Icon;
   export const AlertTriangle: Icon;
+  export const Trophy: Icon;
+  export const Zap: Icon;
 }
