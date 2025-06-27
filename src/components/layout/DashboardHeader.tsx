@@ -137,22 +137,24 @@ export default function DashboardHeader({
   }, [])
 
   return (
-    <div className="bg-white border-b border-slate-200">
-      <div className="max-w-7xl mx-auto px-6 py-4">
-        <div className="flex items-center justify-between">
-          {/* Left Side - Title and Toggle */}
-          <div className="flex items-center space-x-6">
-            {/* Title with Icon */}
-            <div className="flex items-center space-x-3">
+    <div className="bg-white border-b border-slate-200 shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="flex items-center justify-between gap-3">
+          {/* Left Side - Title with Icon */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
-                {icon}
+                <div className="text-blue-600">
+                  {icon}
+                </div>
               </div>
+              
               <div>
-                <h1 className="text-2xl font-bold text-slate-900">
+                <h1 className="text-lg font-bold text-slate-800">
                   {title}
                 </h1>
                 {description && (
-                  <p className="text-sm text-slate-500 mt-0.5">
+                  <p className="text-xs text-slate-500 max-w-xs">
                     {description}
                   </p>
                 )}
@@ -161,37 +163,37 @@ export default function DashboardHeader({
 
             {/* View Mode Toggle for Managers */}
             {showViewToggle && typedSession?.user?.role === 'MANAGER' && (
-              <div className="flex items-center bg-slate-100 rounded-lg p-1">
+              <div className="flex items-center bg-slate-100 rounded-lg p-1 ml-3">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onViewModeChange?.('team')}
                   className={viewMode === 'team' 
-                    ? 'bg-blue-600 text-white shadow-sm h-8 px-3' 
-                    : 'text-slate-600 hover:bg-slate-200 h-8 px-3'
+                    ? 'bg-blue-600 text-white h-7 px-3 rounded-md' 
+                    : 'text-slate-600 hover:bg-slate-200 h-7 px-3 rounded-md'
                   }
                 >
-                  <Users className="w-4 h-4 mr-2" />
-                  Team View
+                  <Users className="w-3 h-3 mr-1" />
+                  Team
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => onViewModeChange?.('personal')}
                   className={viewMode === 'personal' 
-                    ? 'bg-blue-600 text-white shadow-sm h-8 px-3' 
-                    : 'text-slate-600 hover:bg-slate-200 h-8 px-3'
+                    ? 'bg-blue-600 text-white h-7 px-3 rounded-md' 
+                    : 'text-slate-600 hover:bg-slate-200 h-7 px-3 rounded-md'
                   }
                 >
-                  <User className="w-4 h-4 mr-2" />
-                  My OKRs
+                  <User className="w-3 h-3 mr-1" />
+                  Mine
                 </Button>
               </div>
             )}
           </div>
 
           {/* Right Side - Actions and User */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-2 justify-end">
             {/* Action Buttons */}
             {allActions
               .filter(action => !action.hidden)
@@ -202,11 +204,11 @@ export default function DashboardHeader({
                       <Button
                         variant={action.variant || 'outline'}
                         size="sm"
-                        className={action.variant === 'default' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
-                                 action.variant === 'secondary' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' :
-                                 action.variant === 'ghost' && action.label === 'Update Progress' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
-                                 action.variant === 'ghost' ? 'text-slate-600 hover:bg-slate-100' :
-                                 'border-slate-300 text-slate-700 hover:bg-slate-50'}
+                        className={action.variant === 'default' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3' :
+                                 action.variant === 'secondary' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3' :
+                                 action.variant === 'ghost' && action.label === 'Update Progress' ? 'bg-purple-600 hover:bg-purple-700 text-white h-8 px-3' :
+                                 action.variant === 'ghost' ? 'text-slate-600 hover:bg-slate-100 h-8 px-3' :
+                                 'border-slate-300 text-slate-700 hover:bg-slate-50 h-8 px-3'}
                       >
                         {action.icon}
                         <span className="ml-2">{action.label}</span>
@@ -221,11 +223,11 @@ export default function DashboardHeader({
                       size="sm"
                       onClick={action.onClick}
                       disabled={action.disabled}
-                      className={action.variant === 'default' ? 'bg-blue-600 hover:bg-blue-700 text-white' :
-                               action.variant === 'secondary' ? 'bg-emerald-600 hover:bg-emerald-700 text-white' :
-                               action.variant === 'ghost' && action.label === 'Update Progress' ? 'bg-purple-600 hover:bg-purple-700 text-white' :
-                               action.variant === 'ghost' ? 'text-slate-600 hover:bg-slate-100' :
-                               'border-slate-300 text-slate-700 hover:bg-slate-50'}
+                      className={action.variant === 'default' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3' :
+                               action.variant === 'secondary' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3' :
+                               action.variant === 'ghost' && action.label === 'Update Progress' ? 'bg-purple-600 hover:bg-purple-700 text-white h-8 px-3' :
+                               action.variant === 'ghost' ? 'text-slate-600 hover:bg-slate-100 h-8 px-3' :
+                               'border-slate-300 text-slate-700 hover:bg-slate-50 h-8 px-3'}
                     >
                       {action.icon}
                       <span className="ml-2">{action.label}</span>
@@ -239,15 +241,15 @@ export default function DashboardHeader({
               <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="flex items-center space-x-3 bg-slate-50 hover:bg-slate-100 rounded-lg px-3 py-2 border border-slate-200 transition-colors"
+                  className="flex items-center space-x-2 bg-slate-50 hover:bg-slate-100 rounded-lg px-3 py-1.5 border border-slate-200 transition-colors"
                 >
-                  <div className="flex items-center justify-center w-8 h-8 bg-blue-600 text-white rounded-full text-sm font-medium">
+                  <div className="flex items-center justify-center w-7 h-7 bg-blue-600 text-white rounded-full text-xs font-medium">
                     {typedSession.user.name?.charAt(0).toUpperCase() || typedSession.user.email?.charAt(0).toUpperCase()}
                   </div>
                   <div className="text-left">
                     <div className="text-sm font-medium text-slate-900">
-                      {typedSession.user.name?.split(' ').map(n => n.charAt(0)).join('').toUpperCase() || 
-                       typedSession.user.email?.charAt(0).toUpperCase() || 'U'}
+                      {typedSession.user.name || 
+                       typedSession.user.email || 'User'}
                     </div>
                     <div className="text-xs text-slate-500 flex items-center space-x-1">
                       {typedSession.user.role === 'ADMIN' && <Shield className="w-3 h-3 text-amber-600" />}
