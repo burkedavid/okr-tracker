@@ -159,31 +159,17 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const { title, description, type, status, ownerId, cycleId, parentId } = body
 
-    // Define type for update data
-    interface ObjectiveUpdateData {
-      title?: string;
-      description?: string;
-      type?: string;
-      status?: string;
-      ownerId?: string;
-      cycleId?: string;
-      parentId?: string;
-    }
-
-    // Prepare update data, ensuring we don't set null values
-    const updateData: ObjectiveUpdateData = {}
-    
-    if (title !== null && title !== undefined) updateData.title = title
-    if (description !== null && description !== undefined) updateData.description = description
-    if (type !== null && type !== undefined) updateData.type = type
-    if (status !== null && status !== undefined) updateData.status = status
-    if (ownerId !== null && ownerId !== undefined) updateData.ownerId = ownerId
-    if (cycleId !== null && cycleId !== undefined) updateData.cycleId = cycleId
-    if (parentId !== null && parentId !== undefined) updateData.parentId = parentId
-
     const objective = await prisma.objective.update({
       where: { id },
-      data: updateData,
+      data: {
+        ...(title !== undefined && title !== null && { title }),
+        ...(description !== undefined && description !== null && { description }),
+        ...(type !== undefined && type !== null && { type }),
+        ...(status !== undefined && status !== null && { status }),
+        ...(ownerId !== undefined && ownerId !== null && { ownerId }),
+        ...(cycleId !== undefined && cycleId !== null && { cycleId }),
+        ...(parentId !== undefined && parentId !== null && { parentId }),
+      },
       include: {
         owner: {
           select: {
