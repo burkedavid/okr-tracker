@@ -167,10 +167,12 @@ export default function ManagePage() {
     ownerId: ''
   })
 
-  // Search and filter states for key result form
   const [keyResultObjectiveSearch, setKeyResultObjectiveSearch] = useState('')
   const [keyResultOwnerFilter, setKeyResultOwnerFilter] = useState('')
   const [keyResultCycleFilter, setKeyResultCycleFilter] = useState('')
+
+  // Track whether we're in "change objective" mode - when false, we only show the pre-selected banner
+  const [showObjectiveSelector, setShowObjectiveSelector] = useState(false)
 
   const [progressForm, setProgressForm] = useState({
     value: '',
@@ -736,7 +738,11 @@ export default function ManagePage() {
               setKeyResultObjectiveSearch('')
               setKeyResultOwnerFilter('')
               setKeyResultCycleFilter('')
-              setShowKeyResultForm(true)
+              // Show the objective selector when opening from main menu
+              setShowObjectiveSelector(true)
+              // Ensure modal is closed before opening to reset state
+              setShowKeyResultForm(false)
+              setTimeout(() => setShowKeyResultForm(true), 10)
             },
             variant: 'secondary',
             icon: <BarChart3 className="w-4 h-4" />
@@ -1164,7 +1170,9 @@ export default function ManagePage() {
                   variant="ghost" 
                   size="sm" 
                   onClick={() => {
+                    // Properly reset all state when closing the modal
                     setShowKeyResultForm(false)
+                    // Reset form state
                     setKeyResultForm({
                       description: '',
                       metricType: 'NUMBER',
@@ -1177,6 +1185,8 @@ export default function ManagePage() {
                     setKeyResultObjectiveSearch('')
                     setKeyResultOwnerFilter('')
                     setKeyResultCycleFilter('')
+                    // Reset objective selector state
+                    setShowObjectiveSelector(false)
                   }}
                   className="text-gray-500 hover:text-gray-700"
                 >
@@ -1189,84 +1199,88 @@ export default function ManagePage() {
             </CardHeader>
             <CardContent className="p-6">
               <form onSubmit={handleCreateKeyResult} className="space-y-6">
-                {/* Search and Filter Controls */}
-                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
-                  <h6 className="text-sm font-medium text-slate-700 mb-3">Find Objective</h6>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Search Objectives</label>
-                      <div className="relative">
-                        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400 w-3 h-3" />
-                        <input
-                          type="text"
-                          value={keyResultObjectiveSearch}
-                          onChange={(e) => setKeyResultObjectiveSearch(e.target.value)}
-                          placeholder="Search by title or description..."
-                          className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                        />
+                {/* Search and Filter Controls (only show when NO objective is pre-selected or when in change mode) */}
+                {(!keyResultForm.objectiveId || showObjectiveSelector) && (
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <h6 className="text-sm font-medium text-slate-700 mb-3">Find Objective</h6>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">Search Objectives</label>
+                        <div className="relative">
+                          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400 w-3 h-3" />
+                          <input
+                            type="text"
+                            value={keyResultObjectiveSearch}
+                            onChange={(e) => setKeyResultObjectiveSearch(e.target.value)}
+                            placeholder="Search by title or description..."
+                            className="w-full pl-7 pr-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">Filter by Owner</label>
+                        <select
+                          value={keyResultOwnerFilter}
+                          onChange={(e) => setKeyResultOwnerFilter(e.target.value)}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                        >
+                          <option value="">All Owners</option>
+                          {users.map(user => (
+                            <option key={user.id} value={user.id}>
+                              {user.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs font-medium text-slate-600 mb-1">Filter by Cycle</label>
+                        <select
+                          value={keyResultCycleFilter}
+                          onChange={(e) => setKeyResultCycleFilter(e.target.value)}
+                          className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                        >
+                          <option value="">All Cycles</option>
+                          {cycles.map(cycle => (
+                            <option key={cycle.id} value={cycle.id}>
+                              {cycle.name}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     </div>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Filter by Owner</label>
-                      <select
-                        value={keyResultOwnerFilter}
-                        onChange={(e) => setKeyResultOwnerFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      >
-                        <option value="">All Owners</option>
-                        {users.map(user => (
-                          <option key={user.id} value={user.id}>
-                            {user.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium text-slate-600 mb-1">Filter by Cycle</label>
-                      <select
-                        value={keyResultCycleFilter}
-                        onChange={(e) => setKeyResultCycleFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-slate-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      >
-                        <option value="">All Cycles</option>
-                        {cycles.map(cycle => (
-                          <option key={cycle.id} value={cycle.id}>
-                            {cycle.name}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    {(keyResultObjectiveSearch || keyResultOwnerFilter || keyResultCycleFilter) && (
+                      <div className="mt-2 flex items-center justify-between">
+                        <span className="text-xs text-slate-500">
+                          Showing {getFilteredObjectivesForKeyResult().length} of {objectives.length} objectives
+                        </span>
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setKeyResultObjectiveSearch('')
+                            setKeyResultOwnerFilter('')
+                            setKeyResultCycleFilter('')
+                          }}
+                          className="text-xs text-slate-500 hover:text-slate-700"
+                        >
+                          Clear filters
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                  {(keyResultObjectiveSearch || keyResultOwnerFilter || keyResultCycleFilter) && (
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="text-xs text-slate-500">
-                        Showing {getFilteredObjectivesForKeyResult().length} of {objectives.length} objectives
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          setKeyResultObjectiveSearch('')
-                          setKeyResultOwnerFilter('')
-                          setKeyResultCycleFilter('')
-                        }}
-                        className="text-xs text-slate-500 hover:text-slate-700"
-                      >
-                        Clear filters
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                )}
                 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Objective * 
-                    <span className="text-xs font-normal text-slate-500 ml-1">
-                      ({getFilteredObjectivesForKeyResult().length} available)
-                    </span>
+                    {!keyResultForm.objectiveId && (
+                      <span className="text-xs font-normal text-slate-500 ml-1">
+                        ({getFilteredObjectivesForKeyResult().length} available)
+                      </span>
+                    )}
                   </label>
-                  {keyResultForm.objectiveId && (
+                  {keyResultForm.objectiveId && !showObjectiveSelector ? (
                     <div className="mb-2 p-2 bg-green-50 border border-green-200 rounded-md">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-2">
@@ -1279,27 +1293,43 @@ export default function ManagePage() {
                           type="button"
                           variant="ghost"
                           size="sm"
-                          onClick={() => setKeyResultForm({...keyResultForm, objectiveId: ''})}
+                          onClick={() => {
+                            // Show the objective selector when clicking Change
+                            setShowObjectiveSelector(true)
+                            // Clear the objective ID to show the dropdown instead
+                            setKeyResultForm({...keyResultForm, objectiveId: ''})
+                            // Reset filters to ensure a clean state when switching to dropdown view
+                            setKeyResultObjectiveSearch('')
+                            setKeyResultOwnerFilter('')
+                            setKeyResultCycleFilter('')
+                          }}
                           className="text-green-600 hover:text-green-700 text-xs"
                         >
                           Change
                         </Button>
                       </div>
                     </div>
+                  ) : (
+                    <select
+                      value={keyResultForm.objectiveId}
+                      onChange={(e) => {
+                        setKeyResultForm({...keyResultForm, objectiveId: e.target.value})
+                        // When selecting a new objective from the dropdown, exit selector mode
+                        if (e.target.value) {
+                          setShowObjectiveSelector(false)
+                        }
+                      }}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                    >
+                      <option value="">Select objective</option>
+                      {getFilteredObjectivesForKeyResult().map(objective => (
+                        <option key={objective.id} value={objective.id}>
+                          {objective.title} ({objective.owner.name})
+                        </option>
+                      ))}
+                    </select>
                   )}
-                  <select
-                    value={keyResultForm.objectiveId}
-                    onChange={(e) => setKeyResultForm({...keyResultForm, objectiveId: e.target.value})}
-                    required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                  >
-                    <option value="">Select objective</option>
-                    {getFilteredObjectivesForKeyResult().map(objective => (
-                      <option key={objective.id} value={objective.id}>
-                        {objective.title} ({objective.owner.name})
-                      </option>
-                    ))}
-                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">Description *</label>
@@ -1631,13 +1661,24 @@ export default function ManagePage() {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation()
-                                // Pre-populate the objective and open the form
-                                setKeyResultForm(prev => ({
-                                  ...prev,
+                                // Always reset the form, but pre-select this objective
+                                setKeyResultForm({
+                                  description: '',
+                                  metricType: 'NUMBER',
+                                  targetValue: '',
+                                  unit: '',
                                   objectiveId: objective.id,
                                   ownerId: typedSession?.user?.id || ''
-                                }))
-                                setShowKeyResultForm(true)
+                                })
+                                // Clear search and filter states to ensure they don't appear with pre-selected objective
+                                setKeyResultObjectiveSearch('')
+                                setKeyResultOwnerFilter('')
+                                setKeyResultCycleFilter('')
+                                // Ensure we're not showing the objective selector when pre-selected
+                                setShowObjectiveSelector(false)
+                                // Ensure modal is properly reset before opening
+                                setShowKeyResultForm(false) // Close if already open
+                                setTimeout(() => setShowKeyResultForm(true), 10) // Reopen with slight delay to ensure state refresh
                               }}
                               className="text-green-600 hover:text-green-700 hover:bg-green-50 px-2 py-1 text-xs font-medium"
                               title="Add key result to this objective"
@@ -1945,7 +1986,24 @@ export default function ManagePage() {
                         <p className="text-sm text-slate-500">No key results defined yet</p>
                         <Button 
                           onClick={() => {
-                            setShowKeyResultForm(true)
+                            // Always reset the form, but pre-select this objective
+                            setKeyResultForm({
+                              description: '',
+                              metricType: 'NUMBER',
+                              targetValue: '',
+                              unit: '',
+                              objectiveId: objective.id,
+                              ownerId: typedSession?.user?.id || ''
+                            })
+                            // Clear search and filter states
+                            setKeyResultObjectiveSearch('')
+                            setKeyResultOwnerFilter('')
+                            setKeyResultCycleFilter('')
+                            // Ensure we're not showing the objective selector when pre-selected
+                            setShowObjectiveSelector(false)
+                            // Ensure modal is properly reset before opening
+                            setShowKeyResultForm(false) // Close if already open
+                            setTimeout(() => setShowKeyResultForm(true), 10) // Reopen with slight delay to ensure state refresh
                           }}
                           variant="ghost"
                           size="sm"
