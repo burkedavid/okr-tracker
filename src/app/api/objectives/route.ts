@@ -62,7 +62,7 @@ export async function GET() {
         name: string;
         email: string;
         position: string | null;
-      };
+      } | null;
       cycle?: {
         id: string;
         name: string;
