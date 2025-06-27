@@ -36,6 +36,23 @@ interface DashboardHeaderProps {
   onViewModeChange?: (mode: 'team' | 'personal') => void
 }
 
+// Helper function to get initials from full name
+const getInitials = (name: string | null | undefined): string => {
+  if (!name) return '';
+  
+  // Split the name by spaces and get the first letter of each part
+  const nameParts = name.split(' ');
+  if (nameParts.length === 1) {
+    // If there's only one name part, return the first letter
+    return nameParts[0].charAt(0).toUpperCase();
+  } else {
+    // If there are multiple name parts, return first and last initials
+    const firstInitial = nameParts[0].charAt(0).toUpperCase();
+    const lastInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+    return `${firstInitial}${lastInitial}`;
+  }
+};
+
 export default function DashboardHeader({
   title,
   icon,
@@ -204,11 +221,16 @@ export default function DashboardHeader({
                       <Button
                         variant={action.variant || 'outline'}
                         size="sm"
-                        className={action.variant === 'default' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3' :
-                                 action.variant === 'secondary' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3' :
-                                 action.variant === 'ghost' && action.label === 'Update Progress' ? 'bg-purple-600 hover:bg-purple-700 text-white h-8 px-3' :
-                                 action.variant === 'ghost' ? 'text-slate-600 hover:bg-slate-100 h-8 px-3' :
-                                 'border-slate-300 text-slate-700 hover:bg-slate-50 h-8 px-3'}
+                        className={action.variant === 'default' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3 shadow-sm' :
+                                 action.variant === 'secondary' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3 shadow-sm' :
+                                 action.label === 'Add Department' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3 shadow-sm' :
+                                 action.label === 'Add User' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3 shadow-sm' :
+                                 action.label === 'Add Objective' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3 shadow-sm' :
+                                 action.label === 'Add Key Result' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3 shadow-sm' :
+                                 action.label === 'Update Progress' ? 'bg-purple-600 hover:bg-purple-700 text-white h-8 px-3 shadow-sm' :
+                                 action.label === 'Timeline View' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3 shadow-sm' :
+                                 action.variant === 'ghost' ? 'text-slate-600 hover:bg-slate-100 h-8 px-3 border border-slate-200' :
+                                 'border border-slate-300 text-slate-700 hover:bg-slate-50 h-8 px-3'}
                       >
                         {action.icon}
                         <span className="ml-2">{action.label}</span>
@@ -223,11 +245,16 @@ export default function DashboardHeader({
                       size="sm"
                       onClick={action.onClick}
                       disabled={action.disabled}
-                      className={action.variant === 'default' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3' :
-                               action.variant === 'secondary' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3' :
-                               action.variant === 'ghost' && action.label === 'Update Progress' ? 'bg-purple-600 hover:bg-purple-700 text-white h-8 px-3' :
-                               action.variant === 'ghost' ? 'text-slate-600 hover:bg-slate-100 h-8 px-3' :
-                               'border-slate-300 text-slate-700 hover:bg-slate-50 h-8 px-3'}
+                      className={action.variant === 'default' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3 shadow-sm' :
+                               action.variant === 'secondary' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3 shadow-sm' :
+                               action.label === 'Add Department' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3 shadow-sm' :
+                               action.label === 'Add User' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3 shadow-sm' :
+                               action.label === 'Add Objective' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3 shadow-sm' :
+                               action.label === 'Add Key Result' ? 'bg-emerald-600 hover:bg-emerald-700 text-white h-8 px-3 shadow-sm' :
+                               action.label === 'Update Progress' ? 'bg-purple-600 hover:bg-purple-700 text-white h-8 px-3 shadow-sm' :
+                               action.label === 'Timeline View' ? 'bg-blue-600 hover:bg-blue-700 text-white h-8 px-3 shadow-sm' :
+                               action.variant === 'ghost' ? 'text-slate-600 hover:bg-slate-100 h-8 px-3 border border-slate-200' :
+                               'border border-slate-300 text-slate-700 hover:bg-slate-50 h-8 px-3'}
                     >
                       {action.icon}
                       <span className="ml-2">{action.label}</span>
@@ -244,19 +271,7 @@ export default function DashboardHeader({
                   className="flex items-center space-x-2 bg-slate-50 hover:bg-slate-100 rounded-lg px-3 py-1.5 border border-slate-200 transition-colors"
                 >
                   <div className="flex items-center justify-center w-7 h-7 bg-blue-600 text-white rounded-full text-xs font-medium">
-                    {typedSession.user.name?.charAt(0).toUpperCase() || typedSession.user.email?.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="text-left">
-                    <div className="text-sm font-medium text-slate-900">
-                      {typedSession.user.name || 
-                       typedSession.user.email || 'User'}
-                    </div>
-                    <div className="text-xs text-slate-500 flex items-center space-x-1">
-                      {typedSession.user.role === 'ADMIN' && <Shield className="w-3 h-3 text-amber-600" />}
-                      {typedSession.user.role === 'MANAGER' && <Shield className="w-3 h-3 text-blue-600" />}
-                      {typedSession.user.role === 'STAFF' && <User className="w-3 h-3 text-slate-600" />}
-                      <span>{typedSession.user.role}</span>
-                    </div>
+                    {getInitials(typedSession.user.name) || typedSession.user.email?.charAt(0).toUpperCase()}
                   </div>
                   <ChevronDown className="w-4 h-4 text-slate-400" />
                 </button>
@@ -270,6 +285,12 @@ export default function DashboardHeader({
                       </div>
                       <div className="text-sm text-slate-500">
                         {typedSession.user.email}
+                      </div>
+                      <div className="mt-2 flex items-center text-xs text-slate-500">
+                        {typedSession.user.role === 'ADMIN' && <Shield className="w-3 h-3 text-amber-600 mr-1" />}
+                        {typedSession.user.role === 'MANAGER' && <Shield className="w-3 h-3 text-blue-600 mr-1" />}
+                        {typedSession.user.role === 'STAFF' && <User className="w-3 h-3 text-slate-600 mr-1" />}
+                        <span>{typedSession.user.role}</span>
                       </div>
                     </div>
                     <button

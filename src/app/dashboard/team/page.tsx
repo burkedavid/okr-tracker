@@ -269,8 +269,7 @@ export default function TeamManagementPage() {
           {
             label: 'Timeline View',
             href: '/dashboard/timeline',
-            variant: 'default',
-            icon: <Calendar className="w-4 h-4" />
+            variant: 'default'
           }
         ]}
       />
