@@ -160,6 +160,9 @@ export default function DashboardHeader({
           {/* Left Side - Title with Icon */}
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-3">
+              <a href="https://www.idoxgroup.com/" target="_blank" rel="noopener noreferrer" className="mr-2 flex items-center opacity-80 hover:opacity-100 transition-opacity">
+                <img src="https://www.idoxgroup.com/wp-content/uploads/2020/08/NewLogoDefault.png" alt="Idox Logo" style={{height:24, width:'auto'}} />
+              </a>
               <div className="p-2 bg-blue-100 rounded-lg">
                 <div className="text-blue-600">
                   {icon}
