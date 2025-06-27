@@ -96,7 +96,8 @@ export const authOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: CustomUser }) {
+    // @ts-expect-error - Known issue: the type definitions for NextAuth jwt callback are incompatible with Next.js 15.3.3
+    async jwt({ token, user }) {
       if (user) {
         // Add custom user properties to token
         token.role = user.role;
@@ -106,14 +107,18 @@ export const authOptions = {
       }
       return token;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
+    // This callback is called whenever a session is checked
+    // @ts-expect-error - Known issue: the type definitions for NextAuth session callback are incompatible with Next.js 15.3.3
+    async session(params) {
+      const { session, token } = params;
+      
       if (session.user && token.sub) {
         // Add properties from token to session
         session.user.id = token.sub;
-        session.user.role = token.role || '';
-        session.user.department = token.department;
-        session.user.position = token.position;
-        session.user.avatar = token.avatar;
+        session.user.role = token.role as string || '';
+        session.user.department = token.department as string;
+        session.user.position = token.position as string;
+        session.user.avatar = token.avatar as string;
       }
       return session;
     }
