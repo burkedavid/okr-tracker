@@ -6,10 +6,11 @@ import { prisma } from '@/lib/prisma'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: { id: string } }
 ) {
   try {
-    const session = await getServerSession(authOptions) as Session | null
+    // Use type assertion to handle the updated Next.js 15.3.3 session types
+    const session = await getServerSession(authOptions as any) as Session | null
     
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -31,7 +32,7 @@ export async function POST(
       }, { status: 400 })
     }
 
-    const { id: objectiveId } = await params
+    const { id: objectiveId } = context.params
 
     // Get the current objective with its cycle
     const currentObjective = await prisma.objective.findUnique({
