@@ -53,7 +53,7 @@ export async function GET() {
     interface ObjectiveWithKeyResults {
       id: string;
       title: string;
-      description: string;
+      description: string | null;
       status: string;
       keyResults: KeyResult[];
       ownerId: string;
