@@ -60,6 +60,8 @@ export async function GET() {
       owner?: {
         id: string;
         name: string;
+        email: string;
+        position: string | null;
       };
       cycle?: {
         id: string;
