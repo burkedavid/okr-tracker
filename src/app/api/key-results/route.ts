@@ -118,27 +118,15 @@ export async function PUT(request: Request) {
       )
     }
 
-    // Define type for update data
-    interface KeyResultUpdateData {
-      updatedAt: Date;
-      description?: string;
-      targetValue?: number;
-      currentValue?: number;
-      unit?: string;
-      ownerId?: string;
-      metricType?: string;
-    }
-
     // Prepare update data, ensuring we don't set null values
-    const updateData: KeyResultUpdateData = {
-      updatedAt: new Date()
-    }
-    
-    if (description !== null && description !== undefined) updateData.description = description
-    if (targetValue !== null && targetValue !== undefined) updateData.targetValue = parseFloat(targetValue)
-    if (currentValue !== null && currentValue !== undefined) updateData.currentValue = parseFloat(currentValue)
-    if (unit !== null && unit !== undefined) updateData.unit = unit
-    if (ownerId !== null && ownerId !== undefined) updateData.ownerId = ownerId
+    const updateData = {
+      updatedAt: new Date(),
+      ...(description != null ? { description } : {}),
+      ...(targetValue != null ? { targetValue: parseFloat(targetValue) } : {}),
+      ...(currentValue != null ? { currentValue: parseFloat(currentValue) } : {}),
+      ...(unit != null ? { unit } : {}),
+      ...(ownerId != null ? { ownerId } : {}),
+    };
 
     const keyResult = await prisma.keyResult.update({
       where: { id },
