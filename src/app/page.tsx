@@ -9,6 +9,9 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-2">
+              <a href="https://www.idoxgroup.com/" target="_blank" rel="noopener noreferrer" className="mr-2 flex items-center opacity-70 hover:opacity-100 transition-opacity">
+                <img src="https://www.idoxgroup.com/wp-content/uploads/2020/08/NewLogoDefault.png" alt="Idox Logo" style={{height:24, width:'auto'}} />
+              </a>
               <Target className="h-8 w-8 text-blue-600" />
               <span className="text-xl font-bold text-gray-900">OKR Tracker</span>
             </div>
