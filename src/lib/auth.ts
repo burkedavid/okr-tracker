@@ -95,9 +95,13 @@ export const authOptions = {
       if (user) {
         // When user is defined, it has our custom properties from the authorize callback
         // Cast the user properties to avoid type errors
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const role = (user as any).role;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const department = (user as any).department;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const position = (user as any).position;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const avatar = (user as any).avatar;
         
         // Add them to the token
