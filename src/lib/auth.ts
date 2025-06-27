@@ -1,19 +1,13 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
-import type { Session } from 'next-auth'
-import type { JWT } from 'next-auth/jwt'
 
-// Define custom user type for authorization
-type CustomUser = {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  department?: string;
-  position?: string;
-  avatar?: string;
-}
+// We don't directly reference these types but need them for module augmentation
+// Silence ESLint with disable comments
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { Session } from 'next-auth'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import type { JWT } from 'next-auth/jwt'
 
 // Extend the built-in session types
 declare module 'next-auth' {
@@ -99,11 +93,18 @@ export const authOptions = {
     // @ts-expect-error - Known issue: the type definitions for NextAuth jwt callback are incompatible with Next.js 15.3.3
     async jwt({ token, user }) {
       if (user) {
-        // Add custom user properties to token
-        token.role = user.role;
-        token.department = user.department;
-        token.position = user.position;
-        token.avatar = user.avatar;
+        // When user is defined, it has our custom properties from the authorize callback
+        // Cast the user properties to avoid type errors
+        const role = (user as any).role;
+        const department = (user as any).department;
+        const position = (user as any).position;
+        const avatar = (user as any).avatar;
+        
+        // Add them to the token
+        token.role = role;
+        token.department = department;
+        token.position = position;
+        token.avatar = avatar;
       }
       return token;
     },
