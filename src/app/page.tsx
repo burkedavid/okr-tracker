@@ -12,13 +12,7 @@ export default function HomePage() {
               <Target className="h-8 w-8 text-blue-600" />
               <span className="text-xl font-bold text-gray-900">OKR Tracker</span>
             </div>
-            <Link 
-              href="/auth/signin"
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors duration-200 flex items-center space-x-2"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
+
           </div>
         </div>
       </nav>
@@ -189,9 +183,9 @@ export default function HomePage() {
       {/* Dashboard Preview & Roles */}
       <section className="py-16 bg-gradient-to-r from-gray-50 to-blue-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* Dashboard Preview */}
-            <div>
+            <div className="self-start">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">Intelligent Risk Management</h3>
               <div className="bg-white rounded-xl p-6 shadow-lg">
                 <div className="flex items-center justify-between mb-4">
@@ -244,7 +238,7 @@ export default function HomePage() {
             </div>
 
             {/* Role-Based Features */}
-            <div>
+            <div className="self-start">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Built for Every Role</h3>
               <div className="space-y-4">
                 {/* Admin */}
@@ -279,37 +273,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-indigo-600">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to Transform Your OKR Management?</h2>
-          <p className="text-lg text-blue-100 mb-6">
-            Join organizations using our comprehensive system to achieve strategic objectives.
-          </p>
-          <Link 
-            href="/auth/signin"
-            className="bg-white hover:bg-gray-100 text-blue-600 px-8 py-3 rounded-lg font-semibold text-lg transition-all duration-200 transform hover:scale-105 inline-flex items-center space-x-2"
-          >
-            <span>Start Your OKR Journey</span>
-            <ArrowRight className="h-5 w-5" />
-          </Link>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <Target className="h-6 w-6 text-blue-400" />
-              <span className="text-lg font-semibold">OKR Tracker</span>
-            </div>
-            <div className="text-gray-400 text-sm">
-              Built with ❤️ for effective OKR management
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Idox subtle brand credit */}
+      <div className="w-full flex justify-center mt-8 mb-4">
+        <span className="flex items-center space-x-2 text-xs text-slate-400">
+          <img src="https://www.idoxgroup.com/wp-content/uploads/2020/08/NewLogoDefault.png" alt="Idox Logo" style={{height:24, width:'auto'}} />
+          <span>Powered by Idox Software</span>
+        </span>
+      </div>
     </div>
   )
 }
