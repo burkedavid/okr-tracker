@@ -152,6 +152,7 @@ export default function DashboardPage() {
 
   // Helper function to calculate days until deadline
   const getDaysUntilDeadline = (objective: Objective) => {
+
     const deadline = getEffectiveDeadline(objective)
     const now = new Date()
     const diffTime = deadline.getTime() - now.getTime()
@@ -168,7 +169,7 @@ export default function DashboardPage() {
         icon: CheckCircle
       }
     }
-    const deadline = getEffectiveDeadline(objective)
+
     const daysUntil = getDaysUntilDeadline(objective)
     
     if (daysUntil < 0) {
