@@ -319,7 +319,7 @@ export default function DashboardPage() {
           <Card className="bg-white shadow-sm border-slate-200 hover:shadow-md transition-all duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-semibold text-slate-600 uppercase tracking-wide">
-                Completion Rate 
+                Completion Rate
               </CardTitle>
               <div className="p-2 bg-amber-100 rounded-lg">
                 <Trophy className="h-5 w-5 text-amber-600" />
