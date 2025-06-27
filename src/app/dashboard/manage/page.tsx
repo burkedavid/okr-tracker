@@ -349,13 +349,27 @@ export default function ManagePage() {
 
   const handleUpdateProgress = async (e: React.FormEvent) => {
     e.preventDefault()
+    // Ensure mandatory fields are present
+    const createdBy = progressForm.createdById || typedSession?.user?.id || ''
+    const numericValue = parseFloat(progressForm.value)
+    if (!progressForm.keyResultId || !createdBy || Number.isNaN(numericValue)) {
+      console.error('Missing required fields for progress update')
+      return
+    }
+
     try {
+      const payload = {
+        ...progressForm,
+        createdById: createdBy,
+        value: numericValue // send numeric value instead of string
+      }
+
       const response = await fetch('/api/progress-updates', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(progressForm),
+        body: JSON.stringify(payload),
       })
 
       if (response.ok) {

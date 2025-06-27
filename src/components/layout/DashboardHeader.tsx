@@ -13,7 +13,8 @@ import {
   LogOut,
   User,
   Shield,
-  ChevronDown
+  ChevronDown,
+  Calendar
 } from 'lucide-react'
 
 interface DashboardHeaderProps {
@@ -87,6 +88,15 @@ export default function DashboardHeader({
       variant: 'outline' as const,
       icon: <Users className="w-4 h-4" />,
       hidden: typedSession?.user?.role === 'STAFF' || currentPage === 'Team OKRs' || currentPage === 'Manage OKRs',
+      disabled: false,
+      onClick: undefined
+    },
+    {
+      label: 'Timeline',
+      href: '/dashboard/timeline',
+      variant: 'outline' as const,
+      icon: <Calendar className="w-4 h-4" />,
+      hidden: currentPage === 'Timeline',
       disabled: false,
       onClick: undefined
     },

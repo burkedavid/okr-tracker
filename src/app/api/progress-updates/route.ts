@@ -45,10 +45,14 @@ export async function POST(request: Request) {
     const body = await request.json()
     const { value, notes, keyResultId, createdById } = body
 
-    // Validate required fields
-    if (value === undefined || !keyResultId || !createdById) {
+    // Validate required fields and value type
+    const numericValue = typeof value === 'string' ? parseFloat(value) : value
+    if (
+      numericValue === undefined || Number.isNaN(numericValue) ||
+      !keyResultId || !createdById
+    ) {
       return NextResponse.json(
-        { error: 'Missing required fields: value, keyResultId, createdById' },
+        { error: 'Invalid or missing fields: value (number), keyResultId, createdById' },
         { status: 400 }
       )
     }
@@ -56,7 +60,7 @@ export async function POST(request: Request) {
     // Create progress update
     const progressUpdate = await prisma.progressUpdate.create({
       data: {
-        value: parseFloat(value),
+        value: numericValue,
         notes: notes || null,
         keyResultId,
         createdById,
@@ -108,6 +112,8 @@ export async function PUT(request: Request) {
     const body = await request.json()
     const { id, value, notes } = body
 
+    const numericValue = typeof value === 'string' ? parseFloat(value) : value
+
     if (!id) {
       return NextResponse.json(
         { error: 'Missing progress update ID' },
@@ -118,7 +124,7 @@ export async function PUT(request: Request) {
     const progressUpdate = await prisma.progressUpdate.update({
       where: { id },
       data: {
-        ...(value !== undefined && { value: parseFloat(value) }),
+        ...(value !== undefined && { value: numericValue }),
         ...(notes !== undefined && { notes }),
       },
       include: {
@@ -149,7 +155,7 @@ export async function PUT(request: Request) {
       await prisma.keyResult.update({
         where: { id: progressUpdate.keyResultId },
         data: {
-          currentValue: parseFloat(value),
+          currentValue: numericValue,
           updatedAt: new Date()
         }
       })

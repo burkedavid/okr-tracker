@@ -98,6 +98,17 @@ export default function TimelinePage() {
     fetchData()
   }, [])
 
+  // Auto-scroll to today's date when the page loads and data is ready
+  useEffect(() => {
+    if (!loading && cycles.length > 0) {
+      // Small delay to ensure the timeline is fully rendered
+      const timer = setTimeout(() => {
+        scrollToToday()
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [loading, cycles.length])
+
   useEffect(() => {
     // Auto-select current user for staff
     if (typedSession?.user?.role === 'STAFF' && typedSession?.user?.id) {

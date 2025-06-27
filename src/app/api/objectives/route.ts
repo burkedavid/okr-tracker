@@ -65,7 +65,7 @@ export async function GET() {
         id: string;
         name: string;
       };
-      [key: string]: any; // For other properties that might be accessed
+      [key: string]: unknown; // For other properties that might be accessed
     }
 
     // Calculate progress for each objective
@@ -83,11 +83,24 @@ export async function GET() {
           }, 0) / totalKeyResults
         : 0
 
+      // Determine status based on progress
+      let status = objective.status
+      if (totalKeyResults > 0) {
+        if (averageProgress >= 100) {
+          status = 'COMPLETED'
+        } else if (averageProgress > 0) {
+          status = 'IN_PROGRESS'
+        } else if (status === 'NOT_STARTED' && averageProgress > 0) {
+          status = 'IN_PROGRESS'
+        }
+      }
+
       return {
         ...objective,
         progress: Math.round(averageProgress),
         completedKeyResults,
-        totalKeyResults
+        totalKeyResults,
+        status: status // Update the status based on progress
       }
     })
 
