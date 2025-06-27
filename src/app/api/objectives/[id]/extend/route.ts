@@ -4,7 +4,7 @@ import { getServerAuthSession } from '../../../../../lib/auth-helpers'
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Using a helper function to get the session with proper typing
@@ -30,7 +30,7 @@ export async function POST(
       }, { status: 400 })
     }
 
-    const { id: objectiveId } = params
+    const { id: objectiveId } = await params
 
     // Get the current objective with its cycle
     const currentObjective = await prisma.objective.findUnique({

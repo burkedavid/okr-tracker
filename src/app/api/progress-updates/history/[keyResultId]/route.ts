@@ -3,10 +3,10 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(
   request: Request,
-  { params }: { params: { keyResultId: string } }
+  { params }: { params: Promise<{ keyResultId: string }> }
 ) {
   try {
-    const { keyResultId } = params
+    const { keyResultId } = await params
 
     if (!keyResultId) {
       return NextResponse.json(
