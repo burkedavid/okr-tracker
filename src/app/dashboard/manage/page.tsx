@@ -9,28 +9,33 @@ import { Progress } from '@/components/ui/progress'
 import DashboardHeader from '@/components/layout/DashboardHeader'
 import ExtendDeadlineModal from '@/components/ui/ExtendDeadlineModal'
 import Modal from '@/components/ui/Modal'
+import { ProgressHistoryModal } from '@/components/modals/ProgressHistoryModal'
 import ManageCycles from '@/components/admin/ManageCycles'
 import { 
-  Plus, 
-  Target, 
-  BarChart3, 
-  TrendingUp, 
-  Calendar,
-  Save,
-  X,
-  CheckCircle,
-  Clock,
-  AlertCircle,
+  Target,
   User,
-  Building,
   Search,
   Filter,
+  Plus,
+  BarChart3,
+  TrendingUp,
+  Calendar,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Clock,
+  AlertTriangle,
+  ChevronRight,
+  ChevronDown,
   Edit,
   Trash2,
-  XCircle,
-  AlertTriangle,
+  Save,
+  X,
+  TrendingDown,
+  Clock as History,
   RefreshCw,
-  Eye
+  Eye,
+  Building
 } from 'lucide-react'
 
 interface Objective {
@@ -121,6 +126,13 @@ export default function ManagePage() {
   const [showExtendedOnly, setShowExtendedOnly] = useState(false)
   const [showRecentlyCreated, setShowRecentlyCreated] = useState(false)
   const [showManageCycles, setShowManageCycles] = useState(false)
+  const [showProgressHistory, setShowProgressHistory] = useState(false)
+  const [selectedKeyResult, setSelectedKeyResult] = useState<{
+    id: string;
+    description: string;
+    targetValue: number;
+    unit?: string;
+  } | null>(null)
 
   const { data: session } = useSession()
 
@@ -1892,6 +1904,24 @@ export default function ManagePage() {
                                             size="sm"
                                             onClick={(e) => {
                                               e.stopPropagation()
+                                              setSelectedKeyResult({
+                                                id: kr.id,
+                                                description: kr.description,
+                                                targetValue: kr.targetValue,
+                                                unit: kr.unit
+                                              })
+                                              setShowProgressHistory(true)
+                                            }}
+                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 h-8 w-8"
+                                            title="View Progress History"
+                                          >
+                                            <History className="w-3 h-3" />
+                                          </Button>
+                                          <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={(e) => {
+                                              e.stopPropagation()
                                               handleDeleteKeyResult(kr.id)
                                             }}
                                             className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-8 w-8"
@@ -1991,6 +2021,21 @@ export default function ManagePage() {
         >
           <ManageCycles onCyclesUpdate={handleCyclesUpdate} />
         </Modal>
+      )}
+
+      {/* Progress History Modal */}
+      {showProgressHistory && selectedKeyResult && (
+        <ProgressHistoryModal
+          isOpen={showProgressHistory}
+          onClose={() => {
+            setShowProgressHistory(false)
+            setSelectedKeyResult(null)
+          }}
+          keyResultId={selectedKeyResult.id}
+          keyResultDescription={selectedKeyResult.description}
+          targetValue={selectedKeyResult.targetValue}
+          unit={selectedKeyResult.unit}
+        />
       )}
 
       {/* Objective Modal */}
