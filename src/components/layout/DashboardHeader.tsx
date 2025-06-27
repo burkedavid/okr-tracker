@@ -73,7 +73,7 @@ export default function DashboardHeader({
 
   const handleLogout = async () => {
     await signOut({ 
-      callbackUrl: '/auth/signin',
+      callbackUrl: '/',
       redirect: true 
     })
   }
