@@ -85,28 +85,25 @@ export default function DashboardPage() {
 
     if (typedSession.user.role === 'STAFF') {
       // Staff users only see their own objectives
-      filteredObjectives = allObjectives.filter(obj => obj.ownerId === typedSession.user.id)
+      filteredObjectives = filteredObjectives.filter(obj => obj.ownerId === typedSession.user.id)
     } else if (typedSession.user.role === 'MANAGER') {
       if (viewMode === 'personal') {
         // Manager viewing their personal objectives
-        filteredObjectives = allObjectives.filter(obj => obj.ownerId === typedSession.user.id)
-      } else {
-        // Manager viewing team objectives (default)
-        // For now, show all objectives - this could be enhanced to filter by team/department
-        filteredObjectives = allObjectives
-      }
+        filteredObjectives = filteredObjectives.filter(obj => obj.ownerId === typedSession.user.id)
+      } // else: team view, show all
     }
     // ADMIN users see all objectives by default
+
+    // Always exclude completed objectives
+    filteredObjectives = filteredObjectives.filter(obj => obj.status !== 'COMPLETED')
 
     // Sort objectives by deadline (most urgent first)
     const sortedObjectives = filteredObjectives.sort((a, b) => {
       const getEffectiveDeadline = (obj: Objective) => {
         return obj.extendedDeadline ? new Date(obj.extendedDeadline) : new Date(obj.cycle.endDate)
       }
-      
       const deadlineA = getEffectiveDeadline(a)
       const deadlineB = getEffectiveDeadline(b)
-      
       return deadlineA.getTime() - deadlineB.getTime()
     })
 

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { Status } from '@prisma/client'
 
 export async function GET() {
   try {
@@ -141,12 +142,41 @@ export async function PUT(request: Request) {
         },
         objective: {
           select: {
-            title: true,
-            id: true
+            id: true,
+            title: true
           }
         }
       }
     })
+
+    // Recalculate and persist parent objective status
+    if (keyResult.objective?.id) {
+      const allKeyResults = await prisma.keyResult.findMany({
+        where: { objectiveId: keyResult.objective.id },
+      });
+      const totalKeyResults = allKeyResults.length;
+      let averageProgress = 0;
+      if (totalKeyResults > 0) {
+        averageProgress =
+          allKeyResults.reduce((sum, kr) => {
+            const progress = kr.targetValue > 0 ? (kr.currentValue / kr.targetValue) * 100 : 0;
+            return sum + Math.min(progress, 100);
+          }, 0) / totalKeyResults;
+      }
+      // Use Prisma Status enum for type safety
+      let newStatus: Status = Status.NOT_STARTED;
+      if (totalKeyResults > 0) {
+        if (averageProgress >= 100) {
+          newStatus = Status.COMPLETED;
+        } else if (averageProgress > 0) {
+          newStatus = Status.IN_PROGRESS;
+        }
+      }
+      await prisma.objective.update({
+        where: { id: keyResult.objective.id },
+        data: { status: newStatus },
+      });
+    }
 
     return NextResponse.json(keyResult)
   } catch (error) {

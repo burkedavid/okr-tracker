@@ -595,7 +595,9 @@ export default function ManagePage() {
     })
   }
 
-  const filteredObjectives = objectives.filter(objective => {
+  const filteredObjectives = objectives
+  .filter(objective => objective.status !== 'COMPLETED') // Always exclude completed objectives
+  .filter(objective => {
     // Add null checks to prevent errors when properties are undefined
     const matchesSearch = !searchTerm || (
       (objective.title?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
@@ -629,7 +631,7 @@ export default function ManagePage() {
     }
     
     return matchesSearch && matchesStatus && matchesUser
-  })
+  });
 
   // Calculate statistics for the current filtered objectives
   const objectiveStats = {
