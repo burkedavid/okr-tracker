@@ -25,13 +25,10 @@ import {
   AlertCircle,
   Clock,
   AlertTriangle,
-  ChevronRight,
-  ChevronDown,
   Edit,
   Trash2,
   Save,
   X,
-  TrendingDown,
   Clock as History,
   RefreshCw,
   Eye,
@@ -1715,7 +1712,7 @@ export default function ManagePage() {
                         </h4>
                         <div className="space-y-3">
                           {objective.keyResults.map((kr) => {
-                            const progress = kr.targetValue > 0 ? Math.min((kr.currentValue / kr.targetValue) * 100, 100) : 0
+                            const progressPercent = kr.targetValue > 0 ? Math.min((kr.currentValue / kr.targetValue) * 100, 100) : 0
                             
                             // Show inline edit form if this key result is being edited
                             if (editingKeyResultInline === kr.id) {

@@ -37,13 +37,7 @@ export function ProgressHistoryModal({
   const [loading, setLoading] = React.useState(true)
   const [error, setError] = React.useState<string | null>(null)
 
-  React.useEffect(() => {
-    if (isOpen && keyResultId) {
-      fetchProgressHistory()
-    }
-  }, [isOpen, keyResultId])
-
-  const fetchProgressHistory = async () => {
+  const fetchProgressHistory = React.useCallback(async () => {
     setLoading(true)
     setError(null)
     
@@ -62,7 +56,13 @@ export function ProgressHistoryModal({
     } finally {
       setLoading(false)
     }
-  }
+  }, [keyResultId])
+
+  React.useEffect(() => {
+    if (isOpen && keyResultId) {
+      fetchProgressHistory()
+    }
+  }, [isOpen, keyResultId, fetchProgressHistory])
 
   const getProgressPercentage = (value: number) => {
     return targetValue > 0 ? Math.min(100, Math.round((value / targetValue) * 100)) : 0
@@ -100,7 +100,6 @@ export function ProgressHistoryModal({
             
             <div className="space-y-4">
               {progressUpdates.map((update, index) => {
-                const isFirst = index === 0
                 const isLatest = index === 0
                 const previousValue = index < progressUpdates.length - 1 ? progressUpdates[index + 1].value : 0
                 const valueChange = update.value - previousValue

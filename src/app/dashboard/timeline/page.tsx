@@ -98,6 +98,38 @@ export default function TimelinePage() {
     fetchData()
   }, [])
 
+  // Function to get current time position on the timeline
+  const getCurrentTimePosition = (allCycles: Cycle[]) => {
+    if (allCycles.length === 0) return 50
+    
+    const earliestStart = Math.min(...allCycles.map(c => new Date(c.startDate).getTime()))
+    const latestEnd = Math.max(...allCycles.map(c => new Date(c.endDate).getTime()))
+    const totalTimespan = latestEnd - earliestStart
+    const now = new Date().getTime()
+    
+    const basePosition = Math.max(0, Math.min(100, ((now - earliestStart) / totalTimespan) * 100))
+    return basePosition * timelineZoom
+  }
+  
+  // Timeline navigation function
+  const scrollToToday = React.useCallback(() => {
+    if (timelineRef.current) {
+      const currentPosition = getCurrentTimePosition(cycles)
+      const containerWidth = timelineRef.current.clientWidth
+      const timelineWidth = timelineRef.current.scrollWidth
+      
+      // Only scroll if there's actually scrollable content
+      if (timelineWidth > containerWidth) {
+        const scrollPosition = (currentPosition / 100) * timelineWidth - containerWidth / 2
+        
+        timelineRef.current.scrollTo({
+          left: Math.max(0, Math.min(scrollPosition, timelineWidth - containerWidth)),
+          behavior: 'smooth'
+        })
+      }
+    }
+  }, [cycles, timelineZoom])
+  
   // Auto-scroll to today's date when the page loads and data is ready
   useEffect(() => {
     if (!loading && cycles.length > 0) {
@@ -107,7 +139,7 @@ export default function TimelinePage() {
       }, 500)
       return () => clearTimeout(timer)
     }
-  }, [loading, cycles.length])
+  }, [loading, cycles.length, scrollToToday])
 
   useEffect(() => {
     // Auto-select current user for staff
@@ -263,37 +295,6 @@ export default function TimelinePage() {
     return { 
       left: baseLeft * timelineZoom, 
       width: baseWidth * timelineZoom 
-    }
-  }
-
-  const getCurrentTimePosition = (allCycles: Cycle[]) => {
-    if (allCycles.length === 0) return 50
-    
-    const earliestStart = Math.min(...allCycles.map(c => new Date(c.startDate).getTime()))
-    const latestEnd = Math.max(...allCycles.map(c => new Date(c.endDate).getTime()))
-    const totalTimespan = latestEnd - earliestStart
-    const now = new Date().getTime()
-    
-    const basePosition = Math.max(0, Math.min(100, ((now - earliestStart) / totalTimespan) * 100))
-    return basePosition * timelineZoom
-  }
-
-  // Timeline navigation functions
-  const scrollToToday = () => {
-    if (timelineRef.current) {
-      const currentPosition = getCurrentTimePosition(cycles)
-      const containerWidth = timelineRef.current.clientWidth
-      const timelineWidth = timelineRef.current.scrollWidth
-      
-      // Only scroll if there's actually scrollable content
-      if (timelineWidth > containerWidth) {
-        const scrollPosition = (currentPosition / 100) * timelineWidth - containerWidth / 2
-        
-        timelineRef.current.scrollTo({
-          left: Math.max(0, Math.min(scrollPosition, timelineWidth - containerWidth)),
-          behavior: 'smooth'
-        })
-      }
     }
   }
 
