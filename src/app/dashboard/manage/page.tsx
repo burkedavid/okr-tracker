@@ -1845,8 +1845,8 @@ export default function ManagePage() {
                                     </div>
                                     <div className="flex items-center space-x-3">
                                       <div className="text-right">
-                                        <div className={`text-2xl font-bold ${getProgressColor(kr.currentValue / kr.targetValue * 100)}`}>
-                                          {Math.round(kr.currentValue / kr.targetValue * 100)}%
+                                        <div className={`text-2xl font-bold ${getProgressColor(progressPercent)}`}>
+                                          {Math.round(progressPercent)}%
                                         </div>
                                         <div className="text-sm text-slate-500">
                                           {kr.currentValue} / {kr.targetValue}{kr.unit}

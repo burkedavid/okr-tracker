@@ -128,7 +128,7 @@ export default function TimelinePage() {
         })
       }
     }
-  }, [cycles, timelineZoom])
+  }, [cycles, timelineZoom, getCurrentTimePosition])
   
   // Auto-scroll to today's date when the page loads and data is ready
   useEffect(() => {
