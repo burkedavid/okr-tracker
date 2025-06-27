@@ -119,6 +119,17 @@ export default function DashboardPage() {
     completedObjectives: objectives.filter(obj => obj.progress >= 100).length
   }
 
+  // Completion stats for all objectives in the current calendar year
+  const currentYear = new Date().getFullYear();
+  const objectivesThisYear = allObjectives.filter(obj => {
+    const endDate = obj.extendedDeadline ? new Date(obj.extendedDeadline) : new Date(obj.cycle.endDate);
+    return endDate.getFullYear() === currentYear;
+  });
+  const completionStats = {
+    total: objectivesThisYear.length,
+    completed: objectivesThisYear.filter(obj => obj.progress >= 100).length
+  }
+
   const getProgressColor = (progress: number) => {
     if (progress >= 80) return 'text-emerald-600'
     if (progress >= 60) return 'text-amber-600'
@@ -308,7 +319,7 @@ export default function DashboardPage() {
           <Card className="bg-white shadow-sm border-slate-200 hover:shadow-md transition-all duration-200">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
               <CardTitle className="text-sm font-semibold text-slate-600 uppercase tracking-wide">
-                Completion Rate
+                Completion Rate 
               </CardTitle>
               <div className="p-2 bg-amber-100 rounded-lg">
                 <Trophy className="h-5 w-5 text-amber-600" />
@@ -316,12 +327,12 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="pt-0">
               <div className="text-3xl font-bold text-slate-900 mb-1">
-                {stats.activeObjectives > 0 
-                  ? Math.round((stats.completedObjectives / stats.activeObjectives) * 100)
+                {completionStats.total > 0
+                  ? Math.round((completionStats.completed / completionStats.total) * 100)
                   : 0}%
               </div>
               <p className="text-sm text-slate-500">
-                {stats.completedObjectives} of {stats.activeObjectives} completed
+                {completionStats.completed} of {completionStats.total} objectives completed in {currentYear}
               </p>
             </CardContent>
           </Card>
