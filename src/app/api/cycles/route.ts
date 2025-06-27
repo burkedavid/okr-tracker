@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '@/lib/auth';
+import { getServerAuthSession } from '../../../lib/auth-helpers';
 
 // GET all cycles
 export async function GET() {
@@ -20,7 +19,7 @@ export async function GET() {
 
 // POST a new cycle
 export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerAuthSession();
   if (session?.user.role !== 'MANAGER') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -44,7 +43,7 @@ export async function POST(request: Request) {
 
 // PUT (update) a cycle
 export async function PUT(request: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerAuthSession();
   if (session?.user.role !== 'MANAGER') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
@@ -73,7 +72,7 @@ export async function PUT(request: Request) {
 
 // DELETE a cycle
 export async function DELETE(request: Request) {
-  const session = await getServerSession(authOptions);
+  const session = await getServerAuthSession();
   if (session?.user.role !== 'MANAGER') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
