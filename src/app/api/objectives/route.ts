@@ -71,7 +71,7 @@ export async function GET() {
     }
 
     // Calculate progress for each objective
-    const objectivesWithProgress = objectives.map((objective: ObjectiveWithKeyResults) => {
+    const objectivesWithProgress = objectives.map((objective) => {
       const totalKeyResults = objective.keyResults.length
       const completedKeyResults = objective.keyResults.filter((kr: KeyResult) => {
         const progress = kr.targetValue > 0 ? (kr.currentValue / kr.targetValue) * 100 : 0
