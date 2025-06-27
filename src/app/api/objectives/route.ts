@@ -50,25 +50,7 @@ export async function GET() {
     }
 
     // Define objective type with key results
-    interface ObjectiveWithKeyResults {
-      id: string;
-      title: string;
-      description: string | null;
-      status: string;
-      keyResults: KeyResult[];
-      ownerId: string;
-      owner?: {
-        id: string;
-        name: string;
-        email: string;
-        position: string | null;
-      } | null;
-      cycle?: {
-        id: string;
-        name: string;
-      };
-      [key: string]: unknown; // For other properties that might be accessed
-    }
+
 
     // Calculate progress for each objective
     const objectivesWithProgress = objectives.map((objective) => {
