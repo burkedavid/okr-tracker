@@ -5,11 +5,12 @@ import { signIn, getSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Target, Mail, Lock, AlertCircle } from 'lucide-react'
+import { Target, Mail, Lock, AlertCircle, Check } from 'lucide-react'
 
 export default function SignIn() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -24,6 +25,8 @@ export default function SignIn() {
         email,
         password,
         redirect: false,
+        callbackUrl: '/dashboard',
+        rememberMe: rememberMe ? 'true' : 'false',
       })
 
       if (result?.error) {
@@ -97,6 +100,21 @@ export default function SignIn() {
                     placeholder="Enter your password"
                   />
                 </div>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <div 
+                  className={`w-5 h-5 border rounded flex items-center justify-center cursor-pointer ${rememberMe ? 'bg-blue-600 border-blue-600' : 'border-slate-300'}`}
+                  onClick={() => setRememberMe(!rememberMe)}
+                >
+                  {rememberMe && <Check className="w-3 h-3 text-white" />}
+                </div>
+                <label 
+                  className="text-sm text-slate-700 cursor-pointer"
+                  onClick={() => setRememberMe(!rememberMe)}
+                >
+                  Stay signed in
+                </label>
               </div>
 
               <Button

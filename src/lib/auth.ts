@@ -2,6 +2,38 @@ import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
 
+// Define custom types for type safety
+type CustomUser = {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+  department?: string;
+  position?: string;
+  avatar?: string;
+}
+
+type CustomToken = {
+  sub?: string;
+  role?: string;
+  department?: string;
+  position?: string;
+  avatar?: string;
+  [key: string]: unknown;
+}
+
+type CustomSession = {
+  user: {
+    id?: string;
+    role?: string;
+    department?: string;
+    position?: string;
+    avatar?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
+
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -51,27 +83,33 @@ export const authOptions = {
     })
   ],
   session: {
-    strategy: 'jwt' as const
+    strategy: 'jwt' as const,
+    // Default session is 30 days when 'Stay signed in' is checked, otherwise 1 day
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async jwt({ token, user }: { token: any; user: any }) {
+    async jwt({ token, user, trigger, session }: { token: CustomToken; user?: CustomUser; trigger?: string; session?: unknown }) {
       if (user) {
         token.role = user.role
         token.department = user.department
         token.position = user.position
         token.avatar = user.avatar
       }
+      
+      // Update session when it's updated
+      if (trigger === 'update' && session) {
+        // You can update token based on session update if needed
+        Object.assign(token, session)
+      }
       return token
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    async session({ session, token }: { session: any; token: any }) {
-      if (token) {
-        session.user.id = token.sub!
-        session.user.role = token.role as string
-        session.user.department = token.department as string
-        session.user.position = token.position as string
-        session.user.avatar = token.avatar as string
+    async session({ session, token }: { session: CustomSession; token: CustomToken }) {
+      if (token && token.sub) {
+        session.user.id = token.sub
+        session.user.role = token.role || ''
+        session.user.department = token.department || ''
+        session.user.position = token.position || ''
+        session.user.avatar = token.avatar || ''
       }
       return session
     }

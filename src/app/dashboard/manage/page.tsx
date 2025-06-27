@@ -1560,7 +1560,7 @@ export default function ManagePage() {
                         >
                           {objective.title}
                         </CardTitle>
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(objective.status)}`}>
+                        <span className={`inline-block whitespace-nowrap px-3 py-1 rounded-full text-xs font-medium border ${getStatusBadge(objective.status)}`}>
                           {objective.status.replace('_', ' ')}
                         </span>
                         
@@ -1848,92 +1848,89 @@ export default function ManagePage() {
                                     </div>
                                     <div className="flex items-center space-x-3">
                                       <div className="text-right">
-                                        <div className={`text-2xl font-bold ${getProgressColor(progress)}`}>
-                                          {Math.round(progress)}%
+                                        <div className={`text-2xl font-bold ${getProgressColor(kr.currentValue / kr.targetValue * 100)}`}>
+                                          {Math.round(kr.currentValue / kr.targetValue * 100)}%
                                         </div>
                                         <div className="text-sm text-slate-500">
                                           {kr.currentValue} / {kr.targetValue}{kr.unit}
                                         </div>
                                       </div>
-                                      {/* Edit and Delete buttons for managers */}
-                                      {(typedSession?.user?.role === 'MANAGER' || typedSession?.user?.role === 'ADMIN') && (
-                                        <div className="flex flex-col space-y-1">
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={(e) => {
-                                              e.stopPropagation()
-                                              handleEditKeyResult(kr, objective.id)
-                                            }}
-                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 h-8 w-8"
-                                            title="Edit key result"
-                                          >
-                                            <Edit className="w-3 h-3" />
-                                          </Button>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={(e) => {
-                                              e.stopPropagation()
-                                              // Open progress update form with this key result pre-selected
-                                              setShowProgressForm(true)
-                                              // Set current user as default updater
-                                              if (typedSession?.user?.id) {
-                                                setProgressForm({
-                                                  value: '',
-                                                  notes: '',
-                                                  keyResultId: kr.id,
-                                                  createdById: typedSession.user.id,
-                                                  keyResultFilterUserId: ''
-                                                })
-                                              } else {
-                                                setProgressForm(prev => ({
-                                                  ...prev,
-                                                  keyResultId: kr.id,
-                                                  keyResultFilterUserId: ''
-                                                }))
-                                              }
-                                            }}
-                                            className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 p-1 h-8 w-8"
-                                            title="Update Progress"
-                                          >
-                                            <TrendingUp className="w-3 h-3" />
-                                          </Button>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={(e) => {
-                                              e.stopPropagation()
-                                              setSelectedKeyResult({
-                                                id: kr.id,
-                                                description: kr.description,
-                                                targetValue: kr.targetValue,
-                                                unit: kr.unit
+                                      <div className="flex bg-gray-100 rounded-md p-0.5">
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            setEditingKeyResultInline(kr.id)
+                                          }}
+                                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 h-6 w-6"
+                                          title="Edit Key Result"
+                                        >
+                                          <Edit className="w-3 h-3" />
+                                        </Button>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            // Open progress update form with this key result pre-selected
+                                            setShowProgressForm(true)
+                                            // Set current user as default updater
+                                            if (typedSession?.user?.id) {
+                                              setProgressForm({
+                                                value: '',
+                                                notes: '',
+                                                keyResultId: kr.id,
+                                                createdById: typedSession.user.id,
+                                                keyResultFilterUserId: ''
                                               })
-                                              setShowProgressHistory(true)
-                                            }}
-                                            className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 h-8 w-8"
-                                            title="View Progress History"
-                                          >
-                                            <History className="w-3 h-3" />
-                                          </Button>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            onClick={(e) => {
-                                              e.stopPropagation()
-                                              handleDeleteKeyResult(kr.id)
-                                            }}
-                                            className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-8 w-8"
-                                            title="Delete key result"
-                                          >
-                                            <Trash2 className="w-3 h-3" />
-                                          </Button>
-                                        </div>
-                                      )}
+                                            } else {
+                                              setProgressForm(prev => ({
+                                                ...prev,
+                                                keyResultId: kr.id,
+                                                keyResultFilterUserId: ''
+                                              }))
+                                            }
+                                          }}
+                                          className="text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50 p-1 h-6 w-6"
+                                          title="Update Progress"
+                                        >
+                                          <TrendingUp className="w-3 h-3" />
+                                        </Button>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            setSelectedKeyResult({
+                                              id: kr.id,
+                                              description: kr.description,
+                                              targetValue: kr.targetValue,
+                                              unit: kr.unit
+                                            })
+                                            setShowProgressHistory(true)
+                                          }}
+                                          className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 h-6 w-6"
+                                          title="View Progress History"
+                                        >
+                                          <History className="w-3 h-3" />
+                                        </Button>
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            handleDeleteKeyResult(kr.id)
+                                          }}
+                                          className="text-red-600 hover:text-red-700 hover:bg-red-50 p-1 h-6 w-6"
+                                          title="Delete Key Result"
+                                        >
+                                          <Trash2 className="w-3 h-3" />
+                                        </Button>
+                                      </div>
                                     </div>
                                   </div>
-                                  <Progress value={Math.min(progress, 100)} className="h-2 bg-slate-100" />
+                                  <Progress value={Math.min(kr.currentValue / kr.targetValue * 100, 100)} className="h-2 bg-slate-100" />
                                 </div>
                               </div>
                             )
