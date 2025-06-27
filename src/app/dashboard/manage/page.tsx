@@ -1928,7 +1928,7 @@ export default function ManagePage() {
                                       </div>
                                     </div>
                                   </div>
-                                  <Progress value={Math.min(kr.currentValue / kr.targetValue * 100, 100)} className="h-2 bg-slate-100" />
+
                                 </div>
                               </div>
                             )
