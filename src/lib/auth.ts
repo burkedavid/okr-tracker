@@ -1,7 +1,7 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
-import type { Session, User } from 'next-auth'
+import type { Session } from 'next-auth'
 import type { JWT } from 'next-auth/jwt'
 
 // Define custom user type for authorization
