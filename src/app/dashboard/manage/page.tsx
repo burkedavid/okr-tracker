@@ -1861,7 +1861,8 @@ export default function ManagePage() {
                                           size="sm"
                                           onClick={(e) => {
                                             e.stopPropagation()
-                                            setEditingKeyResultInline(kr.id)
+                                            // Call handleEditKeyResult to properly populate the form
+                                            handleEditKeyResult(kr, objective.id)
                                           }}
                                           className="text-blue-600 hover:text-blue-700 hover:bg-blue-50 p-1 h-6 w-6"
                                           title="Edit Key Result"

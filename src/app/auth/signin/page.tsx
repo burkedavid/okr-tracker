@@ -101,15 +101,15 @@ export default function SignIn() {
                   />
                 </div>
               </div>
-              
+
               <div className="flex items-center space-x-2">
-                <div 
+                <div
                   className={`w-5 h-5 border rounded flex items-center justify-center cursor-pointer ${rememberMe ? 'bg-blue-600 border-blue-600' : 'border-slate-300'}`}
                   onClick={() => setRememberMe(!rememberMe)}
                 >
                   {rememberMe && <Check className="w-3 h-3 text-white" />}
                 </div>
-                <label 
+                <label
                   className="text-sm text-slate-700 cursor-pointer"
                   onClick={() => setRememberMe(!rememberMe)}
                 >
@@ -125,17 +125,6 @@ export default function SignIn() {
                 {loading ? 'Signing in...' : 'Sign In'}
               </Button>
             </form>
-
-            <div className="mt-6 pt-6 border-t border-slate-200">
-              <div className="text-sm text-slate-600">
-                <p className="font-medium mb-2">Test Accounts:</p>
-                <div className="space-y-1 text-xs">
-                  <p><strong>Manager:</strong> david.burke@company.com</p>
-                  <p><strong>Staff:</strong> kevin.hughes@company.com</p>
-                  <p><strong>Password:</strong> password123</p>
-                </div>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>

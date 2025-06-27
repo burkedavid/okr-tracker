@@ -372,7 +372,7 @@ export default function DashboardPage() {
                                     {objective.title}
                                   </h3>
                                 </div>
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusBadge(objective.status)}`}>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium border inline-block whitespace-nowrap ${getStatusBadge(objective.status)}`}>
                                   {objective.status.replace('_', ' ')}
                                 </span>
                                 {objective.extendedDeadline && (
