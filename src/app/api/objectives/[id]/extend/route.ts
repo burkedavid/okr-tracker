@@ -3,14 +3,15 @@ import { getServerSession } from 'next-auth/next'
 import { Session } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { getServerAuthSession } from '@/lib/auth-helpers'
 
 export async function POST(
   request: NextRequest,
   context: { params: { id: string } }
 ) {
   try {
-    // Use type assertion to handle the updated Next.js 15.3.3 session types
-    const session = await getServerSession(authOptions as any) as Session | null
+    // Using a helper function to get the session with proper typing
+    const session = await getServerAuthSession()
     
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })

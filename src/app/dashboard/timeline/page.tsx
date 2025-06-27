@@ -99,7 +99,7 @@ export default function TimelinePage() {
   }, [])
 
   // Function to get current time position on the timeline
-  const getCurrentTimePosition = (allCycles: Cycle[]) => {
+  const getCurrentTimePosition = React.useCallback((allCycles: Cycle[]) => {
     if (allCycles.length === 0) return 50
     
     const earliestStart = Math.min(...allCycles.map(c => new Date(c.startDate).getTime()))
@@ -109,7 +109,7 @@ export default function TimelinePage() {
     
     const basePosition = Math.max(0, Math.min(100, ((now - earliestStart) / totalTimespan) * 100))
     return basePosition * timelineZoom
-  }
+  }, [timelineZoom])
   
   // Timeline navigation function
   const scrollToToday = React.useCallback(() => {
