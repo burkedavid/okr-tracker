@@ -1,8 +1,10 @@
 import CredentialsProvider from 'next-auth/providers/credentials'
 import { prisma } from './prisma'
 import bcrypt from 'bcryptjs'
+import type { Session, User } from 'next-auth'
+import type { JWT } from 'next-auth/jwt'
 
-// Define custom types for type safety
+// Define custom user type for authorization
 type CustomUser = {
   id: string;
   email: string;
@@ -13,27 +15,34 @@ type CustomUser = {
   avatar?: string;
 }
 
-type CustomToken = {
-  sub?: string;
-  role?: string;
-  department?: string;
-  position?: string;
-  avatar?: string;
-  [key: string]: unknown;
+// Extend the built-in session types
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      role: string;
+      department?: string;
+      position?: string;
+      avatar?: string;
+    }
+  }
 }
 
-type CustomSession = {
-  user: {
-    id?: string;
-    role?: string;
+// Extend JWT type
+declare module 'next-auth/jwt' {
+  interface JWT {
+    sub?: string;
+    role: string;
     department?: string;
     position?: string;
     avatar?: string;
-    [key: string]: unknown;
-  };
-  [key: string]: unknown;
+  }
 }
 
+// Define auth options compatible with Next.js 15.3.3
 export const authOptions = {
   providers: [
     CredentialsProvider({
@@ -84,34 +93,29 @@ export const authOptions = {
   ],
   session: {
     strategy: 'jwt' as const,
-    // Default session is 30 days when 'Stay signed in' is checked, otherwise 1 day
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user, trigger, session }: { token: CustomToken; user?: CustomUser; trigger?: string; session?: unknown }) {
+    async jwt({ token, user }: { token: JWT; user?: CustomUser }) {
       if (user) {
-        token.role = user.role
-        token.department = user.department
-        token.position = user.position
-        token.avatar = user.avatar
+        // Add custom user properties to token
+        token.role = user.role;
+        token.department = user.department;
+        token.position = user.position;
+        token.avatar = user.avatar;
       }
-      
-      // Update session when it's updated
-      if (trigger === 'update' && session) {
-        // You can update token based on session update if needed
-        Object.assign(token, session)
-      }
-      return token
+      return token;
     },
-    async session({ session, token }: { session: CustomSession; token: CustomToken }) {
-      if (token && token.sub) {
-        session.user.id = token.sub
-        session.user.role = token.role || ''
-        session.user.department = token.department || ''
-        session.user.position = token.position || ''
-        session.user.avatar = token.avatar || ''
+    async session({ session, token }: { session: Session; token: JWT }) {
+      if (session.user && token.sub) {
+        // Add properties from token to session
+        session.user.id = token.sub;
+        session.user.role = token.role || '';
+        session.user.department = token.department;
+        session.user.position = token.position;
+        session.user.avatar = token.avatar;
       }
-      return session
+      return session;
     }
   },
   pages: {
