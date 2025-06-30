@@ -987,7 +987,7 @@ export default function TimelinePage() {
                 )}
 
                 {/* Enhanced Cycle Details */}
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="flex flex-col gap-4">
                   {objectivesByCycle.map(({ cycle, objectives: _objectives }) => {
                     const cycleMissed = _objectives.filter(obj => calculateMissedTargetInfo(obj).isMissed)
                     const cycleAtRisk = _objectives.filter(obj => calculateMissedTargetInfo(obj).isAtRisk)
