@@ -1049,23 +1049,20 @@ export default function TimelinePage() {
                                   </div>
                                 )}
                                 
-                                <div className="space-y-1">
+                                <div className="space-y-3">
                                   {_objectives.slice(0, 3).map(objective => {
                                     const missedInfo = calculateMissedTargetInfo(objective)
                                     return (
-                                      <div key={objective.id} className="flex items-center space-x-2 text-xs">
-                                        <div className={`w-2 h-2 rounded-full ${getStatusColor(objective.status, missedInfo)}`}></div>
-                                        <span className="truncate flex-1">{objective.title}</span>
-                                        <span
-                                          className="flex-1 whitespace-normal break-words"
-                                          title={objective.title}
-                                        >
-                                          {objective.title}
-                                        </span>
-                                        <div className="flex items-center space-x-1">
-                                          <span className={`font-medium ${getProgressColor(objective.progress)}`}>
-                                            {objective.progress}%
-                                          </span>
+                                      <div key={objective.id} className="p-2 rounded border border-slate-100 bg-slate-50 space-y-1">
+                                        <div className="flex items-center space-x-2 mb-1">
+                                          <div className={`w-2 h-2 rounded-full ${getStatusColor(objective.status, missedInfo)}`}></div>
+                                          <span className="font-semibold text-slate-900">{objective.title}</span>
+                                        </div>
+                                        {objective.description && (
+                                          <div className="text-xs text-slate-600 mb-1">{objective.description}</div>
+                                        )}
+                                        <div className="flex items-center space-x-2 text-xs">
+                                          <span className={`font-medium ${getProgressColor(objective.progress)}`}>{objective.progress}%</span>
                                           {missedInfo.isMissed && <XCircle className="w-3 h-3 text-red-600" />}
                                           {missedInfo.isAtRisk && !missedInfo.isMissed && <AlertTriangle className="w-3 h-3 text-orange-500" />}
                                         </div>
