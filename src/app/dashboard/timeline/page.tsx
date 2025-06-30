@@ -806,7 +806,7 @@ export default function TimelinePage() {
           </CardHeader>
           <CardContent className="p-6">
             {cycles.length > 0 ? (
-              <div className="space-y-8">
+              <div className="flex flex-col gap-8">
                 {/* Scrollable Timeline Container */}
                 <div className="relative">
                   {/* Timeline Background with Horizontal Scroll */}
