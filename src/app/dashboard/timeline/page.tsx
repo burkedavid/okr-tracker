@@ -1049,7 +1049,8 @@ export default function TimelinePage() {
                                   </div>
                                 )}
                                 
-                                <div className="space-y-3">
+                                {/* Objectives List - force vertical stacking */}
+                                <div className="flex flex-col space-y-3">
                                   {_objectives.slice(0, 3).map(objective => {
                                     const missedInfo = calculateMissedTargetInfo(objective)
                                     return (
