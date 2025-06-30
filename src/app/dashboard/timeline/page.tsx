@@ -1056,6 +1056,12 @@ export default function TimelinePage() {
                                       <div key={objective.id} className="flex items-center space-x-2 text-xs">
                                         <div className={`w-2 h-2 rounded-full ${getStatusColor(objective.status, missedInfo)}`}></div>
                                         <span className="truncate flex-1">{objective.title}</span>
+                                        <span
+                                          className="flex-1 whitespace-normal break-words"
+                                          title={objective.title}
+                                        >
+                                          {objective.title}
+                                        </span>
                                         <div className="flex items-center space-x-1">
                                           <span className={`font-medium ${getProgressColor(objective.progress)}`}>
                                             {objective.progress}%
